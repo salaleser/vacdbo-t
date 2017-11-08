@@ -1,8 +1,10 @@
+package ru.salaleser.vacdbot;
+
 import sx.blah.discord.handle.obj.IChannel;
 
 class DLog {
 
-	private static IChannel channel = VACDBOT.guild.getChannelByID(VACDBOT.CHANNEL_LOG);
+	private static IChannel channel = Main.guild.getChannelByID(Main.CHANNEL_LOG);
 
 	static void add(String text) {
 		try {
