@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="vacdbo-t:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/vacdbo_t_jar</output-path>
+    <root id="archive" name="vacdbo-t.jar">
+      <element id="module-output" name="vacdbo-t" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Discord4j-2.9.2-shaded.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
