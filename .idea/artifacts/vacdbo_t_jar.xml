@@ -4,6 +4,8 @@
     <root id="archive" name="vacdbo-t.jar">
       <element id="module-output" name="vacdbo-t" />
       <element id="extracted-dir" path="$PROJECT_DIR$/Discord4j-2.9.2-shaded.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jsoup-1.10.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/json-simple-1.1.1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

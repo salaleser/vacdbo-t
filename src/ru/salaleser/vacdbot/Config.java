@@ -24,7 +24,6 @@ class Config {
 			token = bufferedReader.readLine();
 			bufferedReader.close();
 		} catch (IOException e) {
-			DLog.add(e.getMessage());
 			e.printStackTrace();
 		}
 	}

@@ -35,8 +35,7 @@ class HttpClient {
 					response.append("\n");
 				}
 			} else {
-				System.out.println("fail: " + connection.getResponseCode() +
-						", " + connection.getResponseMessage());
+				System.out.println("fail: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
 			}
 		} catch (final java.net.SocketTimeoutException e) {
 			System.out.println("Время ожидания вышло, повторяю операцию...");
