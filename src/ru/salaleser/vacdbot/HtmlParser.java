@@ -205,7 +205,9 @@ public class HtmlParser {
 		return Float.parseFloat(numArtwork) * 4;
 	}
 
-	private static float calcGroups() {return Float.parseFloat(numGroups) * 2;}
+	private static float calcGroups() {
+		return Float.parseFloat(numGroups) * 2;
+	}
 
 	private static float calcFriends(Document doc) {
 		Elements eFriends = doc.getElementsByClass("friendPlayerLevel");
@@ -246,6 +248,31 @@ public class HtmlParser {
 			line('━', length);
 		}
 		return document;
+	}
+
+	ArrayList<StringBuilder> getCoplayersList(String steamID64) {
+		String url = steamID64 + "/friends/coplay?p=";
+		ArrayList<String> coplayers = new ArrayList<>();
+		ArrayList<StringBuilder> ret = new ArrayList<>();
+
+		Document doc = getDocument(BASE_URL + steamID64 + "/friends/coplay");
+		Elements elements = doc.getElementsByClass("pageLinks");
+		System.out.println(doc);
+		for (int page = 1; page < 10; page++) {
+			document = getDocument(BASE_URL + url + page);
+			Elements coplayGroups = document.getElementsByClass("coplayGroup");
+			for (Element coplayGroup : coplayGroups) {
+				if (coplayGroup.getElementsByClass("gameListRowItem")
+						.text().equals("Counter-Strike: Global Offensive")) {
+					Elements friendBlock = coplayGroup.getElementsByClass("friendBlock");
+					for (Element coplayer : friendBlock) {
+						coplayers.add(coplayer.getElementsByTag("data-steamid").text());
+					}
+				}
+			}
+			System.out.println("page: " + page + " | " + coplayers);
+		}
+		return ret;
 	}
 }
 
