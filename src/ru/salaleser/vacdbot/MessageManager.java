@@ -5,6 +5,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 class MessageManager {
@@ -32,27 +33,14 @@ class MessageManager {
 		} else {
 			String command = args[0];
 			switch (command) {
-				case "help":
-				case "помощь":
-				case "?":
-					switch (args.length) {
-						case 2:
-							handleHelp(args[1]);
-						case 1:
-							handleHelp(command);
-							break;
-						default:
-							help("**количество аргументов превышает допустимое, бич**");
-					}
-					break;
 				case "vac":
 				case "вак":
 					switch (args.length) {
 						case 3:
-							if (isSteamID64(args[2])) steamid = args[2];
+							if (Utilities.isSteamID64(args[2])) steamid = args[2];
 							else help("**ошибка в SteamID64** (использую профиль salaleser");
 						case 2:
-							if (isNumeric(args[1])) days = Integer.parseInt(args[1]);
+							if (Utilities.isNumeric(args[1])) days = Integer.parseInt(args[1]);
 							else help("**ошибка в количестве дней** (использую 1 день");
 						case 1:
 							handleHelp(command);
@@ -69,13 +57,13 @@ class MessageManager {
 					int max = 6;
 					switch (args.length) {
 						case 3:
-							if (isNumeric(args[2]) && Integer.parseInt(args[2]) < Integer.parseInt(args[1])) {
+							if (Utilities.isNumeric(args[2]) && Integer.parseInt(args[2]) < Integer.parseInt(args[1])) {
 								min = Integer.parseInt(args[2]);
 							} else {
 								help("**ошибка во втором аргументе** (использую значение " + min + ")");
 							}
 						case 2:
-							if (isNumeric(args[1])) max = Integer.parseInt(args[1]);
+							if (Utilities.isNumeric(args[1])) max = Integer.parseInt(args[1]);
 							else help("**ошибка в первом аргументе** (использую значение " + max + ")");
 						case 1:
 							int range = (max - min) + 1;
@@ -86,30 +74,6 @@ class MessageManager {
 						default:
 							help("**количество аргументов превышает допустимое, бич**");
 					}
-					break;
-				case "map":
-				case "карта":
-					String[] mapList = new String[]{
-							"de_train",
-							"de_nuke",
-							"de_dust2",
-							"de_cache",
-							"de_mirage",
-							"de_inferno",
-							"de_cobblestone",
-							"de_overpass",
-							"cs_office"
-					};
-					int numberOfMaps = mapList.length;
-					if (args.length > 1 && isNumeric(args[1]) &&
-							Integer.parseInt(args[1]) <= mapList.length && Integer.parseInt(args[1]) > 0) {
-						numberOfMaps = Integer.parseInt(args[1]);
-					} else {
-						help("**ошибка в первом аргументе** (использую значение " + numberOfMaps + ")");
-					}
-					int mapNumber = (int) (Math.random() * numberOfMaps);
-					System.out.println(mapNumber);
-					channel.sendMessage("Играть будем на карте " + mapList[mapNumber]);
 					break;
 				case "server":
 				case "сервер":
@@ -133,6 +97,46 @@ class MessageManager {
 							"```alias +bombfind \"+use; gameinstructor_enable 1; cl_clearhinthistory\"\n" +
 							"alias -bombfind \"-use; gameinstructor_enable 0; cl_clearhinthistory\"\n" +
 							"bind e +bombfind```");
+					break;
+				case "report":
+					JsonWriter jsonWriter = new JsonWriter();
+					StringBuilder description = new StringBuilder();
+					if (args.length > 1) {
+						if (!Utilities.isSteamID64(args[1])) {
+							help("**ошибка в профиле**");
+							break;
+						} else {
+							if (args[1].equals("remove")) {
+								channel.sendMessage("Пока не умею.");
+								if (Utilities.isSteamID64(args[2])) {
+									jsonWriter.remove(args[2]);
+								}
+							}
+							if (args[1].equals("undo")) {
+								channel.sendMessage("Пока не умею. " +
+										"Можно попробовать удалить: `~report remove <SteamID64>`");
+								jsonWriter.undo();
+							}
+							for (int i = 2; i < args.length; i++) {
+								description.append(args[i]).append(" ");
+							}
+							try {
+								jsonWriter.addSuspect(args[1], description.toString());
+								channel.sendMessage("http://steamcommunity.com/profiles/" + args[1] +
+										"\nс описанием: ```" + description + "```" +
+										"\nуспешно добавлен в список подозреваемых. " +
+										"Для отмены наберите `~report undo`");
+							} catch (IOException e) {
+								e.printStackTrace();
+								channel.sendMessage("Ошибка в добавлении подозреваемого!");
+								Bot.log.sendMessage(e.getMessage());
+							}
+						}
+					} else {
+						for (String text : jsonWriter.getSuspects()) {
+							channel.sendMessage(text);
+						}
+					}
 					break;
 				case "ready":
 				case "готов":
@@ -162,17 +166,6 @@ class MessageManager {
 				}
 			}
 		}
-	}
-
-	private boolean isSteamID64(String steamID64) {
-		return steamID64.length() == 17 &&
-				steamID64.matches("\\d+") &&
-				Long.parseLong(steamID64) > 76561197960265729L &&
-				Long.parseLong(steamID64) < 76561202255233023L;
-	}
-
-	private boolean isNumeric(String string) {
-		return string.matches("\\d+") && string.length() < 5;
 	}
 
 	private ArrayList<StringBuilder> handleFriends(String steamid) {
@@ -216,10 +209,7 @@ class MessageManager {
 	}
 
 	private void help(String error) {
-		Main.log.sendMessage(author + ", " + error);
-		Main.log.sendMessage("\nПоддерживаемые команды: `vac`, `help`, `map`, `server`, `random`, `bind`\n" +
-				"(некоторые команды доступны на русском или в сокращённом варианте, например: `вак`, `серв`, `rnd`)"
-		);
+
 	}
 
 	private String getIdByName(IUser author) {
@@ -263,25 +253,21 @@ class MessageManager {
 
 	private void handleHelp(String command) {
 		switch (command) {
-			case "help":
-				Main.log.sendMessage("Использование:\t```~help " + command + "```\n" +
-						"Пример: ```~help vac```\n");
-				break;
 			case "vac":
-				Main.log.sendMessage("Использование: ```~vac [<количество_дней> [<SteamID64>]]```\n" +
+				Bot.log.sendMessage("Использование: ```~vac [<количество_дней> [<SteamID64>]]```\n" +
 						"Пример: ```~vac 1 76561198095972970```\n" +
 						"Допустимые значения дня: от 1 до 9999\n" +
 						"Допустимые значения SteamID64: от 76561197960265729 до 76561202255233023");
 				break;
 			case "random":
-				Main.log.sendMessage("Использование:\t```~random [<конечное_значение> [<начальное_значение>]]```\n" +
+				Bot.log.sendMessage("Использование:\t```~random [<конечное_значение> [<начальное_значение>]]```\n" +
 						"Пример: ```~random 6 1```\n" +
 						"Допустимые значения: от 1 до 9999");
 				break;
-			case "map":
-				Main.log.sendMessage("Использование:\t```~map [<количество_карт_в_порядке_желательности>]```\n" +
-						"Пример: ```~map 3```\n" +
-						"Допустимые значения: от 1 до 8");
+			case "report":
+				Bot.log.sendMessage("Использование:\t```~report <SteamID64> [<описание>]```\n" +
+						"Пример: ```~report 76561198095972970 использовал ник Какер, играли на ньюке впятером```\n" +
+						"");
 				break;
 			default:
 				help("**неизвестная команда**");

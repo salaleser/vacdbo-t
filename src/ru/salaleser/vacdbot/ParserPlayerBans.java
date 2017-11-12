@@ -8,6 +8,12 @@ import org.json.simple.parser.ParseException;
 import java.util.ArrayList;
 
 class ParserPlayerBans {
+	/**
+	 * Парсит json с банами
+	 * @param sb json
+	 * @param days дней с последнего бана
+	 * @return лист профилей с вак-банами
+	 */
 	ArrayList<String> parse(StringBuilder sb, int days) {
 		ArrayList<String> vacbannedFriends = new ArrayList<>();
 		try {
