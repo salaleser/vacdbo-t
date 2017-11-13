@@ -3,6 +3,7 @@ package ru.salaleser.vacdbot;
 import ru.salaleser.vacdbot.command.CommandManager;
 import ru.salaleser.vacdbot.command.HelpCommand;
 import ru.salaleser.vacdbot.command.MapCommand;
+import ru.salaleser.vacdbot.command.RepCommand;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -29,7 +30,7 @@ public class Bot {
 		commandManager = new CommandManager(this);
 		commandManager.addCommand(new HelpCommand(commandManager));
 		commandManager.addCommand(new MapCommand());
-//		commandManager.addCommand(new RandomCommand());
+		commandManager.addCommand(new RepCommand());
 
 		client = new ClientBuilder().withToken(config.getToken()).build();
 
