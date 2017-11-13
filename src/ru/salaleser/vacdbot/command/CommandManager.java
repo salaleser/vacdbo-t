@@ -1,6 +1,5 @@
 package ru.salaleser.vacdbot.command;
 
-import ru.salaleser.vacdbot.Bot;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Arrays;
@@ -8,11 +7,9 @@ import java.util.HashMap;
 
 public class CommandManager {
 
-	private final Bot bot;
 	HashMap<String, Command> commands;
 
-	public CommandManager(Bot bot) {
-		this.bot = bot;
+	public CommandManager() {
 		this.commands = new HashMap<>();
 	}
 
@@ -20,16 +17,15 @@ public class CommandManager {
 		commands.put(command.name, command);
 	}
 
-	public Command getCommand(String commandName) {
-		return commands.get(commandName);
+	Command getCommand(String commandsKey) {
+		return commands.get(commandsKey);
 	}
 
 	public void handle(IMessage message) {
 		try {
-			String messageContent = message.getContent().substring(1).toLowerCase();
+			String messageContent = message.getContent().substring(1);
 			String[] args = messageContent.split(" ");
-			if (args.length == 0) return;
-			Command command = getCommand(args[0]);
+			Command command = getCommand(args[0].toLowerCase());
 			command.handle(message, Arrays.copyOfRange(args, 1, args.length));
 		} catch (Exception e) {
 			e.printStackTrace();

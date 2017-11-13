@@ -7,16 +7,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-class HttpClient {
+public class HttpClient {
 	private HttpURLConnection connection;
 	private StringBuilder response;
 	private int timeout;
 
-	HttpClient() {
+	public HttpClient() {
 		timeout = 1000;
 	}
 
-	StringBuilder connect(String query) {
+	public StringBuilder connect(String query) {
 		try {
 			connection = (HttpURLConnection) new URL(query).openConnection();
 			connection.setRequestMethod("GET");

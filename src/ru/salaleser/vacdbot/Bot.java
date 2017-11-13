@@ -1,9 +1,6 @@
 package ru.salaleser.vacdbot;
 
-import ru.salaleser.vacdbot.command.CommandManager;
-import ru.salaleser.vacdbot.command.HelpCommand;
-import ru.salaleser.vacdbot.command.MapCommand;
-import ru.salaleser.vacdbot.command.RepCommand;
+import ru.salaleser.vacdbot.command.*;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -21,18 +18,24 @@ public class Bot {
 	public static IChannel log;
 
 	private final IDiscordClient client;
-	private final MessageManager messageManager;
 	private final CommandManager commandManager;
 
 	private Bot() throws Exception {
-		Config config = new Config();
-		messageManager = new MessageManager();
-		commandManager = new CommandManager(this);
+		new Config();
+		commandManager = new CommandManager();
 		commandManager.addCommand(new HelpCommand(commandManager));
+		commandManager.addCommand(new ConsoleCommand());
 		commandManager.addCommand(new MapCommand());
+		commandManager.addCommand(new PollCommand());
+		commandManager.addCommand(new RandomCommand());
+		commandManager.addCommand(new ReadyCommand());
 		commandManager.addCommand(new RepCommand());
+		commandManager.addCommand(new ReportCommand());
+		commandManager.addCommand(new ServerCommand());
+		commandManager.addCommand(new TipCommand());
+		commandManager.addCommand(new VacCommand());
 
-		client = new ClientBuilder().withToken(config.getToken()).build();
+		client = new ClientBuilder().withToken(Config.getToken()).build();
 
 		client.login();
 		client.getDispatcher().registerListener(this);
@@ -52,12 +55,19 @@ public class Bot {
 
 	@EventSubscriber
 	public void onMessage(MessageReceivedEvent event) {
+		if (event.getMessage().getContent().equals("~")) return;
 		if (event.getMessage().getContent().startsWith("~")) {
-			messageManager.handleMessage(event.getMessage());
-		}
-
-		if (event.getMessage().getContent().startsWith("~"))
 			commandManager.handle(event.getMessage());
+		} else {
+			if (event.getMessage().getMentions().size() != 0) { // Содержит ли текущее сообщение упоминание
+				for (int i = 0; i < event.getMessage().getMentions().size(); i++) { // Перебираю упомянутых пользователей
+					// УПОМИНАНИЕ БОТА
+					if (event.getMessage().getMentions().get(i).getName().equals("VACDBO-T")) {
+						event.getMessage().getChannel().sendMessage(event.getMessage().getAuthor() + ", я выявляю недавно получивших VAC-бан друзей" + "(команда \"~vac\"");
+					}
+				}
+			}
+		}
 	}
 
 	public static void main(String[] args) throws Exception {

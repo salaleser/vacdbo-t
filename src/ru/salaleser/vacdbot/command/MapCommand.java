@@ -25,11 +25,13 @@ public class MapCommand extends Command {
 	@Override
 	public void handle(IMessage message, String[] args) throws Exception {
 		int numberOfMaps = MAPS.length;
-		if (args.length > 1 && Utilities.isNumeric(args[1]) &&
-				Integer.parseInt(args[1]) <= MAPS.length && Integer.parseInt(args[1]) > 0) {
+		if (args.length > 1 &&
+				Utilities.isNumeric(args[1]) &&
+				Integer.parseInt(args[1]) <= MAPS.length &&
+				Integer.parseInt(args[1]) > 0) {
 			numberOfMaps = Integer.parseInt(args[1]);
 		} else {
-			Bot.log.sendMessage(help + "\n**ошибка в первом аргументе** (использую значение " + numberOfMaps + ")");
+			message.reply(help + "\n**ошибка в первом аргументе** (использую значение " + numberOfMaps + ")");
 		}
 		int mapNumber = (int) (Math.random() * numberOfMaps);
 		message.getChannel().sendMessage("Играть будем на карте " + MAPS[mapNumber]);

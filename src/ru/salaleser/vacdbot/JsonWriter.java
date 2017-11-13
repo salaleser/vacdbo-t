@@ -11,7 +11,7 @@ public class JsonWriter {
 
 	ParserSuspects parserSuspects = new ParserSuspects();
 
-	void addSuspect(String steamID64, String description) throws IOException {
+	public void addSuspect(String steamID64, String description) throws IOException {
 
 		JSONObject suspect = new JSONObject();
 		suspect.put("timestamp", System.currentTimeMillis());
@@ -52,11 +52,11 @@ public class JsonWriter {
 		}
 	}
 
-	void undo() {
+	public void undo() {
 
 	}
 
-	void remove(String steamid) {
+	public void remove(String steamid) {
 		StringBuilder json = getJsonFromFile();
 		for (String item : parserSuspects.parse(json)) {
 			if (item.startsWith(steamid)) continue;
@@ -73,7 +73,7 @@ public class JsonWriter {
 		}
 	}
 
-	ArrayList<String> getSuspects() {
+	public ArrayList<String> getSuspects() {
 		return parserSuspects.parse(getJsonFromFile());
 	}
 

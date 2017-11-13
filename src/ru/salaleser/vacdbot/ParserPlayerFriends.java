@@ -7,14 +7,14 @@ import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 
-class ParserPlayerFriends {
+public class ParserPlayerFriends {
 	/**
 	 * Парсит json с друзьями
 	 *
 	 * @param sb json
 	 * @return массив из сотен SteamIDs
 	 */
-	ArrayList<StringBuilder> parse(StringBuilder sb) {
+	public ArrayList<StringBuilder> parse(StringBuilder sb) {
 		StringBuilder steamIDs = new StringBuilder();
 		ArrayList<StringBuilder> hundredsOfSteamIDs = new ArrayList<>();
 		try {

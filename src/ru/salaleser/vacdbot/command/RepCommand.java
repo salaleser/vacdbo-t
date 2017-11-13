@@ -13,14 +13,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class RepCommand extends Command {
 	private static final String BASE_URL = "http://steamcommunity.com/profiles/";
 
-	private static int length = 45;
-	private static String title;
-	private static String last_online;
-	private static String status;
 	private static String profile_level;
 	private static String profile_summary;
 	private static String numBadges = "0";
@@ -33,13 +30,7 @@ public class RepCommand extends Command {
 	private static String numArtwork = "0";
 	private static String numGroups = "0";
 	private static String numFriends = "0";
-	private static String numAchievementsCsgo = "0";
-	private static float commentsRep;
 	private static int friendsLevels;
-	private static String recent_activity;
-	private static ArrayList<String> positiveList;
-	private static ArrayList<String> negativeList;
-	private static ArrayList<String> complaintsList;
 	private static Document document;
 
 	public RepCommand() {
@@ -55,9 +46,9 @@ public class RepCommand extends Command {
 		if (Utilities.isSteamID64(args[0])) steamid = args[0];
 		else message.reply("**ошибка в профиле**");
 
-		positiveList = fillList("positive_list.txt");
-		negativeList = fillList("negative_list.txt");
-		complaintsList = fillList("complaints_list.txt");
+		ArrayList<String> positiveList = fillList("positive_list.txt");
+		ArrayList<String> negativeList = fillList("negative_list.txt");
+		ArrayList<String> complaintsList = fillList("complaints_list.txt");
 
 		document = getDocument(BASE_URL + steamid);
 		Elements profile = document.getElementsByClass("no_header");
@@ -65,12 +56,12 @@ public class RepCommand extends Command {
 			message.reply("Профиль не существует");
 			return;
 		}
-		title = document.title();
+		String title = document.title();
 		profile_level = document.getElementsByClass("friendPlayerLevel").first().text();
-		status = document.getElementsByClass("profile_in_game_header").text();
-		last_online = document.getElementsByClass("profile_in_game_name").text();
+		String status = document.getElementsByClass("profile_in_game_header").text();
+		String last_online = document.getElementsByClass("profile_in_game_name").text();
 		profile_summary = document.getElementsByClass("profile_summary").text();
-		recent_activity = document.getElementsByClass("recentgame_recentplaytime").text();
+		String recent_activity = document.getElementsByClass("recentgame_recentplaytime").text();
 		Elements keys = document.getElementsByClass("count_link_label");
 		Elements values = document.getElementsByClass("profile_count_link_total");
 		for (int i = 0; i < keys.size(); i++) {
@@ -87,27 +78,12 @@ public class RepCommand extends Command {
 		numInventory = getInventory(steamid);
 
 		//SUMMARY:
-		message.getChannel().sendMessage("__" + title + "__\n" +
-				"Level: " + profile_level + "\n" +
-				"Status: " + status + " - " + last_online + "\n" +
-				"Recent activity: " + recent_activity + "\n" +
-				"Summary: " + profile_summary + "\n" +
-				"Badges: " + numBadges + "\n" +
-				"Games: " + numGames + "\n" +
-				"Inventory: " + numInventory + "\n" +
-				"Screenshots: " + numScreenshots + "\n" +
-				"Videos: " + numVideos + "\n" +
-				"Workshop Items: " + numWorkshopItems + "\n" +
-				"Reviews: " + numReviews + "\n" +
-				"Artwork: " + numArtwork + "\n" +
-				"Groups: " + numGroups + "\n" +
-				"Friends: " + numFriends
-		);
+		message.getChannel().sendMessage("__" + title + "__\n" + "Level: " + profile_level + "\n" + "Status: " + status + " - " + last_online + "\n" + "Recent activity: " + recent_activity + "\n" + "Summary: " + profile_summary + "\n" + "Badges: " + numBadges + "\n" + "Games: " + numGames + "\n" + "Inventory: " + numInventory + "\n" + "Screenshots: " + numScreenshots + "\n" + "Videos: " + numVideos + "\n" + "Workshop Items: " + numWorkshopItems + "\n" + "Reviews: " + numReviews + "\n" + "Artwork: " + numArtwork + "\n" + "Groups: " + numGroups + "\n" + "Friends: " + numFriends);
 
 		//COMMENTS:
 		String url = steamid + "/allcomments?ctp=";
 		int page = 0;
-		int count = 0;
+		int commentCounter = 0;
 		int rep = 0;
 		int complaints = 0;
 		ArrayList<StringBuilder> commentsAll = new ArrayList<>();
@@ -117,12 +93,16 @@ public class RepCommand extends Command {
 			document = getDocument(BASE_URL + url + page);
 			Elements comments = document.getElementsByClass("commentthread_comment_content");
 			if (comments.isEmpty()) break;
+			int maxLenght = 40;
 			for (Element element : comments) {
+				commentCounter++;
 				String comment = element.getElementsByClass("commentthread_comment_text").text();
-				int reduceTo = comment.length();
-				if (comment.length() > 35) reduceTo = 35;
-				String reducedComment = comment.substring(0, reduceTo);
-				commentsPage.append(count).append(". ").append(reducedComment).append("\n");
+				int realLenght = comment.length();
+				if (comment.length() > maxLenght) realLenght = maxLenght;
+				String reducedComment = comment.substring(0, realLenght);
+				commentsPage.append(commentCounter).append(". ").append(reducedComment);
+				if (comment.length() > maxLenght) commentsPage.append("...\n");
+				else commentsPage.append("\n");
 				if (checkComment(positiveList, comment)) {
 					rep++;
 				} else if (checkComment(negativeList, comment)) {
@@ -131,24 +111,24 @@ public class RepCommand extends Command {
 						complaints++;
 					}
 				}
-				count++;
 			}
 			commentsAll.add(commentsPage);
 		}
-		float cheatRep = (float) complaints / count * 100;
-		commentsRep = rep / count * cheatRep + count;
-		message.getChannel().sendMessage("Всего комментариев: " + count + "\n" +
+		float cheatRep = (float) complaints / commentCounter * 100;
+		float commentsRep = rep / commentCounter * cheatRep + commentCounter;
+		float reputation = calcLevel() + calcSummary() + calcBadges() + calcGames() + calcScreenshots() + calcVideos() + calcWorkshopItems() + calcReviews() + calcArtwork() + calcGroups() + calcFriends(document) + calcInventory() + commentsRep;
+		message.getChannel().sendMessage("Всего комментариев: " + commentCounter + "\n" +
 				"Репутация абсолютная: " + rep + "\n" +
 				"Обвинений в нечестной игре: " + complaints + " (" + (int) cheatRep + "%)\n" +
-				"Репутация комментариев: " + commentsRep);
-
-		float reputation = calcLevel() + calcSummary() + calcBadges() + calcGames() + calcScreenshots() + calcVideos() + calcWorkshopItems() + calcReviews() + calcArtwork() + calcGroups() + calcFriends(document) + calcInventory() + commentsRep;
-		message.getChannel().sendMessage("ВСЕГО: " + reputation);
+				"Репутация комментариев: " + commentsRep + "\n" +
+				"ВСЕГО: " + reputation
+		);
 
 		if (args.length > 1 && args[1].equals("v")) {
-			message.getChannel().sendMessage("Краткое содержание всех комментариев:");
+			message.getChannel().sendMessage("Все (почти, не получается больше сотни вывести пока) комментарии:");
 			for (StringBuilder comment : commentsAll) {
 				message.getChannel().sendMessage(comment.toString());
+				TimeUnit.SECONDS.sleep(1);
 			}
 		}
 
@@ -275,10 +255,10 @@ public class RepCommand extends Command {
 		return document;
 	}
 
-	/**
-	 * Пока это не работает по причине приватности коплееров
+	/*
+	  Пока это не работает по причине приватности коплееров
 	 */
-	ArrayList<StringBuilder> getCoplayersList(String steamID64) {
+	/*ArrayList<StringBuilder> getCoplayersList(String steamID64) {
 		String url = steamID64 + "/friends/coplay?p=";
 		ArrayList<String> coplayers = new ArrayList<>();
 		ArrayList<StringBuilder> ret = new ArrayList<>();
@@ -301,5 +281,5 @@ public class RepCommand extends Command {
 			System.out.println("page: " + page + " | " + coplayers);
 		}
 		return ret;
-	}
+	}*/
 }
