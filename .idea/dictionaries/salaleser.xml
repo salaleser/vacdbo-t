@@ -7,9 +7,11 @@
       <w>coplayers</w>
       <w>dayssincelastban</w>
       <w>economyban</w>
+      <w>emoji</w>
       <w>numberofgamebans</w>
       <w>numberofvacbans</w>
       <w>recentgames</w>
+      <w>splitted</w>
       <w>vacbanned</w>
     </words>
   </dictionary>

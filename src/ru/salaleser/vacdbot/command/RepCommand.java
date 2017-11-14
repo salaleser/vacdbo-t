@@ -34,17 +34,14 @@ public class RepCommand extends Command {
 	private static Document document;
 
 	public RepCommand() {
-		super("rep", "Считает репутацию по странной формуле");
+		super("rep", "cчитает репутацию по странной формуле");
 	}
 
 	@Override
 	public void handle(IMessage message, String[] args) throws Exception {
-		String steamid = null;
-		if (args.length == 0) {
-			return;
-		}
-		if (Utilities.isSteamID64(args[0])) steamid = args[0];
-		else message.reply("**ошибка в профиле**");
+		String steamid = Utilities.getIdByName(message.getAuthor());
+		if (args.length > 0 && Utilities.isSteamID64(args[0])) steamid = args[0];
+		else message.reply("*ошибка в профиле*");
 
 		ArrayList<String> positiveList = fillList("positive_list.txt");
 		ArrayList<String> negativeList = fillList("negative_list.txt");
@@ -53,7 +50,7 @@ public class RepCommand extends Command {
 		document = getDocument(BASE_URL + steamid);
 		Elements profile = document.getElementsByClass("no_header");
 		if (profile.isEmpty()) {
-			message.reply("Профиль не существует");
+			message.reply("*Профиль не существует*");
 			return;
 		}
 		String title = document.title();
@@ -78,7 +75,7 @@ public class RepCommand extends Command {
 		numInventory = getInventory(steamid);
 
 		//SUMMARY:
-		message.getChannel().sendMessage("__" + title + "__\n" + "Level: " + profile_level + "\n" + "Status: " + status + " - " + last_online + "\n" + "Recent activity: " + recent_activity + "\n" + "Summary: " + profile_summary + "\n" + "Badges: " + numBadges + "\n" + "Games: " + numGames + "\n" + "Inventory: " + numInventory + "\n" + "Screenshots: " + numScreenshots + "\n" + "Videos: " + numVideos + "\n" + "Workshop Items: " + numWorkshopItems + "\n" + "Reviews: " + numReviews + "\n" + "Artwork: " + numArtwork + "\n" + "Groups: " + numGroups + "\n" + "Friends: " + numFriends);
+		message.getChannel().sendMessage("__" + title + "__\n" + "Level: **" + profile_level + "**\n" + "Status: **" + status + "** - " + last_online + "\n" + "Recent activity: " + recent_activity + "\n" + "Summary: " + profile_summary + "\n" + "Badges: **" + numBadges + "**\n" + "Games: **" + numGames + "**\n" + "Inventory: **" + numInventory + "**\n" + "Screenshots: **" + numScreenshots + "**\n" + "Videos: **" + numVideos + "**\n" + "Workshop Items: **" + numWorkshopItems + "**\n" + "Reviews: **" + numReviews + "**\n" + "Artwork: **" + numArtwork + "**\n" + "Groups: **" + numGroups + "**\n" + "Friends: **" + numFriends + "**");
 
 		//COMMENTS:
 		String url = steamid + "/allcomments?ctp=";
@@ -117,22 +114,15 @@ public class RepCommand extends Command {
 		float cheatRep = (float) complaints / commentCounter * 100;
 		float commentsRep = rep / commentCounter * cheatRep + commentCounter;
 		float reputation = calcLevel() + calcSummary() + calcBadges() + calcGames() + calcScreenshots() + calcVideos() + calcWorkshopItems() + calcReviews() + calcArtwork() + calcGroups() + calcFriends(document) + calcInventory() + commentsRep;
-		message.getChannel().sendMessage("Всего комментариев: " + commentCounter + "\n" +
-				"Репутация абсолютная: " + rep + "\n" +
-				"Обвинений в нечестной игре: " + complaints + " (" + (int) cheatRep + "%)\n" +
-				"Репутация комментариев: " + commentsRep + "\n" +
-				"ВСЕГО: " + reputation
-		);
+		message.getChannel().sendMessage("Всего комментариев: **" + commentCounter + "**\n" + "Репутация абсолютная: **" + rep + "**\n" + "Обвинений в нечестной игре: **" + complaints + "** (" + (int) cheatRep + "%)\n" + "Репутация комментариев: **" + commentsRep + "**\n" + "ВСЕГО: " + reputation);
 
 		if (args.length > 1 && args[1].equals("v")) {
-			message.getChannel().sendMessage("Все (почти, не получается больше сотни вывести пока) комментарии:");
+			message.getChannel().sendMessage("Все *(почти, не получается больше сотни вывести пока)* комментарии:");
 			for (StringBuilder comment : commentsAll) {
 				message.getChannel().sendMessage(comment.toString());
 				TimeUnit.SECONDS.sleep(1);
 			}
 		}
-
-		//		System.out.println("\n\n\n" + document);
 	}
 
 	/**
@@ -247,10 +237,10 @@ public class RepCommand extends Command {
 		try {
 			document = Jsoup.connect(url).get();
 		} catch (IOException e) {
-			Bot.log.sendMessage("Нет соединения с интернетом");
+			Bot.log.sendMessage("*Нет соединения с интернетом*");
 		}
 		if (document == null) {
-			Bot.log.sendMessage("Пустой ответ от сервера");
+			Bot.log.sendMessage("*Пустой ответ от сервера*");
 		}
 		return document;
 	}

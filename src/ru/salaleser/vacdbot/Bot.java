@@ -8,6 +8,7 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
 
@@ -16,6 +17,8 @@ public class Bot {
 	static long CHANNEL_GENERAL = 347088817729306624L;
 	static long CHANNEL_TEST = 347333162449502208L;
 	public static IChannel log;
+	public static final String status = "KTO=ЛЕЩ";
+	public static IUser bot;
 
 	private final IDiscordClient client;
 	private final CommandManager commandManager;
@@ -43,7 +46,9 @@ public class Bot {
 
 	@EventSubscriber
 	public void onReady(ReadyEvent event) throws RateLimitException, DiscordException {
-		client.changePlayingText("KTO=ЛЕЩ");
+		client.changePlayingText(status);
+		client.changePlayingText("твои нервы! KTO=ЛЕЩ");
+		bot = client.getUserByID(377411774254809088L);
 		log = client.getChannelByID(377431980658393088L);
 		log.sendMessage("**___Я тут___**");
 	}
