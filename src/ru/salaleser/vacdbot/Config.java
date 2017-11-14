@@ -16,6 +16,7 @@ public class Config {
 	static String getToken() {
 		return config.get("Token");
 	}
+
 	public static String getTrainingServerAddress() {
 		return config.get("TrainingServerAddress");
 	}
@@ -35,6 +36,7 @@ public class Config {
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Ошибка при чтении конфигурационного файла!");
+			new Gui();
 		}
 	}
 }

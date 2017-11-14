@@ -37,7 +37,7 @@ public class PollCommand extends Command {
 			qMessage.addReaction("👍");
 			TimeUnit.MILLISECONDS.sleep(100);
 			qMessage.addReaction("👎");
-		} else if (answers.length <= 10){
+		} else if (answers.length <= 10) {
 			for (int i = 0; i < answers.length; i++) {
 				answersEnum.append(getNumberEmoji(i))
 						.append(" - ")
@@ -59,41 +59,52 @@ public class PollCommand extends Command {
 		StringBuilder progressBar;
 		String pollWrapper = "\n" + question + "\n" + answersEnum;
 		for (int i = finalCountdown; i >= 0; i--) {
-			TimeUnit.MILLISECONDS.sleep(1000);
+			TimeUnit.SECONDS.sleep(1);
 			progressBar = fillProgressBar(i);
 			qMessage.edit("*Голосование завершится через " + i + " с*" +
 					"```" + progressBar + "```" + pollWrapper);
 		}
-		qMessage.edit("*Голосование завершено!*" + pollWrapper);
-
-		message.getClient().changePlayingText(Bot.status);
 
 		//бот удалает свои реакции перед подсчетом голосов:
-//		for (IReaction reaction : qMessage.getReactions()) qMessage.removeReaction(Bot.bot, reaction);
+		for (IReaction reaction : qMessage.getReactions()) {
+			qMessage.removeReaction(Bot.bot, reaction);
+			TimeUnit.MILLISECONDS.sleep(100);
+		}
+
 		ArrayList<IReaction> reactions = (ArrayList<IReaction>) qMessage.getReactions();
+		int users = 0;
 		int voters = 0;
 		for (IUser user : message.getGuild().getUsers()) {
 			if (!user.isBot() && !user.getPresence().getStatus().name().equals("OFFLINE")) {
-				voters++;
+				users++;
 			}
 		}
-		message.getChannel().sendMessage("В голосовании приняли участие " +
-				(reactions.size() - answers.length) +
-				" из " + voters + " участников.\n");
-		StringBuilder pollResult = calculatePollResult(reactions);
+		StringBuilder pollResult = calculatePollResult(reactions, answers);
 		//удаляю все реакции, чтобы нельзя больше было баловаться кнопками:
 		qMessage.removeAllReactions();
-		message.getChannel().sendMessage(pollResult.toString());
+
+		message.getClient().changePlayingText(Bot.status);
+
+		qMessage.edit("*Голосование завершено!*" +
+				"``` ```" +
+				"В голосовании приняли участие " +
+				reactions.size() + " из " + users + " участников.\n" + pollResult.toString());
 	}
 
 	private String getRandomQuestion() {
-		String array[] = {"Ты за луну или за солнце? ", "Сколько будет (2 + 2 * 2)?1/2/3/4/5/6/7/8"};
+		String array[] = {
+				"Ты за луну или за солнце? ",
+				"Сколько будет 2+2*2?1/2/3/4/5/6/7/8",
+				"Хочешь пить? ",
+				"Сколько тебе лет?12/13/14/Старше 14"
+		};
 		int random = new Random().nextInt(array.length);
 		return array[random];
 	}
 
 	private String getNumberEmoji(int number) {
-		String numberEmoji[] = {":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":ten:"};
+		String numberEmoji[] = {":one:", ":two:", ":three:", ":four:",
+				":five:", ":six:", ":seven:", ":eight:", ":nine:", ":ten:"};
 		return numberEmoji[number];
 	}
 
@@ -116,15 +127,19 @@ public class PollCommand extends Command {
 		return newArgs.toString().split("\\?");
 	}
 
-	private StringBuilder calculatePollResult(ArrayList<IReaction> reactions) {
+	private StringBuilder calculatePollResult(ArrayList<IReaction> reactions, String[] answers) {
 		StringBuilder result = new StringBuilder();
-		result.append("Результаты голосования:");
-		for (IReaction reaction : reactions) {
-			result.append(reaction.getEmoji()).append(" = ");
-			result.append(reaction.getCount()).append(": ");
-			for (IUser user : reaction.getUsers()) result.append(user.getName()).append(", ");
-			if (!reaction.getUsers().isEmpty()) result.replace(result.length() - 2, result.length(), ".\n");
-			else result.append("никто не проголосовал.\n");
+		result.append("Результаты голосования:\n");
+		if (reactions.isEmpty()) {
+			return result.replace(0, result.length(), "Никто не голосовал.");
+		}
+		for (int i = 0; i < reactions.size(); i++) {
+			result.append(reactions.get(i).getEmoji());
+			if (answers.length > 1) result.append("`").append(answers[i]).append("`");
+			result.append(" = ").append("**").append(reactions.get(i).getCount()).append("**: ");
+			for (IUser user : reactions.get(i).getUsers()) result.append(user.getDisplayName(Bot.guild)).append(", ");
+			if (!reactions.get(i).getUsers().isEmpty()) result.replace(result.length() - 2, result.length(), ".\n");
+			else result.append("нет голосов.\n");
 		}
 		return result;
 	}
