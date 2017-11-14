@@ -51,6 +51,7 @@ public class PollCommand extends Command {
 				qMessage.addReaction(getNumberEmoji(i));
 			}
 		} else {
+
 			message.reply("*неправильное количество вариантов ответов*");
 		}
 
