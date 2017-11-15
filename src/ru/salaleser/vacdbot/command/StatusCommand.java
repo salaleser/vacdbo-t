@@ -6,7 +6,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class StatusCommand extends Command {
 
 	public StatusCommand() {
-		super("status", "устанавливает статус боту (\"Играет в \")");
+		super("status", "устанавливает статус боту (\"Играет в **<ваш_остроумный_текст>**\")");
 	}
 
 	@Override

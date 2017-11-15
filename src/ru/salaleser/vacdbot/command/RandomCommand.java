@@ -6,7 +6,9 @@ import sx.blah.discord.handle.obj.IMessage;
 public class RandomCommand extends Command {
 
 	public RandomCommand() {
-		super("random", "Использование: ```~random [<конечное_значение> [<начальное_значение>]]```\n" + "Пример: ```~random 6 1```\n" + "Допустимые значения: от 1 до 9999");
+		super("random", "Использование: ```~random [<конечное_значение> [<начальное_значение>]]```\n" +
+				"Пример: ```~random 6 1```\n" +
+				"Допустимые значения: от 1 до 9999");
 	}
 
 	@Override

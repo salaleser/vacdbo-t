@@ -37,6 +37,7 @@ public class Bot {
 		commandManager.addCommand(new StatusCommand());
 		commandManager.addCommand(new TipCommand());
 		commandManager.addCommand(new VacCommand());
+		commandManager.addCommand(new GoogleCommand());
 
 		client = new ClientBuilder().withToken(Config.getToken()).build();
 
@@ -47,7 +48,7 @@ public class Bot {
 	@EventSubscriber
 	public void onReady(ReadyEvent event) throws RateLimitException, DiscordException {
 		client.changePlayingText(status);
-		client.changePlayingText("KTO=ЛЕЩ");
+		client.changePlayingText("твои нервы!");
 		bot = client.getUserByID(377411774254809088L);
 		guild = client.getGuildByID(223560049937743872L);
 		log = client.getChannelByID(377431980658393088L);
