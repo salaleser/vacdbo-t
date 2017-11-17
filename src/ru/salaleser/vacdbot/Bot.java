@@ -28,7 +28,7 @@ public class Bot {
 		addCommands();
 		gui = new Gui();
 		IDiscordClient client;
-		if (Config.readConfigFile("/Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/")) client = login();
+		if (Config.readConfigFile("/Users/salaleser/IdeaProjects/vacdbo-t/out/artifacts/vacdbo_t_jar/")) client = login();
 		else return;
 		EventDispatcher dispatcher = client.getDispatcher();
 		dispatcher.registerListener(new AnnotationListener());
