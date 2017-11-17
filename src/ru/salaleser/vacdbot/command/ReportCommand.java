@@ -11,7 +11,7 @@ public class ReportCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws Exception {
+	public void handle(IMessage message, String[] args) {
 		message.reply("*функция в разработке*");
 	}
 }

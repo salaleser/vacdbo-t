@@ -12,6 +12,5 @@ public abstract class Command {
 		this.help = help;
 	}
 
-	public abstract void handle(IMessage message, String[] args) throws Exception;
-
+	public abstract void handle(IMessage message, String[] args) throws InterruptedException;
 }

@@ -1,17 +1,12 @@
 package ru.salaleser.vacdbot;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import ru.salaleser.vacdbot.gui.ConfigWindow;
+
+import java.io.*;
 import java.util.HashMap;
 
 public class Config {
 	private static HashMap<String, String> config = new HashMap<>();
-
-	Config() {
-		readConfigFile();
-	}
 
 	static String getToken() {
 		return config.get("Token");
@@ -21,8 +16,9 @@ public class Config {
 		return config.get("TrainingServerAddress");
 	}
 
-	private static void readConfigFile() {
-		File file = new File("vacdbot.cfg");
+	public static boolean readConfigFile(String path) {
+		Bot.gui.addText("Пытаюсь прочитать конфигурационный файл...");
+		File file = new File(path + "vacdbot.cfg");
 		try {
 			FileReader fileReader = new FileReader(file);
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -32,11 +28,16 @@ public class Config {
 				config.put(args[0], args[1]);
 			}
 			bufferedReader.close();
-			System.out.println("Конфигурационный файл считан успешно.");
+			Bot.gui.addText("Конфигурационный файл считан успешно.");
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			Bot.gui.addText("Ошибка загрузки конфигурационного файла!");
+			return false;
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Ошибка при чтении конфигурационного файла!");
-			new Gui();
+			Bot.gui.addText(e.getMessage());
+			return false;
 		}
 	}
 }

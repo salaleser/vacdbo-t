@@ -38,7 +38,7 @@ public class RepCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws Exception {
+	public void handle(IMessage message, String[] args) throws InterruptedException {
 		String steamid = Utilities.getIdByName(message.getAuthor());
 		if (args.length > 0 && Utilities.isSteamID64(args[0])) steamid = args[0];
 		else message.reply("*ошибка в профиле*");

@@ -11,7 +11,7 @@ public class ServerCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws Exception {
+	public void handle(IMessage message, String[] args) {
 		message.getChannel().sendMessage("Тренировочный сервер: " +
 				"steam://" + trainingServerAddress + "//\n" +
 				"```connect " + trainingServerAddress + "; password 2002```" +

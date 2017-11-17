@@ -29,7 +29,7 @@ public class GoogleCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws Exception {
+	public void handle(IMessage message, String[] args) {
 		StringBuilder query = new StringBuilder();
 		for (String arg : args) query.append(arg).append("+");
 		query.replace(query.length() - 1, query.length(), "");

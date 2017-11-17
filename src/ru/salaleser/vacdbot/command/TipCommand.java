@@ -14,7 +14,7 @@ public class TipCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws Exception {
+	public void handle(IMessage message, String[] args) {
 		message.getChannel().sendMessage(TIPS[ThreadLocalRandom.current().nextInt(TIPS.length)]);
 	}
 }

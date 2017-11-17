@@ -9,7 +9,7 @@ public class ReadyCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws Exception {
+	public void handle(IMessage message, String[] args) {
 		message.getChannel().sendMessage(message.getGuild().getRolesByName("КТО-С").get(0) + ", " + message.getGuild().getRolesByName("КТО-О").get(0) + ", " + message.getGuild().getRolesByName("КТО-Ж").get(0) + ", " + message.getGuild().getRolesByName("КТО-З").get(0) + ", " + message.getGuild().getRolesByName("КТО-Ф").get(0) + "!\n" + message.getAuthor() + " готов играть в CS:GO");
 	}
 }

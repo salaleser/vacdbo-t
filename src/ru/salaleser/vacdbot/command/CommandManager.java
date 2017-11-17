@@ -27,7 +27,7 @@ public class CommandManager {
 			String[] args = messageContent.split(" ");
 			Command command = getCommand(args[0].toLowerCase());
 			command.handle(message, Arrays.copyOfRange(args, 1, args.length));
-		} catch (Exception e) {
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

@@ -1,9 +1,11 @@
 package ru.salaleser.vacdbot.command;
 
+import com.vdurmont.emoji.Emoji;
 import ru.salaleser.vacdbot.Bot;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IReaction;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.RateLimitException;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -12,15 +14,17 @@ import java.util.concurrent.TimeUnit;
 public class PollCommand extends Command {
 
 	public PollCommand() {
-		super("poll", "создаёт голосование\n" +
-				"Использование: ```~poll [<вопрос>? [<вариант_ответа> / ... [<вариант_ответа>]]]```\n" +
-				"Пример: ```~poll Есть ли жизнь на Марсе? Да / Нет / Не уверен```" +
-				"Примечание: вариантов ответов может быть до 10; разделителем для вопроса является " +
+		super("poll", "**Описание:** Создаёт голосование\n" +
+				"**Использование:** `~poll [<вопрос>? [<вариант_ответа> / ... [<вариант_ответа>]]]`\n" +
+				"**Предустановки:** `~poll` - голосование с рандомным вопросом;" +
+						"`~poll map` - голосование за карту в ксго.\n" +
+				"**Пример:** `~poll Есть ли жизнь на Марсе? Да / Нет / Не уверен`\n" +
+				"**Примечание:** вариантов ответов может быть до 10; разделителем для вопроса является " +
 				"вопросительный знак `?`, а для вариантов ответов - слэш `/`");
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws Exception {
+	public void handle(IMessage message, String[] args) throws InterruptedException {
 		message.getClient().changePlayingText("голосование");
 		//defaults:
 		int finalCountdown = 5;
@@ -51,7 +55,6 @@ public class PollCommand extends Command {
 				qMessage.addReaction(getNumberEmoji(i));
 			}
 		} else {
-
 			message.reply("*неправильное количество вариантов ответов*");
 		}
 
@@ -80,26 +83,56 @@ public class PollCommand extends Command {
 			}
 		}
 		StringBuilder pollResult = calculatePollResult(reactions, answers);
+
 		//удаляю все реакции, чтобы нельзя больше было баловаться кнопками:
-		qMessage.removeAllReactions();
+		try {
+			qMessage.removeAllReactions();
+		} catch (RateLimitException e) {
+			e.printStackTrace();
+			Bot.log.sendMessage("RateLimitException caught: " + e.getMessage());
+		}
 
 		message.getClient().changePlayingText(Bot.status);
 
 		qMessage.edit("*Голосование завершено!*" +
 				"``` ```" +
-				"В голосовании приняли участие " +
-				reactions.size() + " из " + users + " участников.\n" + pollResult.toString());
+				"В голосовании приняли участие " + reactions.size() + " из " + users + " участников.\n" +
+				pollResult.toString());
 	}
 
 	private String getRandomQuestion() {
 		String array[] = {
 				"Ты за луну или за солнце? ",
-				"Сколько будет 2+2*2?1/2/3/4/5/6/7/8",
 				"Хочешь пить? ",
+				"Как вам эта песня? ",
+				"Сколько стоит аренда аккаунта?Складной нож/зависит от внешности арендатора/Не измеряется деньгами",
+				"Шла Саша по шоссе?Шла/По кривой дорожке/Повернула \"налево\"/Бежала/Наташа/Не сушку",
+				"Сколько будет 2+2*2?1/2/3/4/5/6/7/8",
 				"Сколько тебе лет?12/13/14/Старше 14"
 		};
 		int random = new Random().nextInt(array.length);
 		return array[random];
+	}
+
+	private String getMapQuestion() {
+		StringBuilder mapQuestion = new StringBuilder("В какую карту хочешь сыграть?");
+		String[] maps = {
+				"de_train",
+				"de_nuke",
+				"de_dust2",
+				"de_cache",
+				"de_mirage",
+				"de_inferno",
+				"de_cobblestone",
+				"de_overpass",
+				"cs_office",
+				"cs_agency"
+		};
+		for (int i = 0; i < maps.length; i++) {
+			mapQuestion.append(maps[i]);
+			if (i + 1 != maps.length) mapQuestion.append("/");
+		}
+		return mapQuestion.toString();
 	}
 
 	private String getNumberEmoji(int number) {
@@ -113,9 +146,9 @@ public class PollCommand extends Command {
 		if (args.length == 0) {
 			return getRandomQuestion().split("\\?");
 		}
-		//добавляю разделитель за ленивых:
-		if (args.length == 1) {
-			args[0] += "?";
+		//если первый аргумент "map", то отдаю предустановку:
+		if (args[0].equals("map")) {
+			return getMapQuestion().split("\\?");
 		}
 		//создаю новый массив аргументов:
 		StringBuilder newArgs = new StringBuilder();
@@ -123,6 +156,11 @@ public class PollCommand extends Command {
 		for (String arg : args) {
 			newArgs.append(arg).append(" ");
 		}
+		//добавляю разделитель за ленивых:
+		if (!newArgs.toString().contains("?")) {
+			newArgs.append("?");
+		}
+		System.out.println(newArgs.toString());
 		//выделяю вопрос отдельно от вариантов ответов.
 		return newArgs.toString().split("\\?");
 	}

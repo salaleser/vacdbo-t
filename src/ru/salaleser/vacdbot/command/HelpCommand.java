@@ -2,26 +2,29 @@ package ru.salaleser.vacdbot.command;
 
 import sx.blah.discord.handle.obj.IMessage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HelpCommand extends Command {
 	private final CommandManager commandManager;
 
-	public HelpCommand(CommandManager commandManager) {
+	public HelpCommand(CommandManager manager) {
 		super("help", "`~help` - список команд; `!help <команда>` - описание");
-		this.commandManager = commandManager;
+
+		commandManager = manager;
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws Exception {
+	public void handle(IMessage message, String[] args) {
 		if (args.length != 0) {
 			Command command = commandManager.getCommand(args[0]);
 			if (command == null) {
-				message.reply("нет такой команды");
+				message.reply("команда `" + message.getContent() + "` не поддерживается");
 				return;
 			}
-			if (command.help != null) message.reply(command.help);
-			else message.reply("У команды " + command.name + " нет описания");
+			if (command.help != null) message.getChannel().sendMessage(command.help);
+			else message.reply("у команды " + command.name + " нет описания");
 		} else {
 			StringBuilder msg = new StringBuilder("Поддерживаемые команды: ");
 			for (Map.Entry<String, Command> entry : commandManager.commands.entrySet()) {

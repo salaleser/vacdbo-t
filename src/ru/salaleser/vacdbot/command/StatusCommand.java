@@ -10,7 +10,7 @@ public class StatusCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws Exception {
+	public void handle(IMessage message, String[] args) {
 		Bot.bot.getClient().changePlayingText(args[0]);
 //		message.getChannel().sendMessage("MEs").addReaction("<:rasmus:286853270746431488>");
 	}
