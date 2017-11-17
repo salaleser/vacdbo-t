@@ -16,7 +16,7 @@ public class VacCommand extends Command {
 	@Override
 	public void handle(IMessage message, String[] args) {
 		//defaults:
-		String steamid = Utilities.getIdByName(message.getAuthor());
+		String steamid = Utilities.getSteamidByUser(message.getAuthor());
 		int days = 1;
 
 		if (args.length > 0) {
@@ -38,7 +38,7 @@ public class VacCommand extends Command {
 			message.reply("**аргументы не заданы** (проверяю баны друзей salaleser'а за сегодня)");
 		}
 
-		String name = Utilities.getNameById(steamid, message.getGuild());
+		String name = Utilities.getNameBySteamid(steamid, message.getGuild());
 		message.getChannel().sendMessage("Проверяю на вшивость друзей " + name + "'а...");
 		StringBuilder jsonFriends = httpClient.connect("http://api.steampowered.com/" + "ISteamUser/GetFriendList/v0001/" + "?key=393819FBF50B3E63C1C6B60515A1AD0B&steamid=" + steamid + "&relationship=friend");
 		if (jsonFriends == null) {

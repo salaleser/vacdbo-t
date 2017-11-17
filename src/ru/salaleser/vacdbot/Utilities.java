@@ -21,7 +21,7 @@ public class Utilities {
 			return "ня";
 		return "ней";
 	}
-	public static String getIdByName(IUser author) {
+	public static String getSteamidByUser(IUser author) {
 		switch (author.getStringID()) {
 			case "223559816239513601":
 				return "76561198095972970";
@@ -40,7 +40,7 @@ public class Utilities {
 		}
 	}
 
-	public static String getNameById(String steamID64, IGuild guild) {
+	public static String getNameBySteamid(String steamID64, IGuild guild) {
 		// FIXME: 09.11.17 убрать хардкод дискорд айди
 		switch (steamID64) {
 			case "76561198095972970":

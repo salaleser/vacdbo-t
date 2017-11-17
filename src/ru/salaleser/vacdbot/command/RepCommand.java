@@ -34,12 +34,16 @@ public class RepCommand extends Command {
 	private static Document document;
 
 	public RepCommand() {
-		super("rep", "cчитает репутацию по странной формуле");
+		super("rep", "**Описание:** Считает репутацию по странной формуле.\n" +
+				"**Использование:** `~rep [<SteamID64>].`\n" +
+				"**Предустановки:** `~rep` - считает репутацию salaleser.\n" +
+				"**Пример:** `~rep 76561198095972970`.\n" +
+				"**Примечание:** SteamID64 должен быть возможным.");
 	}
 
 	@Override
 	public void handle(IMessage message, String[] args) throws InterruptedException {
-		String steamid = Utilities.getIdByName(message.getAuthor());
+		String steamid = Utilities.getSteamidByUser(message.getAuthor());
 		if (args.length > 0 && Utilities.isSteamID64(args[0])) steamid = args[0];
 		else message.reply("*ошибка в профиле*");
 

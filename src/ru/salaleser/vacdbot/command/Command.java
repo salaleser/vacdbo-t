@@ -4,7 +4,7 @@ import sx.blah.discord.handle.obj.IMessage;
 
 public abstract class Command {
 
-	final String name;
+	public final String name;
 	final String help;
 
 	Command(String name, String help) {

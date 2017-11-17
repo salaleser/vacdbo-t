@@ -5,6 +5,8 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 
+import java.text.SimpleDateFormat;
+
 public class AnnotationListener {
 
 
@@ -15,12 +17,27 @@ public class AnnotationListener {
 		Bot.bot = event.getClient().getUserByID(377411774254809088L);
 		Bot.guild = event.getClient().getGuildByID(223560049937743872L);
 		Bot.log = event.getClient().getChannelByID(377431980658393088L);
-		Bot.log.sendMessage("**___Я тут___**");
+		Bot.test = event.getClient().getChannelByID(347333162449502208L);
+		Bot.general = event.getClient().getChannelByID(347088817729306624L);
+		Bot.KTO = event.getClient().getRoleByID(381124867338272769L);
+		Bot.voice = event.getClient().getVoiceChannelByID(347089107949977601L);
+
+		long time = System.currentTimeMillis();
+		String date = new SimpleDateFormat("dd.MM.yyyy").format(time);
+		Bot.log.sendMessage(date + "\n" +
+				event.getClient().getApplicationName() + " | " +
+				event.getClient().getApplicationDescription() + " |\n" +
+				event.getClient().getApplicationIconURL() + " |\n" +
+				event.getClient().getApplicationOwner().getDisplayName(Bot.guild));
+		Bot.gui.addText("Успешно подключен.");
 	}
 
 	@EventSubscriber
 	public void onUserJoin(UserJoinEvent event) {
-
+		if (event.getUser().hasRole(Bot.KTO)) {
+			Bot.general.sendMessage(event.getUser() + ", <:alo:>");
+			event.getUser().moveToVoiceChannel(Bot.voice);
+		}
 	}
 
 	@EventSubscriber

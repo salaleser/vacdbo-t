@@ -1,7 +1,5 @@
 package ru.salaleser.vacdbot;
 
-import ru.salaleser.vacdbot.gui.ConfigWindow;
-
 import java.io.*;
 import java.util.HashMap;
 
