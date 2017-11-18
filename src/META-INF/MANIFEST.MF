@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: ru.salaleser.vacdbot.Bot
+Main-Class: ru.salaleser.vacdbot.bot.Bot
 

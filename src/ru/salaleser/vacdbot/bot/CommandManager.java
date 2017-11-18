@@ -1,0 +1,43 @@
+package ru.salaleser.vacdbot.bot;
+
+import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.util.RateLimitException;
+
+import java.util.Arrays;
+import java.util.HashMap;
+
+public class CommandManager {
+
+	public HashMap<String, Command> commands;
+
+	public CommandManager() {
+		this.commands = new HashMap<>();
+	}
+
+	public void addCommand(Command command) {
+		commands.put(command.name, command);
+	}
+
+	public Command getCommand(String commandsKey) {
+		return commands.get(commandsKey);
+	}
+
+	public void handle(IMessage message) {
+		try {
+			String messageContent = message.getContent().substring(1);
+			String[] args = messageContent.split(" ");
+			Command command = getCommand(args[0].toLowerCase());
+			if (command == null) { // FIXME: 17.11.2017 сделать исключение так как код повторяется. такой же блок в хелпе
+				message.reply("команда `" + args[0] + "` не поддерживается");
+				return;
+			}
+			Bot.gui.addText("Получил команду " + command.name + ".");
+			command.handle(message, Arrays.copyOfRange(args, 1, args.length));
+		} catch (RateLimitException e) {
+			message.getChannel().sendMessage("RateLimitException пойман, повторите операцию!");
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+}
