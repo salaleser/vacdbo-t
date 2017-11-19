@@ -27,9 +27,10 @@ public class Bot {
 	private static final CommandManager COMMAND_MANAGER = new CommandManager();
 
 	public static void main(String[] args) {
-		boolean isConfig = Config.readConfigFile("/Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/");
 		addCommands();
 		gui = new Gui();
+		boolean isConfig = Config.readConfigFile("/Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/");
+		if (!isConfig) isConfig = Config.readConfigFile("");
 		client = login(isConfig);
 		EventDispatcher dispatcher = client.getDispatcher();// FIXME: 18.11.2017 не регается при переподключении
 		dispatcher.registerListener(new AnnotationListener());
@@ -74,5 +75,6 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new SetCommand());
 		COMMAND_MANAGER.addCommand(new GetCommand());
 		COMMAND_MANAGER.addCommand(new CalcCommand());
+		COMMAND_MANAGER.addCommand(new IdCommand());
 	}
 }

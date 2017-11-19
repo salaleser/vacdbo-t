@@ -36,20 +36,20 @@ public class RepCommand extends Command {
 	public RepCommand() {
 		super("rep", "**Описание:** Считает репутацию по странной формуле.\n" +
 				"**Использование:** `~rep [<SteamID64>].`\n" +
-				"**Предустановки:** `~rep` - считает репутацию salaleser.\n" +
+				"**Предустановки:** `~rep` — считает репутацию salaleser.\n" +
 				"**Пример:** `~rep 76561198095972970`.\n" +
 				"**Примечание:** SteamID64 должен быть возможным.");
 	}
 
 	@Override
 	public void handle(IMessage message, String[] args) throws InterruptedException {
-		String steamid = Utilities.getSteamidByUser(message.getAuthor());
+		String steamid = Utilities.getSteamidByDiscordUser(message.getAuthor());
 		if (args.length > 0 && Utilities.isSteamID64(args[0])) steamid = args[0];
 		else message.reply("*ошибка в профиле*");
 
-		ArrayList<String> positiveList = fillList("positive_list.txt");
-		ArrayList<String> negativeList = fillList("negative_list.txt");
-		ArrayList<String> complaintsList = fillList("complaints_list.txt");
+		ArrayList<String> positiveList = fillList("txt/positive_list.txt");
+		ArrayList<String> negativeList = fillList("txt/negative_list.txt");
+		ArrayList<String> complaintsList = fillList("txt/complaints_list.txt");
 
 		document = getDocument(BASE_URL + steamid);
 		Elements profile = document.getElementsByClass("no_header");

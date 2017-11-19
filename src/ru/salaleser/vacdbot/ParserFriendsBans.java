@@ -7,7 +7,7 @@ import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 
-public class ParserPlayerBans {
+public class ParserFriendsBans {
 	/**
 	 * Парсит json с банами
 	 * @param sb json

@@ -5,6 +5,7 @@ import sx.blah.discord.handle.obj.IMessage;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TipCommand extends Command {
+
 	private static final String[] TIPS = {
 			"Не стреляй на ходу с калаша",
 			"Не покупай петуха"};

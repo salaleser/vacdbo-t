@@ -37,16 +37,20 @@ public class AnnotationListener {
 	@EventSubscriber
 	public void onUserJoin(UserJoinEvent event) {
 		if (event.getUser().hasRole(Bot.KTO)) {
-			Bot.general.sendMessage(event.getUser() + ", <:alo:>");
+			Bot.general.sendMessage(event.getUser() + ", <:alo:346605809532141570>");
 			event.getUser().moveToVoiceChannel(Bot.voice);
 		}
 	}
 
 	@EventSubscriber
-	public void onMessage(MessageReceivedEvent event) {
+	public void onMessage(MessageReceivedEvent event) throws InterruptedException {
 		if (event.getMessage().getContent().equals("~")) return;
 		if (event.getMessage().getContent().startsWith("~")) {
 			Bot.getCommandManager().handle(event.getMessage());
+		} else if (event.getMessage().getContent().startsWith("=")) {
+			String messageContent = event.getMessage().getContent().substring(1);
+			String[] args = messageContent.split(" ");
+			Bot.getCommandManager().getCommand("calc").handle(event.getMessage(), args);
 		} else {
 			if (event.getMessage().getMentions().size() != 0) { // Содержит ли текущее сообщение упоминание
 				for (int i = 0; i < event.getMessage().getMentions().size(); i++) { // Перебираю упомянутых пользователей

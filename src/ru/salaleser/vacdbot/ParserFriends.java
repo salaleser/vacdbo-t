@@ -7,7 +7,7 @@ import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 
-public class ParserPlayerFriends {
+public class ParserFriends {
 	/**
 	 * Парсит json с друзьями
 	 *

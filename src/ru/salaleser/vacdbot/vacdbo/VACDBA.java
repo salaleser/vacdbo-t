@@ -88,7 +88,7 @@ class VACDBA {
 		for (Scanner scanner : scanners) {
 			Thread thread = new Thread(() -> {
 				scanner.scan();
-				Log.out("\nПоток " + threads + " => Сканирование завершено.\n" +
+				System.out.println("\nПоток " + threads + " => Сканирование завершено.\n" +
 						"\t\tВсего просканировано " + Config.getTotalScanned() + " учётных записей," +
 						"из них добавлено: " + Config.getTotalAdded() +
 						", обновлено: " + Config.getTotalUpdated());

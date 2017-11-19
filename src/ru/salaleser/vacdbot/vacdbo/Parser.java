@@ -58,7 +58,7 @@ public abstract class Parser {
 			return resultSet.getRow() > 0;
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			Log.out("Ошибка при запросе в базу данных");
+			System.out.println("Ошибка при запросе в базу данных");
 			return true; // TODO: 01.11.17 почему тру?
 		} finally {
 			try {

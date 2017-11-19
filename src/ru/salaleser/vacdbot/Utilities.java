@@ -13,7 +13,7 @@ public class Utilities {
 	public static final long MAX_STEAMID64 = 76561202255233023L;
 
 	public static boolean isNumeric(String string) {
-		return string.matches("\\d+") && string.length() < 5 && Integer.parseInt(string) > 0;
+		return string.matches("\\d+") && string.length() < 10 && Integer.parseInt(string) > 0;
 	}
 
 	public static boolean isSteamID64(String steamID64) {
@@ -39,7 +39,7 @@ public class Utilities {
 		return sdf.format(date);
 	}
 
-	public static String getSteamidByUser(IUser author) {
+	public static String getSteamidByDiscordUser(IUser author) {
 		switch (author.getStringID()) {
 			case "223559816239513601":
 				return "76561198095972970";
@@ -54,11 +54,11 @@ public class Utilities {
 			case "278897176271126528":
 				return "76561198245710318";
 			default:
-				return "76561198095972970";
+				return "ноунейм какой-то";
 		}
 	}
 
-	public static String getNameBySteamid(String steamID64, IGuild guild) {
+	public static String getDiscordDisplayNameBySteamid(String steamID64, IGuild guild) {
 		// FIXME: 09.11.17 убрать хардкод дискорд айди
 		switch (steamID64) {
 			case "76561198095972970":
@@ -78,3 +78,13 @@ public class Utilities {
 		}
 	}
 }
+
+/*
+http://steamcommunity.com/inventory/76561198095972970/730/2?l=russian&count=5000
+http://steamcommunity.com/profiles/76561198095972970/inventory/json/753/1
+
+http://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=730&key=393819FBF50B3E63C1C6B60515A1AD0B&steamid=76561198095972970
+http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=393819FBF50B3E63C1C6B60515A1AD0B&steamid=76561198095972970
+
+http://api.steampowered.com/ISteamApps/GetAppList/v2
+*/
