@@ -4,6 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import ru.salaleser.vacdbot.Config;
 
 import java.sql.*;
 
@@ -24,7 +25,7 @@ public class ParserOwnedGames extends Parser {
 			JSONObject jsonObject = (JSONObject) jsonParser.parse(String.valueOf(sb));
 			JSONObject response = (JSONObject) jsonObject.get("response");
 			if (response.isEmpty()) {
-				Log.add("Пользователь не настроил свой профиль");
+				System.out.println("Пользователь не настроил свой профиль");
 				return true;
 			}
 			JSONArray games = (JSONArray) response.get("games");
@@ -34,7 +35,7 @@ public class ParserOwnedGames extends Parser {
 			game_count = (long) response.get("game_count");
 
 			if (game_count == 0) {
-				Log.add("У пользователя нет игр");
+				System.out.println("У пользователя нет игр");
 				return true;
 			} else {
 				for (Object g : games) {
@@ -45,27 +46,27 @@ public class ParserOwnedGames extends Parser {
 						playtime_forever = (long) game.get("playtime_forever");
 						if (isExists(null, null)) {
 							if (update()) {
-								Log.add("Обновлён. Пользователь наиграл " + playtime_forever / 60 + " часов");
-								Settings.addTotalUpdated(1);
+								System.out.println("Обновлён. Пользователь наиграл " + playtime_forever / 60 + " часов");
+								Config.addTotalUpdated(1);
 							} else {
 								return false;
 							}
 						} else {
 							if (insert()) {
-								Log.add("Добавлен. Пользователь наиграл " + playtime_forever / 60 + " часов");
-								Settings.addTotalAdded(1);
+								System.out.println("Добавлен. Пользователь наиграл " + playtime_forever / 60 + " часов");
+								Config.addTotalAdded(1);
 							} else {
 								return false;
 							}
 						}
 					} else {
-						Log.out("Пользователь не имеет CS:GO");
+						System.out.println("Пользователь не имеет CS:GO");
 					}
 				}
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
-			Log.out("Ошибка парсера, повторяю операцию...");
+			System.out.println("Ошибка парсера, повторяю операцию...");
 			return false;
 		}
 		return true;
@@ -78,7 +79,8 @@ public class ParserOwnedGames extends Parser {
 		PreparedStatement statement = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
+			connection = DriverManager.getConnection(Config.getDBUrl(),
+					Config.getDBLogin(), Config.getDBPassword());
 			connection.setAutoCommit(false);
 			statement = connection.prepareStatement(sql);
 
@@ -93,7 +95,7 @@ public class ParserOwnedGames extends Parser {
 			return true;
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			Log.out("Ошибка добавления в БД, повторяю операцию...");
+			System.out.println("Ошибка добавления в БД, повторяю операцию...");
 			return false;
 		} finally {
 			try {
@@ -104,7 +106,7 @@ public class ParserOwnedGames extends Parser {
 					connection.close();
 				}
 			} catch (SQLException e) {
-				Log.add("Cannot close connection");
+				System.out.println("Cannot close connection");
 				e.printStackTrace();
 			}
 		}
@@ -122,7 +124,8 @@ public class ParserOwnedGames extends Parser {
 		PreparedStatement statement = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
+			connection = DriverManager.getConnection(Config.getDBUrl(),
+					Config.getDBLogin(), Config.getDBPassword());
 			connection.setAutoCommit(false);
 			statement = connection.prepareStatement(sql);
 
@@ -137,7 +140,7 @@ public class ParserOwnedGames extends Parser {
 			return true;
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			Log.out("Ошибка обновления БД, повторяю операцию...");
+			System.out.println("Ошибка обновления БД, повторяю операцию...");
 			return false;
 		} finally {
 			try {
@@ -148,43 +151,9 @@ public class ParserOwnedGames extends Parser {
 					connection.close();
 				}
 			} catch (SQLException e) {
-				Log.out("Cannot close connection");
+				System.out.println("Cannot close connection");
 				e.printStackTrace();
 			}
-		}
-	}
-
-	/**
-	 * Не работает. Когда понадобится, тогда и сделаю...
-	 */
-	@Override
-	public void createTable() {
-
-		Connection connection;
-		Statement statement;
-
-		try {
-			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
-			connection.setAutoCommit(false);
-			String sql;
-
-			statement = connection.createStatement();
-			sql = "CREATE TABLE " + table + " (" +
-					"steamid VARCHAR(17) PRIMARY KEY NULL," +
-					"communityvisibilitystate INT8 NULL," +
-					"timeupdated INT8 NULL" +
-					")";
-
-			statement.executeUpdate(sql);
-			statement.close();
-			connection.commit();
-			Log.out("Table " + table + " created successfully");
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(e.getClass().getName() + ":-)" + e.getMessage());
-//			System.exit(0);
 		}
 	}
 }

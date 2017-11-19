@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class HttpClient {
+
 	private HttpURLConnection connection;
 	private StringBuilder response;
 	private int timeout;

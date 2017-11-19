@@ -1,5 +1,8 @@
 package ru.salaleser.vacdbot.vacdbo;
 
+import ru.salaleser.vacdbot.Config;
+import ru.salaleser.vacdbot.HttpClient;
+
 public class ScannerPlayerBans extends Scanner {
 
 	ScannerPlayerBans(long starts, long range, int instance) {
@@ -7,14 +10,13 @@ public class ScannerPlayerBans extends Scanner {
 		String sInterface = "ISteamUser";
 		String sMethod = "GetPlayerBans";
 		String sVersion = "v1";
-		baseQuery = Settings.BASE_URL + "/" + sInterface + "/" + sMethod + "/" + sVersion + "/?key=" +
-				Settings.getKey() + "&steamids=";
+		baseQuery = Config.BASE_URL + "/" + sInterface + "/" + sMethod + "/" + sVersion + "/?key=" + Config.getSteamWebApiKey() + "&steamids=";
 		steamidCount = 100;
 	}
 
 	protected void scan() {
 		parser = new ParserPlayerBans();
-		client = new Client();
+		httpClient = new HttpClient();
 
 		StringBuilder steamids;
 
@@ -29,7 +31,7 @@ public class ScannerPlayerBans extends Scanner {
 
 			System.out.print("Поток " + space() + thread + " => Сканирую SteamIDs: " + sStarts + "-" + sEnds + " | ");
 
-			response = client.connect(baseQuery + steamids);
+			response = httpClient.connect(baseQuery + steamids);
 			if (response == null) {
 				i -= steamidCount;
 				continue;
@@ -38,8 +40,8 @@ public class ScannerPlayerBans extends Scanner {
 				i -= steamidCount;
 				continue;
 			}
-			Log.out(" \\ " + parser.getElapsed() + " ms");
-			Settings.addTotalScanned(steamidCount);
+			System.out.println(" \\ " + parser.getElapsed() + " ms");
+			Config.addTotalScanned(steamidCount);
 		}
 	}
 }

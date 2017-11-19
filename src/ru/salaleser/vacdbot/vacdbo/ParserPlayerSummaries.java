@@ -4,6 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import ru.salaleser.vacdbot.Config;
 
 import java.sql.*;
 
@@ -39,7 +40,7 @@ public class ParserPlayerSummaries extends Parser {
 			JSONObject response = (JSONObject) jsonObject.get("response");
 			JSONArray players = (JSONArray) response.get("players");
 			if (players.isEmpty()) {
-				Log.out("SteamID не существуют");
+				System.out.println("SteamID не существуют");
 				return true;
 			}
 			timeUpdated = System.currentTimeMillis() / 1000L;
@@ -94,12 +95,12 @@ public class ParserPlayerSummaries extends Parser {
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
-			Log.out("Ошибка парсера, повторяю операцию...");
+			System.out.println("Ошибка парсера, повторяю операцию...");
 			return false;
 		}
-		Log.add("Добавлено: " + added + " / Обновлено: " + updated);
-		Settings.addTotalUpdated(updated);
-		Settings.addTotalAdded(added);
+		System.out.println("Добавлено: " + added + " / Обновлено: " + updated);
+		Config.addTotalUpdated(updated);
+		Config.addTotalAdded(added);
 		return true;
 	}
 
@@ -110,7 +111,8 @@ public class ParserPlayerSummaries extends Parser {
 		PreparedStatement statement = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
+			connection = DriverManager.getConnection(Config.getDBUrl(),
+					Config.getDBLogin(), Config.getDBPassword());
 			connection.setAutoCommit(false);
 			statement = connection.prepareStatement(sql);
 
@@ -139,7 +141,7 @@ public class ParserPlayerSummaries extends Parser {
 			return true;
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			Log.out("Ошибка добавления в БД, повторяю операцию...");
+			System.out.println("Ошибка добавления в БД, повторяю операцию...");
 			return false;
 		} finally {
 			try {
@@ -182,7 +184,8 @@ public class ParserPlayerSummaries extends Parser {
 		PreparedStatement statement = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
+			connection = DriverManager.getConnection(Config.getDBUrl(),
+					Config.getDBLogin(), Config.getDBPassword());
 			connection.setAutoCommit(false);
 			statement = connection.prepareStatement(sql);
 
@@ -211,7 +214,7 @@ public class ParserPlayerSummaries extends Parser {
 			return true;
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			Log.out("Ошибка обновления БД, повторяю операцию...");
+			System.out.println("Ошибка обновления БД, повторяю операцию...");
 			return false;
 		} finally {
 			try {
@@ -228,13 +231,14 @@ public class ParserPlayerSummaries extends Parser {
 		}
 	}
 
-	@Override
+	// FIXME: 18.11.2017 эта функция не нужна скорее всего, просто лежит
 	public void createTable() {
 		Connection connection = null;
 		Statement statement = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
+			connection = DriverManager.getConnection(Config.getDBUrl(),
+					Config.getDBLogin(), Config.getDBPassword());
 			connection.setAutoCommit(false);
 			String sql;
 
@@ -264,11 +268,11 @@ public class ParserPlayerSummaries extends Parser {
 			statement.executeUpdate(sql);
 			statement.close();
 			connection.commit();
-			Log.out("Table " + table + " created successfully");
+			System.out.println("Table " + table + " created successfully");
 			connection.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.out("Ошибка создания таблицы \"" + table + "\"");
+			System.out.println("Ошибка создания таблицы \"" + table + "\"");
 		} finally {
 			try {
 				if (statement != null) {

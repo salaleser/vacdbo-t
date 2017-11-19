@@ -1,6 +1,6 @@
 package ru.salaleser.vacdbot.bot.command;
 
-import ru.salaleser.vacdbot.bot.Config;
+import ru.salaleser.vacdbot.Config;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Arrays;

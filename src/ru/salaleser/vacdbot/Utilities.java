@@ -3,16 +3,26 @@ package ru.salaleser.vacdbot;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class Utilities {
+
+	public static final long MIN_STEAMID64 = 76561197960265729L;
+	public static final long MAX_STEAMID64 = 76561202255233023L;
+
 	public static boolean isNumeric(String string) {
 		return string.matches("\\d+") && string.length() < 5 && Integer.parseInt(string) > 0;
 	}
+
 	public static boolean isSteamID64(String steamID64) {
 		return steamID64.length() == 17 &&
 				steamID64.matches("\\d+") &&
-				Long.parseLong(steamID64) > 76561197960265729L &&
-				Long.parseLong(steamID64) < 76561202255233023L;
+				Long.parseLong(steamID64) > MIN_STEAMID64 &&
+				Long.parseLong(steamID64) < MAX_STEAMID64;
 	}
+
 	public static String ending(int days) {
 		if (String.valueOf(days).endsWith("1") && !String.valueOf(days).endsWith("11")) return "ень";
 		if (String.valueOf(days).endsWith("2") ||
@@ -21,6 +31,14 @@ public class Utilities {
 			return "ня";
 		return "ней";
 	}
+
+	public static String convertTime(long unixTime) {
+		Date date = new Date(unixTime * 1000L);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT-3"));
+		return sdf.format(date);
+	}
+
 	public static String getSteamidByUser(IUser author) {
 		switch (author.getStringID()) {
 			case "223559816239513601":

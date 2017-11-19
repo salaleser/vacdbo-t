@@ -1,7 +1,7 @@
 package ru.salaleser.vacdbot.gui;
 
 import ru.salaleser.vacdbot.bot.Bot;
-import ru.salaleser.vacdbot.bot.Config;
+import ru.salaleser.vacdbot.Config;
 
 import javax.swing.*;
 

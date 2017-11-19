@@ -1,5 +1,7 @@
 package ru.salaleser.vacdbot.vacdbo;
 
+import ru.salaleser.vacdbot.Config;
+
 import java.sql.*;
 
 public abstract class Parser {
@@ -45,7 +47,8 @@ public abstract class Parser {
 		ResultSet resultSet = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
+			connection = DriverManager.getConnection(Config.getDBUrl(),
+					Config.getDBLogin(), Config.getDBPassword());
 
 			statement = connection.prepareStatement(sql);
 			statement.setString(1, customSteamId);
@@ -78,7 +81,4 @@ public abstract class Parser {
 	public abstract boolean insert();
 
 	public abstract boolean update();
-
-	public abstract void createTable();
-
 }

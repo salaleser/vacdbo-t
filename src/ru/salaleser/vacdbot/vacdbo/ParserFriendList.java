@@ -4,6 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import ru.salaleser.vacdbot.Config;
 
 import java.sql.*;
 
@@ -75,7 +76,8 @@ public class ParserFriendList extends Parser {
 		PreparedStatement statement = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
+			connection = DriverManager.getConnection(Config.getDBUrl(),
+					Config.getDBLogin(), Config.getDBPassword());
 			connection.setAutoCommit(false);
 			statement = connection.prepareStatement(sql);
 
@@ -130,7 +132,8 @@ public class ParserFriendList extends Parser {
 		PreparedStatement statement = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
+			connection = DriverManager.getConnection(Config.getDBUrl(),
+					Config.getDBLogin(), Config.getDBPassword());
 			connection.setAutoCommit(false);
 			statement = connection.prepareStatement(sql);
 
@@ -163,36 +166,5 @@ public class ParserFriendList extends Parser {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void createTable() {
-
-		Connection connection;
-		Statement statement;
-
-		try {
-			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(Settings.getUrl(), Settings.getLogin(), Settings.getPassword());
-			connection.setAutoCommit(false);
-			String sql;
-
-			statement = connection.createStatement();
-			sql = "CREATE TABLE " + table + " (" +
-					"steamid VARCHAR(48) PRIMARY KEY NULL," +
-					"communityvisibilitystate INT8 NULL," +
-					"timeupdated INT8 NULL" +
-					")";
-
-			statement.executeUpdate(sql);
-			statement.close();
-			connection.commit();
-			System.out.println("Table " + table + " created successfully");
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(e.getClass().getName() + ":-)" + e.getMessage());
-//			System.exit(0);
-		}
 	}
 }

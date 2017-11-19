@@ -7,10 +7,7 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +16,7 @@ public class Gui extends JFrame {
 
 	private static JTextArea textArea;
 	private JFrame frame;
-	private static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1L;
 
 	private JTextField textField = new JTextField(12);
 	private JLabel labelStatus;
@@ -112,7 +109,7 @@ public class Gui extends JFrame {
 		file.addSeparator();
 
 		openMenuItem.addActionListener(e -> new ConfigWindow());
-		loginMenuItem.addActionListener(e -> Bot.login());
+		loginMenuItem.addActionListener(e -> Bot.relogin());
 
 		return file;
 	}

@@ -2,32 +2,30 @@ package ru.salaleser.vacdbot.vacdbo;
 
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
+import ru.salaleser.vacdbot.Config;
+import ru.salaleser.vacdbot.Utilities;
+import ru.salaleser.vacdbot.bot.Bot;
+import ru.salaleser.vacdbot.gui.Gui;
+import sx.blah.discord.util.RateLimitException;
 
 class VACDBA {
 
-	static UserInterface ui = null;
 	static Scanner[] scanners;
-	static Settings settings;
 	private static ColoredPrinter cp;
 
 	public static void main(String args[]) {
-		settings = Settings.set();
 		cp = new ColoredPrinter.Builder(1, false)
 				.foreground(Ansi.FColor.RED).background(Ansi.BColor.NONE).build();
 
 		if (args.length == 1) {
 			switch (args[0]) {
-				case "--graphics":
-				case "-gui":
-					ui = new UserInterface();
-					break;
 				case "--help":
 				case "-?":
 					help();
 					break;
 				case "--version":
 				case "-ver":
-					System.out.println("Версия " + Settings.getVersion());
+					System.out.println("Версия " + Gui.serialVersionUID);
 					break;
 				default:
 					error();
@@ -51,22 +49,18 @@ class VACDBA {
 	}
 
 	private static boolean assign(String args[]) {
-		if (args[1].length() != 17) return false;
-		Settings.setStarts(Long.parseLong(args[1]));
+		if (Utilities.isSteamID64(args[1])) return false;
 		Long range = Long.parseLong(args[2]);
-		Settings.setEnds(Settings.getStarts() + range);
-		if (args.length > 3) Settings.setThreads(Integer.parseInt(args[3]));
+		if (args.length > 3) Config.setScannerThreads(args[3]);
 		start("GetOwnedGames");
 		return true;
 	}
 
 	static void start(String method) {
-		new Log(ui);
-
-		int threads = Settings.getThreads();
+		int threads = Config.getScannerThreads();
 		scanners = new Scanner[threads];
-		long starts = Settings.getStarts();
-		long ends = Settings.getEnds();
+		long starts = Utilities.MIN_STEAMID64;
+		long ends = Utilities.MAX_STEAMID64;
 		long range = ends - starts;
 		long part = range / threads;
 
@@ -92,18 +86,12 @@ class VACDBA {
 		}
 
 		for (Scanner scanner : scanners) {
-			scanner.addPropertyChangeListener(event -> {
-				if ("progress".equals(event.getPropertyName())) {
-					ui.progressBar.setValue((Integer) event.getNewValue());
-				}
-			});
-
 			Thread thread = new Thread(() -> {
 				scanner.scan();
 				Log.out("\nПоток " + threads + " => Сканирование завершено.\n" +
-						"\t\tВсего просканировано " + Settings.getTotalScanned() + " учётных записей," +
-						"из них добавлено: " + Settings.getTotalAdded() +
-						", обновлено: " + Settings.getTotalUpdated());
+						"\t\tВсего просканировано " + Config.getTotalScanned() + " учётных записей," +
+						"из них добавлено: " + Config.getTotalAdded() +
+						", обновлено: " + Config.getTotalUpdated());
 			});
 			thread.start();
 		}

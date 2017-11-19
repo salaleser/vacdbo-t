@@ -1,5 +1,7 @@
 package ru.salaleser.vacdbot.vacdbo;
 
+import ru.salaleser.vacdbot.HttpClient;
+
 import javax.swing.*;
 
 abstract class Scanner extends SwingWorker<Integer, String> {
@@ -13,7 +15,7 @@ abstract class Scanner extends SwingWorker<Integer, String> {
 	 */
 
 	String baseQuery;
-	Client client;
+	HttpClient httpClient;
 	Parser parser;
 	StringBuilder response;
 	long starts, range;
@@ -43,7 +45,7 @@ abstract class Scanner extends SwingWorker<Integer, String> {
 
 	@Override
 	protected void done() {
-		if (isCancelled()) Log.add("\nПоток " + space() + thread + " => Сканирование отменено");
-		else Log.add("\nПоток " + space() + thread + " => Сканирование завершено. Всего ");
+		if (isCancelled()) System.out.println("\nПоток " + space() + thread + " => Сканирование отменено");
+		else System.out.println("\nПоток " + space() + thread + " => Сканирование завершено. Всего ");
 	}
 }

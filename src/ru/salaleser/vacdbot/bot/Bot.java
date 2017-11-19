@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot;
 
+import ru.salaleser.vacdbot.Config;
 import ru.salaleser.vacdbot.bot.command.*;
 import ru.salaleser.vacdbot.gui.Gui;
 import sx.blah.discord.api.ClientBuilder;
@@ -21,27 +22,34 @@ public class Bot {
 
 	public static Gui gui;
 	private static final Config CONFIG = new Config();
+	private static IDiscordClient client;
 	private static final ClientBuilder CLIENT_BUILDER = new ClientBuilder();
 	private static final CommandManager COMMAND_MANAGER = new CommandManager();
 
 	public static void main(String[] args) {
+		boolean isConfig = Config.readConfigFile("/Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/");
 		addCommands();
 		gui = new Gui();
-		Config.readConfigFile("/Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/");
-		IDiscordClient client = login();
+		client = login(isConfig);
 		EventDispatcher dispatcher = client.getDispatcher();// FIXME: 18.11.2017 не регается при переподключении
 		dispatcher.registerListener(new AnnotationListener());
 	}
 
-	public static IDiscordClient login() {
+	public static IDiscordClient login(boolean login) {
 		CLIENT_BUILDER.withToken(Config.getToken());
 		try {
-			return CLIENT_BUILDER.login();
+			if (login) return CLIENT_BUILDER.login();
+			else return CLIENT_BUILDER.build();
 		} catch (DiscordException e) {
 			e.printStackTrace();
 			Bot.gui.addText(e.getErrorMessage());
 			return null;
 		}
+	}
+
+	public static void relogin() {
+		if (client.isLoggedIn()) client.logout();
+		client.login();
 	}
 
 	public static CommandManager getCommandManager() {
@@ -65,5 +73,6 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new QuitCommand());
 		COMMAND_MANAGER.addCommand(new SetCommand());
 		COMMAND_MANAGER.addCommand(new GetCommand());
+		COMMAND_MANAGER.addCommand(new CalcCommand());
 	}
 }
