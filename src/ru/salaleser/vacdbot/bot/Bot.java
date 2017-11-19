@@ -29,8 +29,11 @@ public class Bot {
 	public static void main(String[] args) {
 		addCommands();
 		gui = new Gui();
-		boolean isConfig = Config.readConfigFile("/Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/");
-		if (!isConfig) isConfig = Config.readConfigFile("");
+		boolean isConfig = Config.readConfigFile("/" +
+				"Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/vacdbot.cfg");
+		if (!isConfig) isConfig = Config.readConfigFile("/" +
+				"Users/salaleser/IdeaProjects/vacdbo-t/out/artifacts/vacdbo_t_jar/vacdbot.cfg");
+		if (!isConfig) isConfig = Config.readConfigFile("vacdbot.cfg");
 		client = login(isConfig);
 		EventDispatcher dispatcher = client.getDispatcher();// FIXME: 18.11.2017 не регается при переподключении
 		dispatcher.registerListener(new AnnotationListener());
@@ -48,7 +51,7 @@ public class Bot {
 		}
 	}
 
-	public static void relogin() {
+	public static void relogin() { // FIXME: 19.11.2017 не работает
 		if (client.isLoggedIn()) client.logout();
 		client.login();
 	}

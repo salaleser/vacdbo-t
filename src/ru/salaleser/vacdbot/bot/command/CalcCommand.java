@@ -4,13 +4,10 @@ import ru.salaleser.vacdbot.Utilities;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class CalcCommand extends Command {
 
-	private final String[] ops = new String[]{"+", "-", "*", "/", "^"};
-	// FIXME: 19.11.2017 надо бы запятую с точкой алиасить
 	private ArrayList<String> operands = new ArrayList<>();
 	private ArrayList<Character> operators = new ArrayList<>();
 
@@ -52,14 +49,9 @@ public class CalcCommand extends Command {
 		String expression = operand1 + "" + operators.get(0) + "" + operand2 + "=**" +
 				calculate(operand1, operand2).get(0) + "**";
 
-		TimeUnit.MILLISECONDS.sleep(333);
+		TimeUnit.MILLISECONDS.sleep(500);
 
 		rMessage.edit(removeZerosAndDots(expression));
-	}
-
-	private boolean isOperator(String s) {
-		for (String op : ops) if (op.equals(s)) return true;
-		return false;
 	}
 
 	private double add(double operand1, double operand2) {

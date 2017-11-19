@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 
 public class AnnotationListener {
 
+	public Snitch snitch = new Snitch();
 
 	@EventSubscriber
 	public void onReady(ReadyEvent event) {
@@ -52,16 +53,7 @@ public class AnnotationListener {
 			String[] args = messageContent.split(" ");
 			Bot.getCommandManager().getCommand("calc").handle(event.getMessage(), args);
 		} else {
-			if (event.getMessage().getMentions().size() != 0) { // Содержит ли текущее сообщение упоминание
-				for (int i = 0; i < event.getMessage().getMentions().size(); i++) { // Перебираю упомянутых пользователей
-					// УПОМИНАНИЕ БОТА
-					if (event.getMessage().getMentions().get(i).getName().equals("VACDBO-T")) {
-						event.getMessage().getChannel().sendMessage(event.getMessage().getAuthor() +
-								", я выявляю недавно получивших VAC-бан друзей" +
-								"(команда \"~vac\"");
-					}
-				}
-			}
+			snitch.snitch(event.getMessage());
 		}
 	}
 }

@@ -63,27 +63,14 @@ public class Config {
 		totalUpdated += count;
 	}
 
-	public static boolean readConfigFile(String path) {
+	public static boolean readConfigFile(String filename) {
 		Bot.gui.addText("Пытаюсь прочитать конфигурационный файл...");
-		File file = new File(path + "vacdbot.cfg");
-		try {
-			FileReader fileReader = new FileReader(file);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			String line;
-			while ((line = bufferedReader.readLine()) != null) {
-				String[] args = line.split("=");
-				config.put(args[0], args[1]);
-			}
-			bufferedReader.close();
+		config = Utilities.storeToHashMapFromFile(filename, "=", false);
+		if (config != null) {
 			Bot.gui.addText("Конфигурационный файл считан успешно.");
 			return true;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		} else {
 			Bot.gui.addText("Ошибка загрузки конфигурационного файла!");
-			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
-			Bot.gui.addText(e.getMessage());
 			return false;
 		}
 	}

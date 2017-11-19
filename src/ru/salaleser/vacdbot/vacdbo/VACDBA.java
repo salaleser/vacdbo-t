@@ -13,7 +13,7 @@ class VACDBA {
 	static Scanner[] scanners;
 	private static ColoredPrinter cp;
 
-	public static void main(String args[]) {
+	public static void mainot(String args[]) {
 		cp = new ColoredPrinter.Builder(1, false)
 				.foreground(Ansi.FColor.RED).background(Ansi.BColor.NONE).build();
 
