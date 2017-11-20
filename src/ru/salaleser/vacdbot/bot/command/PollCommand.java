@@ -223,7 +223,7 @@ public class PollCommand extends Command {
 			result.append(c).append("**: ");
 			for (IUser user : reactions.get(i).getUsers()) {
 				if (!user.isBot()) {
-					result.append(user.getDisplayName(Bot.guild)).append(", ");
+					result.append(user.getDisplayName(Bot.guildKTO)).append(", ");
 				}
 			}
 			if (!reactions.get(i).getUsers().isEmpty()) {

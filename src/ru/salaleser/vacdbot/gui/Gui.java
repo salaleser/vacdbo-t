@@ -168,7 +168,7 @@ public class Gui extends JFrame {
 	private void test(String text) {
 		Command command = Bot.getCommandManager().getCommand(text.substring(1));
 		try {
-			command.handle(Bot.test.sendMessage("*Тест* `" + text + "`:"), new String[]{});
+			command.handle(Bot.channelTest.sendMessage("*Тест* `" + text + "`:"), new String[]{});
 			TimeUnit.MILLISECONDS.sleep(2000);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
@@ -224,7 +224,7 @@ public class Gui extends JFrame {
 				if (bots) {
 					if (user.isBot()) {
 						userList.add(user);
-						listModelUsers.addElement(user.getDisplayName(Bot.guild));
+						listModelUsers.addElement(user.getDisplayName(Bot.guildKTO));
 					}
 				}
 				if (offlineUsers) {

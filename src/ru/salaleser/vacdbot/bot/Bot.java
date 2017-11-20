@@ -11,14 +11,15 @@ import sx.blah.discord.util.DiscordException;
 
 public class Bot {
 
-	public static IChannel log;
-	public static IChannel test;
-	public static IChannel general;
+	public static IChannel channelLog;
+	public static IChannel channelTest;
+	public static IChannel channelGeneral;
 	public static String status = "твои нервы!";
-	public static IUser bot;
-	public static IGuild guild;
+	public static IUser userBot;
+	public static IGuild guildKTO;
 	public static IRole KTO;
-	public static IVoiceChannel voice;
+	public static IRole roleOfficers;
+	public static IVoiceChannel voiceChannelGeneral;
 
 	public static Gui gui;
 	private static final Config CONFIG = new Config();

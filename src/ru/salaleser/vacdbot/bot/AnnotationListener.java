@@ -1,6 +1,5 @@
 package ru.salaleser.vacdbot.bot;
 
-import ru.salaleser.vacdbot.gui.Gui;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -10,36 +9,27 @@ import java.text.SimpleDateFormat;
 
 public class AnnotationListener {
 
-	public Snitch snitch = new Snitch();
+	private Snitch snitch = new Snitch();
 
 	@EventSubscriber
 	public void onReady(ReadyEvent event) {
 		Bot.gui.setConnected(event.getClient());
 		event.getClient().changePlayingText(Bot.status);
-		event.getClient().changePlayingText("твои нервы!");
-		Bot.bot = event.getClient().getUserByID(377411774254809088L);
-		Bot.guild = event.getClient().getGuildByID(223560049937743872L);
-		Bot.log = event.getClient().getChannelByID(377431980658393088L);
-		Bot.test = event.getClient().getChannelByID(347333162449502208L);
-		Bot.general = event.getClient().getChannelByID(347088817729306624L);
-		Bot.KTO = event.getClient().getRoleByID(381124867338272769L);
-		Bot.voice = event.getClient().getVoiceChannelByID(347089107949977601L);
-
-		long time = System.currentTimeMillis();
-		String date = new SimpleDateFormat("dd.MM.yyyy").format(time);
-		Bot.log.sendMessage(date + "\n" +
-				event.getClient().getApplicationName() + " | " +
-				event.getClient().getApplicationDescription() + " |\n" +
-				event.getClient().getApplicationIconURL() + " |\n" +
-				event.getClient().getApplicationOwner().getDisplayName(Bot.guild));
+		Bot.userBot = event.getClient().getUserByID(377411774254809088L);
+		Bot.guildKTO = event.getClient().getGuildByID(223560049937743872L);
+		Bot.channelLog = event.getClient().getChannelByID(377431980658393088L);
+		Bot.channelTest = event.getClient().getChannelByID(347333162449502208L);
+		Bot.channelGeneral = event.getClient().getChannelByID(347088817729306624L);
+		Bot.roleOfficers = event.getClient().getRoleByID(382154712524259337L);
+		Bot.voiceChannelGeneral = event.getClient().getVoiceChannelByID(347089107949977601L);
 		Bot.gui.addText("Успешно подключен.");
 	}
 
 	@EventSubscriber
 	public void onUserJoin(UserJoinEvent event) {
-		if (event.getUser().hasRole(Bot.KTO)) {
-			Bot.general.sendMessage(event.getUser() + ", <:alo:346605809532141570>");
-			event.getUser().moveToVoiceChannel(Bot.voice);
+		if (event.getUser().hasRole(Bot.roleOfficers)) {
+			Bot.channelGeneral.sendMessage(event.getUser() + ", <:alo:346605809532141570>");
+			event.getUser().moveToVoiceChannel(Bot.voiceChannelGeneral);
 		}
 	}
 
@@ -56,4 +46,7 @@ public class AnnotationListener {
 			snitch.snitch(event.getMessage());
 		}
 	}
+
+//	@EventSubscriber
+
 }

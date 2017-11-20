@@ -56,7 +56,7 @@ public class GoogleCommand extends Command {
 		try {
 			Document doc = Jsoup
 					.connect(request)
-					.userAgent("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+					.userAgent("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/userBot.html)")
 					.timeout(5000).get();
 
 //			System.out.println(doc);

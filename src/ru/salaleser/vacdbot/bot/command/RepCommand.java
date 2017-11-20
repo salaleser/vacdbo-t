@@ -242,10 +242,10 @@ public class RepCommand extends Command {
 		try {
 			document = Jsoup.connect(url).get();
 		} catch (IOException e) {
-			Bot.log.sendMessage("*Нет соединения с интернетом*");
+			Bot.channelLog.sendMessage("*Нет соединения с интернетом*");
 		}
 		if (document == null) {
-			Bot.log.sendMessage("*Пустой ответ от сервера*");
+			Bot.channelLog.sendMessage("*Пустой ответ от сервера*");
 		}
 		return document;
 	}
