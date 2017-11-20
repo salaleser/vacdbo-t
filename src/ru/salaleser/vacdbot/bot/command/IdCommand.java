@@ -1,37 +1,35 @@
 package ru.salaleser.vacdbot.bot.command;
 
-import ru.salaleser.vacdbot.Utilities;
+import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 public class IdCommand extends Command {
 
 	public IdCommand() {
-		super("id", "**Описание:** Возвращает ID.\n" +
-				"**Использование:** `~id [<ID_пользователя_Discord>]`.\n" +
-				"**Предустановки:** `~id` — возвращает SteamID64 автора сообщения.\n" +
-				"**Пример:** `~id @salaleser`.\n" +
-				"**Примечание:** ничего примечательного.");
+		super("id", "" +
+				Util.b("Описание:") + " Возвращает ID.\n" +
+				Util.b("Использование:") + " `~id [<ID_пользователя_Discord || SteamID64>]`.\n" +
+				Util.b("Предустановки:") + " `~id` — возвращает SteamID64 автора сообщения.\n" +
+				Util.b("Пример:") + " `~id @salaleser`, `~id 76561198095972970`.\n" +
+				Util.b("Примечание:") + " можно указать SteamID64 или Discord ID.");
 	}
 
 	@Override
 	public void handle(IMessage message, String[] args) {
 		if (args.length == 0) {
-			message.getChannel().sendMessage(Utilities
-					.getSteamidByDiscordUser(message.getAuthor().getStringID()));
+			message.getChannel().sendMessage(Util.getSteamidByDiscordUser(message.getAuthor().getStringID()));
 			return;
 		}
-		if (args.length == 1 && Utilities.isSteamID64(args[0])) {
-			message.getChannel().sendMessage(Utilities
-					.getDiscordNameBySteamid(args[0]));
-		} else if (args.length == 1 && args[0].startsWith("<@")) {
-			message.getChannel().sendMessage(Utilities
-					.getSteamidByDiscordUser(args[0].replaceAll("[<@!>]", "")));
-		} else if (args.length == 1 && args[0].length() == 18) {
-			message.getChannel().sendMessage(Utilities
-					.getSteamidByDiscordUser(args[0]));
-		} else {
-			message.getChannel().sendMessage("Неверный ID");
+		if (Util.isSteamID64(args[0])) {
+			message.getChannel().sendMessage("Discord ID " + args[0] + ": " +
+					Util.getDiscordUserBySteamid(args[0]));
+			return;
 		}
+		if (Util.isDiscordUser(args[0])) {
+			message.getChannel().sendMessage("SteamID64 " + args[0] +": " +
+					Util.getSteamidByDiscordUser(args[0]));
+			return;
+		}
+		message.getChannel().sendMessage("Неверный ID");
 	}
 }

@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot.command;
 
+import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.CommandManager;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -9,11 +10,12 @@ public class HelpCommand extends Command {
 	private final CommandManager commandManager;
 
 	public HelpCommand(CommandManager manager) {
-		super("help", "**Описание:** Показывает как пользоваться командами.\n" +
-				"**Использование:** `~help [<команда>]`.\n" +
-				"**Предустановки:** `~help` — покажет все доступные команды.\n" +
-				"**Пример:** `~help vac`, `~help`.\n" +
-				"**Примечание:** хелп как хелп, что, хелпа никогда не видели?");
+		super("help", "" +
+				Util.b("Описание:") + " Показывает как пользоваться командами.\n" +
+				Util.b("Использование:") + " `~help [<команда>]`.\n" +
+				Util.b("Предустановки:") + " `~help` — покажет все доступные команды.\n" +
+				Util.b("Пример:") + " `~help vac`, `~help`.\n" +
+				Util.b("Примечание:") + " хелп как хелп, что, хелпа никогда не видели?");
 
 		commandManager = manager;
 	}
@@ -29,7 +31,7 @@ public class HelpCommand extends Command {
 			if (command.help != null) message.getChannel().sendMessage(command.help);
 			else message.reply("у команды " + command.name + " нет описания");
 		} else {
-			StringBuilder msg = new StringBuilder("**Поддерживаемые команды:** ");
+			StringBuilder msg = new StringBuilder(Util.b("Поддерживаемые команды: "));
 			for (Map.Entry<String, Command> entry : commandManager.commands.entrySet()) {
 				msg.append("`").append(entry.getKey()).append("`").append(", ");
 			}

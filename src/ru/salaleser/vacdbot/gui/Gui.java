@@ -9,6 +9,8 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.StatusType;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class Gui extends JFrame {
 
 	private ArrayList<IGuild> guildList = new ArrayList<>();
 	private DefaultListModel<String> listModelGuilds = new DefaultListModel<>();
-	private JList<String> listOfGuilds = new JList<>(listModelGuilds);
+	private JList<String> listOfGuilds = new JList<>(listModelGuilds);;
 
 	private ArrayList<IChannel> channelList = new ArrayList<>();
 	private DefaultListModel<String> listModelChannels = new DefaultListModel<>();
@@ -34,6 +36,7 @@ public class Gui extends JFrame {
 	private ArrayList<IUser> userList = new ArrayList<>();
 	private DefaultListModel<String> listModelUsers = new DefaultListModel<>();
 	private JList<String> listOfUsers = new JList<>(listModelUsers);
+
 	private JCheckBox checkBoxBots = new JCheckBox("Боты", false);
 	private JCheckBox checkBoxNotOfflineUsers = new JCheckBox("Неофлайн", true);
 	private JCheckBox checkBoxOfflineUsers = new JCheckBox("Офлайн", false);
@@ -44,6 +47,7 @@ public class Gui extends JFrame {
 		frame = new JFrame("Версия: " + serialVersionUID + " § Играет в " + Bot.status);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setContentPane(new JPanel());
+		frame.setLayout(new BorderLayout());
 
 		//блок состояния:
 		JPanel panelStatus = new JPanel(new BorderLayout());
@@ -52,10 +56,21 @@ public class Gui extends JFrame {
 		labelStatus = new JLabel("Disconnected", disconnectedIcon, JLabel.CENTER);
 		panelStatus.add(labelStatus);
 
+		//блок настроек:
+		JPanel panelSettings = new JPanel();
+		panelSettings.setBorder(BorderFactory.createTitledBorder("Настройки"));
+		JButton buttonOpenFile = new JButton("Открыть конфигурационный файл");
+		buttonOpenFile.addActionListener(e -> new ConfigWindow());
+		panelSettings.add(buttonOpenFile);
+		JButton buttonRelogin = new JButton("Перелогиниться");
+		buttonRelogin.addActionListener(e -> Bot.relogin());
+		panelSettings.add(buttonRelogin);
+
 		//общий северный блок:
 		JPanel panelNorth = new JPanel();
 		panelNorth.setBorder(BorderFactory.createTitledBorder("Северная панель"));
 		panelNorth.add(panelStatus);
+		panelNorth.add(panelSettings);
 
 		//блок гильдий:
 		JPanel panelServers = new JPanel();
@@ -75,17 +90,20 @@ public class Gui extends JFrame {
 		panelChannels.add(new JScrollPane(listOfChannels));
 
 		//блок пользователей:
-		JPanel panelUsers = new JPanel(new FlowLayout());
+		JPanel panelUsers = new JPanel(new BorderLayout());
 		panelUsers.setBorder(BorderFactory.createTitledBorder("Пользователи"));
-		JButton buttonUpdate = new JButton("Обновить");
-
-		buttonUpdate.addActionListener(e -> updateUsers(listOfGuilds.getSelectedIndices(), checkBoxBots.isSelected(),
-				checkBoxNotOfflineUsers.isSelected(), checkBoxOfflineUsers.isSelected()));
-		panelUsers.add(new JScrollPane(listOfUsers));
-		panelUsers.add(checkBoxBots);
-		panelUsers.add(checkBoxNotOfflineUsers);
-		panelUsers.add(checkBoxOfflineUsers);
-		panelUsers.add(buttonUpdate);
+		checkBoxBots.addChangeListener(new ChangeListenerUsers());
+		checkBoxNotOfflineUsers.addChangeListener(new ChangeListenerUsers());
+		checkBoxOfflineUsers.addChangeListener(new ChangeListenerUsers());
+		listOfGuilds.setPreferredSize(new Dimension(60, 50));
+		listOfChannels.setPreferredSize(new Dimension(60, 50));
+//		listOfUsers.setPreferredSize(new Dimension(60, 50));
+		panelUsers.add(new JScrollPane(listOfUsers), BorderLayout.WEST);
+		JPanel panelUsersSettings = new JPanel(new BorderLayout());
+		panelUsersSettings.add(checkBoxBots, BorderLayout.NORTH);
+		panelUsersSettings.add(checkBoxNotOfflineUsers, BorderLayout.CENTER);
+		panelUsersSettings.add(checkBoxOfflineUsers, BorderLayout.SOUTH);
+		panelUsers.add(panelUsersSettings, BorderLayout.EAST);
 
 		//общий блок слева:
 		JPanel panelWest = new JPanel();
@@ -131,32 +149,17 @@ public class Gui extends JFrame {
 		panelEast.add(panelMessage);
 		panelEast.add(panelCommands);
 
-		//блок настроек:
-		JPanel panelSettings = new JPanel();
-		panelSettings.setBorder(BorderFactory.createTitledBorder("Настройки"));
-		JButton buttonOpenFile = new JButton("Открыть конфигурационный файл");
-		buttonOpenFile.addActionListener(e -> new ConfigWindow());
-		panelSettings.add(buttonOpenFile);
-		JButton buttonRelogin = new JButton("Перелогиниться");
-		buttonRelogin.addActionListener(e -> Bot.relogin());
-		panelSettings.add(buttonRelogin);
-
 		//блок лога:
 		JPanel panelLog = new JPanel();
 		panelLog.setBorder(BorderFactory.createTitledBorder("Лог"));
 		textAreaLog = new JTextArea();
+		textAreaLog.setColumns(64);
 		panelLog.add(textAreaLog);
 
-		//общий блок снизу:
-		JPanel panelSouth = new JPanel();
-		panelSouth.setBorder(BorderFactory.createTitledBorder("Южная панель"));
-		panelSouth.add(panelSettings);
-		panelSouth.add(panelLog);
-
-		frame.getContentPane().add(panelNorth, BorderLayout.NORTH);
+		frame.getContentPane().add(panelNorth, BorderLayout.PAGE_START);
 		frame.getContentPane().add(panelWest, BorderLayout.WEST);
 		frame.getContentPane().add(panelEast, BorderLayout.EAST);
-		frame.getContentPane().add(panelSouth, BorderLayout.SOUTH);
+		frame.getContentPane().add(panelLog, BorderLayout.PAGE_END);
 
 		frame.getRootPane().setDefaultButton(buttonSendMessage);
 
@@ -165,10 +168,20 @@ public class Gui extends JFrame {
 		frame.setVisible(true);
 	}
 
+	private class ChangeListenerUsers implements ChangeListener {
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			updateUsers(listOfGuilds.getSelectedIndices(),
+					checkBoxBots.isSelected(),
+					checkBoxNotOfflineUsers.isSelected(),
+					checkBoxOfflineUsers.isSelected());
+		}
+	}
+
 	private void test(String text) {
 		Command command = Bot.getCommandManager().getCommand(text.substring(1));
 		try {
-			command.handle(Bot.channelTest.sendMessage("*Тест* `" + text + "`:"), new String[]{});
+			command.handle(Bot.channelKTOTest.sendMessage("*Тест* `" + text + "`:"), new String[]{});
 			TimeUnit.MILLISECONDS.sleep(2000);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();

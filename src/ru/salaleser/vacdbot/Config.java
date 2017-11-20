@@ -2,7 +2,6 @@ package ru.salaleser.vacdbot;
 
 import ru.salaleser.vacdbot.bot.Bot;
 
-import java.io.*;
 import java.util.HashMap;
 
 public class Config {
@@ -67,16 +66,19 @@ public class Config {
 	 * Читает конфигурационный файл
 	 * @param filename имя конфигурационного файла (обычно это vacdbot.cfg, но
 	 *                 путь к нему может отличаться
-	 * @return
+	 * @return true, если файл загрузился успешно, false — если нет
 	 */
 	public static boolean readConfigFile(String filename) {
-		Bot.gui.addText("Пытаюсь прочитать конфигурационный файл...");
-		config = Utilities.storeToHashMapFromFile(filename, "=", false);
+		Bot.gui.addText("Пытаюсь прочитать конфигурационный файл " + filename + "...");
+		System.out.println("Пытаюсь прочитать конфигурационный файл " + filename + "...");
+		config = Util.storeToHashMapFromFile(filename, "=", false);
 		if (config != null) {
 			Bot.gui.addText("Конфигурационный файл считан успешно.");
+			System.out.println("Конфигурационный файл считан успешно.");
 			return true;
 		} else {
 			Bot.gui.addText("Ошибка загрузки конфигурационного файла!");
+			System.out.println("Ошибка загрузки конфигурационного файла!");
 			return false;
 		}
 	}

@@ -1,6 +1,6 @@
 package ru.salaleser.vacdbot.bot.command;
 
-import ru.salaleser.vacdbot.Utilities;
+import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Random;
@@ -38,7 +38,7 @@ public class RandomCommand extends Command {
 			if (args[0].equals("map")) {
 				int numberOfMaps = maps.length;
 				if (args.length > 1 &&
-						Utilities.isNumeric(args[1]) &&
+						Util.isNumeric(args[1]) &&
 						Integer.parseInt(args[1]) <= maps.length &&
 						Integer.parseInt(args[1]) > 0) {
 					numberOfMaps = Integer.parseInt(args[1]);
@@ -49,7 +49,7 @@ public class RandomCommand extends Command {
 				message.getChannel().sendMessage("Играть будем на карте " + maps[mapNumber]);
 			}
 			//если первый аргумент оказался подходящим числом:
-			if (Utilities.isNumeric(args[0])) {
+			if (Util.isNumeric(args[0])) {
 				range = Integer.parseInt(args[0]);
 			} else {
 				message.reply("**неверный аргумент** (использую значение 6)");

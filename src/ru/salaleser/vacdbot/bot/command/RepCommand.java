@@ -5,7 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.salaleser.vacdbot.bot.Bot;
-import ru.salaleser.vacdbot.Utilities;
+import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.BufferedReader;
@@ -43,9 +43,9 @@ public class RepCommand extends Command {
 
 	@Override
 	public void handle(IMessage message, String[] args) throws InterruptedException {
-		String steamid = Utilities
+		String steamid = Util
 				.getSteamidByDiscordUser(message.getAuthor().getStringID());
-		if (args.length > 0 && Utilities.isSteamID64(args[0])) steamid = args[0];
+		if (args.length > 0 && Util.isSteamID64(args[0])) steamid = args[0];
 		else message.reply("*ошибка в профиле*");
 
 		ArrayList<String> positiveList = fillList("txt/positive_list.txt");
@@ -242,10 +242,10 @@ public class RepCommand extends Command {
 		try {
 			document = Jsoup.connect(url).get();
 		} catch (IOException e) {
-			Bot.channelLog.sendMessage("*Нет соединения с интернетом*");
+			Bot.channelKTOLog.sendMessage("*Нет соединения с интернетом*");
 		}
 		if (document == null) {
-			Bot.channelLog.sendMessage("*Пустой ответ от сервера*");
+			Bot.channelKTOLog.sendMessage("*Пустой ответ от сервера*");
 		}
 		return document;
 	}

@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GoogleCommand extends Command {
+public class FindCommand extends Command {
 
 	private static Pattern patternDomainName;
 	private Matcher matcher;
@@ -23,9 +24,13 @@ public class GoogleCommand extends Command {
 		patternDomainName = Pattern.compile(DOMAIN_NAME_PATTERN);
 	}
 
-	public GoogleCommand() {
-		super("google", "Использование: ```~google <поисковый_запрос>```\n" +
-				"Пример: ```~google как похудеть```");
+	public FindCommand() {
+		super("find", "" +
+				Util.b("Описание:") + " Возвращает четыре первые ссылки по запросу.\n" +
+				Util.b("Использование:") + " `~find <поисковый_запрос>`.\n" +
+				Util.b("Предустановки:") + " нет.\n" +
+				Util.b("Пример:") + " `~find как похудеть`.\n" +
+				Util.b("Примечание:") + " ничего особенного.");
 	}
 
 	@Override
@@ -35,12 +40,7 @@ public class GoogleCommand extends Command {
 		query.replace(query.length() - 1, query.length(), "");
 		Set<String> result = getDataFromGoogle(query.toString());
 
-		for (String temp : result) {
-			System.out.println(temp);
-		}
-		System.out.println(result.size());
-
-		StringBuilder results = new StringBuilder("*Вот что я нашёл вашему запросу:*\n");
+		StringBuilder results = new StringBuilder(Util.i("Вот что я нашёл вашему запросу:\n"));
 		int c = 0;
 		for (String line : result) {
 			if (c < 4) results.append(line).append("\n");

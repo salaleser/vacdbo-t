@@ -1,6 +1,6 @@
 package ru.salaleser.vacdbot.bot.command;
 
-import ru.salaleser.vacdbot.Utilities;
+import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
@@ -12,12 +12,13 @@ public class CalcCommand extends Command {
 	private ArrayList<Character> operators = new ArrayList<>();
 
 	public CalcCommand() {
-		super("calc", "**Описание:** Производит нехитрые манипуляции с числами.\n" +
-				"**Использование:** `~calc <операнд1><оператор><операнд2>`.\n" +
-				"**Предустановки:** пока нет.\n" +
-				"**Пример:** `=103*23`.\n" +
-				"**Поддерживаемые операции:** `+`, `-`, `*`, `/`, `^`. Пока только с двумя операндами за одну операцию.\n" +
-				"**Примечание:** можно использовать знак `=` для активации команды.");
+		super("calc", "" +
+				Util.b("Описание:") + " Производит нехитрые манипуляции с числами.\n" +
+				Util.b("Использование:") + " `~calc <операнд1><оператор><операнд2>`.\n" +
+				Util.b("Предустановки:") + " пока нет.\n" +
+				Util.b("Пример:") + " `=103*23`.\n" +
+				Util.b("Поддерживаемые операции:") + " `+`, `-`, `*`, `/`, `^`. Пока только с двумя операндами за одну операцию.\n" +
+				Util.b("Примечание:") + " можно использовать знак `=` для активации команды.");
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public class CalcCommand extends Command {
 		//распихать операнды и операторы по массивам:
 		String[] operandsArray = formula.toString().split("[+-/*^]");
 
-		for (String operand : operandsArray) if (Utilities.isNumeric(operand)) operands.add(operand);
+		for (String operand : operandsArray) if (Util.isNumeric(operand)) operands.add(operand);
 		System.out.println(operands);
 
 		operators.add(formula.charAt(operandsArray[0].length()));
@@ -46,8 +47,8 @@ public class CalcCommand extends Command {
 		double operand1 = Double.parseDouble(operands.get(0));
 		double operand2 = Double.parseDouble(operands.get(1));
 
-		String expression = operand1 + "" + operators.get(0) + "" + operand2 + "=**" +
-				calculate(operand1, operand2).get(0) + "**";
+		String expression = operand1 + "" + operators.get(0) + "" + operand2 + "=" +
+				Util.b(calculate(operand1, operand2).get(0).toString());
 
 		TimeUnit.MILLISECONDS.sleep(500);
 

@@ -11,13 +11,12 @@ import sx.blah.discord.util.DiscordException;
 
 public class Bot {
 
-	public static IChannel channelLog;
-	public static IChannel channelTest;
-	public static IChannel channelGeneral;
+	public static IChannel channelKTOLog;
+	public static IChannel channelKTOTest;
+	public static IChannel channelKTOGeneral;
 	public static String status = "твои нервы!";
 	public static IUser userBot;
 	public static IGuild guildKTO;
-	public static IRole KTO;
 	public static IRole roleOfficers;
 	public static IVoiceChannel voiceChannelGeneral;
 
@@ -63,16 +62,16 @@ public class Bot {
 
 	private static void addCommands() {
 		COMMAND_MANAGER.addCommand(new ConsoleCommand());
-		COMMAND_MANAGER.addCommand(new GoogleCommand());
+		COMMAND_MANAGER.addCommand(new FindCommand());
 		COMMAND_MANAGER.addCommand(new HelpCommand(COMMAND_MANAGER));
 		COMMAND_MANAGER.addCommand(new PollCommand());
 		COMMAND_MANAGER.addCommand(new RandomCommand());
 		COMMAND_MANAGER.addCommand(new ReadyCommand());
-		COMMAND_MANAGER.addCommand(new RepCommand());
+//		COMMAND_MANAGER.addCommand(new RepCommand());
 		COMMAND_MANAGER.addCommand(new ReportCommand());
 		COMMAND_MANAGER.addCommand(new ServerCommand());
 		COMMAND_MANAGER.addCommand(new StatusCommand());
-		COMMAND_MANAGER.addCommand(new TipCommand());
+//		COMMAND_MANAGER.addCommand(new TipCommand());
 		COMMAND_MANAGER.addCommand(new VacCommand());
 		COMMAND_MANAGER.addCommand(new SmokeCommand());
 		COMMAND_MANAGER.addCommand(new QuitCommand());

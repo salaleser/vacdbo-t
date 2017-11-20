@@ -3,10 +3,8 @@ package ru.salaleser.vacdbot.vacdbo;
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
 import ru.salaleser.vacdbot.Config;
-import ru.salaleser.vacdbot.Utilities;
-import ru.salaleser.vacdbot.bot.Bot;
+import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.gui.Gui;
-import sx.blah.discord.util.RateLimitException;
 
 class VACDBA {
 
@@ -49,7 +47,7 @@ class VACDBA {
 	}
 
 	private static boolean assign(String args[]) {
-		if (Utilities.isSteamID64(args[1])) return false;
+		if (Util.isSteamID64(args[1])) return false;
 		Long range = Long.parseLong(args[2]);
 		if (args.length > 3) Config.setScannerThreads(args[3]);
 		start("GetOwnedGames");
@@ -59,8 +57,8 @@ class VACDBA {
 	static void start(String method) {
 		int threads = Config.getScannerThreads();
 		scanners = new Scanner[threads];
-		long starts = Utilities.MIN_STEAMID64;
-		long ends = Utilities.MAX_STEAMID64;
+		long starts = Util.MIN_STEAMID64;
+		long ends = Util.MAX_STEAMID64;
 		long range = ends - starts;
 		long part = range / threads;
 
