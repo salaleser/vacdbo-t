@@ -17,6 +17,12 @@ public class HttpClient {
 		timeout = 1000;
 	}
 
+	/**
+	 * Http-client
+	 *
+	 * @param query URL
+	 * @return ответ от сервера
+	 */
 	public StringBuilder connect(String query) {
 		try {
 			connection = (HttpURLConnection) new URL(query).openConnection();

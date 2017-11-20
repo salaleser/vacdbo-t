@@ -63,6 +63,12 @@ public class Config {
 		totalUpdated += count;
 	}
 
+	/**
+	 * Читает конфигурационный файл
+	 * @param filename имя конфигурационного файла (обычно это vacdbot.cfg, но
+	 *                 путь к нему может отличаться
+	 * @return
+	 */
 	public static boolean readConfigFile(String filename) {
 		Bot.gui.addText("Пытаюсь прочитать конфигурационный файл...");
 		config = Utilities.storeToHashMapFromFile(filename, "=", false);
