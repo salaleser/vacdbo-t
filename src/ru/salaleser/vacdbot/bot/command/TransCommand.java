@@ -19,27 +19,34 @@ import java.util.ArrayList;
 public class TransCommand extends Command {
 
 	public TransCommand() {
-		super("trans", "" + Util.b("Описание:") + " Конвертирует слова в слова.\n" + Util.b("Использование:") + " `~trans <слово>`.\n" + Util.b("Предустановки:") + " нет.\n" + Util.b("Пример:") + " `~trans раш б с диглами`.\n" + Util.b("Примечание:") + " команда в разработке.");
+		super("trans", "" +
+				Util.b("Описание:") + " Перевод слова с сайта http://wooordhunt.ru.\n" +
+				Util.b("Использование:") + " `~trans <русское_слово | английское_слово>`.\n" +
+				Util.b("Предустановки:") + " нет.\n" +
+				Util.b("Пример:") + " `~trans constellation`, `~trans кисломолочный`.\n" +
+				Util.b("Примечание:") + " пока перевод только одного слова с русского" +
+				" на английский и обратно.");
 	}
 
 	@Override
 	public void handle(IMessage message, String[] args) {
-		StringBuilder query = new StringBuilder();
+		StringBuilder argsSB = new StringBuilder();
 		//перегоняю все аргументы в одну строку
-		for (String arg : args) query.append(arg).append("%20");
-		query.replace(query.length() - 3, query.length(), "");
-		ArrayList<String> result = getDataFromYandexTranslator(query.toString());
+		for (String arg : args) argsSB.append(arg).append("%20");
+		argsSB.replace(argsSB.length() - 3, argsSB.length(), "");
+		ArrayList<String> result = getDataFromYandexTranslator(argsSB.toString());
 
-		StringBuilder translation = new StringBuilder("");
+		StringBuilder translation = new StringBuilder(Util.b("Перевод слова " +
+				Util.u(argsSB.toString()) + ":\n"));
 		for (String line : result) translation.append(line).append(" ");
 		message.getChannel().sendMessage(translation.toString());
 	}
 
 	private ArrayList<String> getDataFromYandexTranslator(String query) {
 		ArrayList<String> result = new ArrayList<>();
-		//		final String request = "http://translate.yandex.ru/?lang=ru-en&text=" + query;
-		//		final String request = "https://translate.google.com/#ru/en/" + query;
-		final String request = "https://google.com";
+//				final String request = "http://translate.yandex.ru/?lang=ru-en&text=" + query;
+//				final String request = "https://translate.google.com/#ru/en/" + query;
+		final String request = "http://wooordhunt.ru/word/" + query;
 		System.out.println("Sending request..." + request);
 
 		try (final WebClient webClient = new WebClient(BrowserVersion.CHROME)) {
@@ -48,8 +55,8 @@ public class TransCommand extends Command {
 			webClient.getOptions().setJavaScriptEnabled(true);
 			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 			webClient.getOptions().setThrowExceptionOnScriptError(false);
-			webClient.waitForBackgroundJavaScriptStartingBefore(1000);
-			webClient.waitForBackgroundJavaScript(1000);
+			webClient.waitForBackgroundJavaScriptStartingBefore(100);
+			webClient.waitForBackgroundJavaScript(100);
 			webClient.getOptions().setTimeout(5000);
 
 			WebRequest webRequest = new WebRequest(new URL(request));
@@ -58,10 +65,15 @@ public class TransCommand extends Command {
 			HtmlPage page = webClient.getPage(webRequest);
 
 			Document document = Jsoup.parse(page.asXml());
-			System.out.println("\n\n#############################################################################\n\n" +
-					document + "\n\n#############################################################################\n\n");
-			Elements elements = document.select("pre");
-			for (Element element : elements) result.add(element.text());
+
+			//если иностранное слово:
+			Elements english = document.getElementsByClass("t_inline_en");
+			for (Element element : english) result.add(element.text());
+
+			//если русское слово:
+			Elements russian = document.getElementsByClass("ru_content");
+			for (Element element : russian) result.add(element.text());
+
 			return result;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -69,3 +81,4 @@ public class TransCommand extends Command {
 		return result;
 	}
 }
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
