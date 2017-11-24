@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 public class ReadyCommand extends Command {
 
-	HashSet<IUser> ready = new HashSet<>();
+	private HashSet<IUser> ready = new HashSet<>();
 
 	public ReadyCommand() {
 		super("ready", "**Описание:** Оповещает тиммейтов о готовности к матчу.\n" +
