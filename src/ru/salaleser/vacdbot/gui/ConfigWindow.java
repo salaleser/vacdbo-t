@@ -1,6 +1,5 @@
 package ru.salaleser.vacdbot.gui;
 
-import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.Config;
 
 import javax.swing.*;
@@ -18,9 +17,7 @@ public class ConfigWindow extends JFrame {
 		JButton button = new JButton("Загрузить");
 		button.addActionListener(e -> {
 			dispose();
-			String path = pathTextField.getText();
-			Bot.gui.addText(path.substring(0, 16) + "..." + path.substring(path.length() - 16, path.length()));
-			Config.readConfigFile(path);
+			Config.readConfigFile(pathTextField.getText());
 		});
 
 		contents.add(pathTextField);

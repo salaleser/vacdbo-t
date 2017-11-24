@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot.command;
 
+import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.Config;
 import sx.blah.discord.handle.obj.IMessage;
@@ -14,12 +15,13 @@ import java.util.concurrent.TimeUnit;
 public class PollCommand extends Command {
 
 	public PollCommand() {
-		super("poll", "**Описание:** Создаёт голосование.\n" +
-				"**Использование:** `~poll [<вопрос>?[<вариант_ответа>/[<вариант_ответа>]]]`.\n" +
-				"**Предустановки:** `~poll` — голосование с рандомным вопросом;" +
+		super("poll", "" +
+				Util.b("Описание:") + " Создаёт голосование.\n" +
+				Util.b("Использование:") + " `~poll [<вопрос>?[<вариант_ответа>/[<вариант_ответа>]]]`.\n" +
+				Util.b("Предустановки:") + " `~poll` — голосование с рандомным вопросом;\n" +
 				"`~poll map` — голосование за карту в ксго.\n" +
-				"**Пример:** `~poll Есть ли жизнь на Марсе? Да / Нет / Не уверен`.\n" +
-				"**Примечание:** вариантов ответов может быть до 10; разделителем для вопроса является " +
+				Util.b("Пример:") + " `~poll Есть ли жизнь на Марсе? Да / Нет / Не уверен`.\n" +
+				Util.b("Примечание:") + " вариантов ответов может быть до 10; разделителем для вопроса является " +
 				"вопросительный знак `?`, а для вариантов ответов — слэш `/`.");
 	}
 
@@ -33,7 +35,7 @@ public class PollCommand extends Command {
 
 		StringBuilder answersEnum = new StringBuilder("\n");
 		String questionAndAnswers[] = splitQuestionAndAnswers(args);
-		String question = "**" + questionAndAnswers[0] + "?**";
+		String question = Util.b(questionAndAnswers[0] + "?");
 		String answers[] = questionAndAnswers[1].split("/");
 
 		//добавляю кнопки для голосования в виде реакций:
@@ -131,17 +133,12 @@ public class PollCommand extends Command {
 			}
 		}
 
-		if (answers.length > 2) {
-			qMessage.edit("*Голосование завершено!*" + "``` ```" + "\n" + question + "\n\n" +
-					"В голосовании приняли участие " + voters.size() + " из " + usersNumber +
-					" участников.\n\n" + pollResult.toString() + "\n" + "Вариант " + winner.getEmoji() +
-					"`" + answers[winnerNumber] + "`" + " набрал наибольшее количество голосов!");
-		} else {
-			qMessage.edit("*Голосование завершено!*" + "``` ```" + "\n" + question + "\n\n" +
-					"В голосовании приняли участие " + voters.size() + " из " + usersNumber +
-					" участников.\n\n" + pollResult.toString() + "\n" + "Вариант " + winner.getEmoji() +
-					" набрал наибольшее количество голосов!");
-		}
+		String result = Util.b("Голосование завершено!") + Util.block(" ") + "\n" + question + "\n\n" +
+				"В голосовании приняли участие " + voters.size() + " из " + usersNumber +
+				" участников.\n\n" + pollResult.toString() + "\n" + "Вариант " + winner.getEmoji();
+		if (answers.length > 2) result += Util.code(answers[winnerNumber]) + " набрал наибольшее количество голосов!";
+		else result += " набрал наибольшее количество голосов!";
+		qMessage.edit(result);
 
 		message.getClient().changePlayingText(Bot.status);
 	}
@@ -211,10 +208,10 @@ public class PollCommand extends Command {
 
 	private StringBuilder calculatePollResult(List<IReaction> reactions, String[] answers) {
 		StringBuilder result = new StringBuilder();
-		result.append("_*Результаты голосования:*_\n\n");
+		result.append(Util.bi("Результаты голосования:\n\n"));
 		for (int i = 0; i < reactions.size(); i++) {
 			result.append(reactions.get(i).getEmoji());
-			if (answers.length > 1) result.append("`").append(answers[i]).append("`");
+			if (answers.length > 1) result.append(Util.code(answers[i]));
 			result.append(" = ").append("**");
 			int c = 0;
 			for (IUser user : reactions.get(i).getUsers()) {
@@ -229,7 +226,7 @@ public class PollCommand extends Command {
 			if (!reactions.get(i).getUsers().isEmpty()) {
 				result.replace(result.length() - 2, result.length(), ".\n");
 			} else {
-				result.append("*нет голосов.*\n");
+				result.append(Util.b("нет голосов.\n"));
 			}
 		}
 		return result;
@@ -241,3 +238,4 @@ public class PollCommand extends Command {
 		return sb;
 	}
 }
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

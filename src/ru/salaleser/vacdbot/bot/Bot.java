@@ -1,8 +1,10 @@
 package ru.salaleser.vacdbot.bot;
 
 import ru.salaleser.vacdbot.Config;
+import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.bot.command.*;
 import ru.salaleser.vacdbot.gui.Gui;
+import sun.rmi.runtime.Log;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
@@ -11,49 +13,58 @@ import sx.blah.discord.util.DiscordException;
 
 public class Bot {
 
-	public static IChannel channelKTOLog;
+	public static IGuild guildKTO;
+	public static IChannel channelKTOLog; // FIXME: 21.11.2017 убрать хардкод
 	public static IChannel channelKTOTest;
 	public static IChannel channelKTOGeneral;
-	public static String status = "твои нервы!";
-	public static IUser userBot;
-	public static IGuild guildKTO;
-	public static IRole roleOfficers;
 	public static IVoiceChannel voiceChannelGeneral;
+	public static IRole roleOfficers;
+	public static String status = "твои нервы!";
 
 	public static Gui gui;
 	private static final Config CONFIG = new Config();
-	private static IDiscordClient client;
 	private static final ClientBuilder CLIENT_BUILDER = new ClientBuilder();
 	private static final CommandManager COMMAND_MANAGER = new CommandManager();
 
 	public static void main(String[] args) {
 		addCommands();
 		gui = new Gui();
+		Logger.info("Графическая оболочка запущена.");
+		Logger.info("Загружаю модули...");
+		Logger.info("Всего модулей загружено — " + Command.count);
 		boolean isConfig = Config.readConfigFile("/" +
 				"Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/vacdbot.cfg");
 		if (!isConfig) isConfig = Config.readConfigFile("/" +
 				"Users/salaleser/IdeaProjects/vacdbo-t/out/artifacts/vacdbo_t_jar/vacdbot.cfg");
 		if (!isConfig) isConfig = Config.readConfigFile("vacdbot.cfg");
-		client = login(isConfig);
-		EventDispatcher dispatcher = client.getDispatcher();// FIXME: 18.11.2017 не регается при переподключении
-		dispatcher.registerListener(new AnnotationListener());
+		IDiscordClient client = login(isConfig);
+		if (client != null) {
+			EventDispatcher dispatcher = client.getDispatcher();
+			dispatcher.registerListener(new AnnotationListener());
+		}
 	}
 
-	public static IDiscordClient login(boolean login) {
-		CLIENT_BUILDER.withToken(Config.getToken());
+	private static IDiscordClient login(boolean login) {
 		try {
-			if (login) return CLIENT_BUILDER.login();
-			else return CLIENT_BUILDER.build();
+			CLIENT_BUILDER.withToken(Config.getToken());
+			if (login) {
+				Bot.gui.setConnecting();
+				return CLIENT_BUILDER.login();
+			} else {
+				return CLIENT_BUILDER.build();
+			}
 		} catch (DiscordException e) {
 			e.printStackTrace();
-			Bot.gui.addText(e.getErrorMessage());
+			Logger.error(e.getErrorMessage());
+			return null;
+		} catch (NullPointerException e) {
+			Logger.error("Конфигурационный файл не загружен!");
 			return null;
 		}
 	}
 
-	public static void relogin() { // FIXME: 19.11.2017 не работает
-		if (client.isLoggedIn()) client.logout();
-		client.login();
+	public static void relogin() {
+		login(true);
 	}
 
 	public static CommandManager getCommandManager() {
@@ -67,7 +78,7 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new PollCommand());
 		COMMAND_MANAGER.addCommand(new RandomCommand());
 		COMMAND_MANAGER.addCommand(new ReadyCommand());
-//		COMMAND_MANAGER.addCommand(new RepCommand());
+		COMMAND_MANAGER.addCommand(new RepCommand());
 		COMMAND_MANAGER.addCommand(new ReportCommand());
 		COMMAND_MANAGER.addCommand(new ServerCommand());
 		COMMAND_MANAGER.addCommand(new StatusCommand());
@@ -79,5 +90,7 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new GetCommand());
 		COMMAND_MANAGER.addCommand(new CalcCommand());
 		COMMAND_MANAGER.addCommand(new IdCommand());
+		COMMAND_MANAGER.addCommand(new TransCommand());
 	}
 }
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

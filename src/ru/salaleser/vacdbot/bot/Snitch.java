@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Snitch {
 
-	public void snitch(IMessage message) {
+	public void snitch(IMessage message) throws InterruptedException {
 		String content = message.getContent().toLowerCase();
 		IChannel channel = message.getChannel();
 
@@ -28,6 +28,7 @@ public class Snitch {
 		for (String word : kidWordlist) {
 			if (content.contains(word)) {
 				message.addReaction("🎒");
+				message.getChannel().sendMessage("школьник detected", true);
 			}
 		}
 
@@ -65,3 +66,4 @@ public class Snitch {
 		}
 	}
 }
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

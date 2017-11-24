@@ -67,13 +67,6 @@ public class Util {
 		return "ней";
 	}
 
-	public static String convertTime(long unixTime) {
-		Date date = new Date(unixTime * 1000L);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT-3"));
-		return sdf.format(date);
-	}
-
 	/**
 	 * Возвращает SteamID64, если такой Discord User есть в mapSteamidDiscordid
 	 *
@@ -126,9 +119,7 @@ public class Util {
 			bufferedReader.close();
 			return hashMap;
 		} catch (IOException e) {
-			e.printStackTrace();
-			Bot.gui.addText("Ошибка при чтении файла " + filename);
-			System.out.println("Ошибка при чтении файла " + filename);
+			Logger.error("Ошибка при чтении файла " + filename);
 			return null;
 		}
 	}
@@ -183,3 +174,4 @@ http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730
 
 http://api.steampowered.com/ISteamApps/GetAppList/v2
 */
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
