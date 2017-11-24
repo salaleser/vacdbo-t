@@ -1,16 +1,16 @@
 package ru.salaleser.vacdbot.bot.command;
 
-import ru.salaleser.vacdbot.HttpClient;
-import ru.salaleser.vacdbot.ParserInventory;
-import ru.salaleser.vacdbot.Util;
+import ru.salaleser.vacdbot.*;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class CostCommand extends Command {
 
 	private final HttpClient httpClient = new HttpClient();
+	private ParserInventory parserInventory = new ParserInventory();
 
 	public CostCommand() {
 		super("cost", "Стомость шмоток и игр на акке.");
@@ -39,38 +39,76 @@ public class CostCommand extends Command {
 			message.getChannel().sendMessage(Util.b("Время ожидания вышло! Повторите запрос..."));
 			return;
 		}
-		ParserInventory parserInventory = new ParserInventory();
-		ArrayList<String> items = parserInventory.parse(jsonInventory);
-		System.out.println(items.size());
+		HashMap<String, String> items = parserInventory.parse(jsonInventory);
 		message.getChannel().sendMessage("" +
 				"Всего предметов в инвентаре (context=2): " + Util.b(items.size() + ""));
 
-		int c = 0;
-		float cost = 0;
-		for (String itemWithSpaces : items) {
-			//способ парсинга json (больше 20 цен предметов за короткий промежуток времени запрашивать невозможно):
-//			String item = itemWithSpaces.replace(" ", "%20");
-//			StringBuilder jsonItem = httpClient.connect("http://steamcommunity.com/market/priceoverview/" +
-//					"?currency=5&country=us&appid=730&market_hash_name=" + item + "&format=json");
-//			if (jsonItem != null) {
-//				float itemCost = parserInventory.getItemsValue(jsonItem);
-//				System.out.println(itemWithSpaces + " = " + itemCost);
-//				cost += itemCost;
-//				c++;
-//			} else {
-//				System.out.println("NULL: " + itemWithSpaces + " — не смогла...");
-//			}
-			//способ парсинга html магазина (такой же херовый):
-			String itemWithPluses = itemWithSpaces.replace(" ", "+");
-			float itemCost = parserInventory.parseMarketHtml("http://steamcommunity.com/market/search?appid=730&l=en&q=" +
-					itemWithPluses);
-			System.out.println(itemWithSpaces + " = " + itemCost);
-			cost += itemCost;
-
-//			TimeUnit.SECONDS.sleep(3);
+		float totalCost = 0;
+		//неудачные способы не включаю в обработку todo удалить их вообще
+		for (Map.Entry<String, String> item : items.entrySet()) {
+//			totalCost += getPriceBySteamMarketJson(item.getValue());
+//			totalCost += getPriceBySteamMarketHtml(item.getValue());
+			totalCost += getPriceByMarketCsgoCom(item);
+			//задержка для сайта https://market.csgo.com/docs/
+			TimeUnit.MILLISECONDS.sleep(200);
 		}
 
-		message.getChannel().sendMessage("Из них посчитано: " + Util.b(c + "\n") +
-				Util.u("Общая стоимость предметов (context=2): " + Util.b(cost + "")));
+		message.getChannel().sendMessage("" +
+				Util.u("Общая стоимость предметов (context=2): " + Util.b(totalCost + "")));
+	}
+
+	/**
+	 * Способ парсинга json (больше 20 цен предметов за короткий промежуток времени запрашивать невозможно):
+	 *
+	 * @param itemWithSpaces название предмета
+	 * @return стоимость предмета
+	 */
+	private float getPriceBySteamMarketJson(String itemWithSpaces) {
+		float price = 0;
+		String item = itemWithSpaces.replace(" ", "%20");
+		StringBuilder jsonItem = httpClient.connect("http://steamcommunity.com/market/priceoverview/" +
+				"?currency=5&country=us&appid=730&market_hash_name=" + item + "&format=json");
+		if (jsonItem != null) {
+			price = parserInventory.getItemsValue(jsonItem);
+			Logger.debug(itemWithSpaces + " = " + price);
+		} else {
+			Logger.error("getPriceBySteamMarketJson: " + itemWithSpaces + " — не смогла...");
+		}
+		return price;
+	}
+
+	/**
+	 * Способ парсинга html (больше 20 цен предметов за короткий промежуток времени запрашивать невозможно):
+	 *
+	 * @param itemWithSpaces название предмета
+	 * @return стоимость предмета
+	 */
+	private float getPriceBySteamMarketHtml(String itemWithSpaces) {
+		float price;
+		String itemWithPluses = itemWithSpaces.replace(" ", "+");
+		price = parserInventory.parseMarketHtml("http://steamcommunity.com/market/search?appid=730&l=en&q=" +
+				itemWithPluses);
+		Logger.debug(itemWithSpaces + " = " + price);
+		return price;
+	}
+
+	/**
+	 * Способ парсинга html сайта market.csgo.com
+	 *
+	 * @return стоимость предмета
+	 */
+	private float getPriceByMarketCsgoCom(Map.Entry<String, String> item) {
+		float price = 0;
+		String classid_instanceid = item.getKey();
+		String market_hash_name = item.getValue();
+		StringBuilder jsonItem = httpClient.connect("https://market.csgo.com/api/BuyOffers/" +
+				classid_instanceid + "/?key=" + Config.getMarketCsgoComKey());
+		if (jsonItem != null) {
+			price = parserInventory.getItemPriceByMarketCsgoCom(jsonItem);
+		} else {
+			Logger.error("getPriceByMarketCsgoCom: " + market_hash_name + " — не смогла...");
+		}
+		Logger.debug(market_hash_name + " = " + price);
+		return price;
 	}
 }

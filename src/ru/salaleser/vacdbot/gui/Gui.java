@@ -114,7 +114,6 @@ public class Gui extends JFrame {
 		JPanel panelCommands = new JPanel();
 		panelCommands.setBorder(BorderFactory.createTitledBorder("Отправка команды:"));
 		JComboBox<String> commandComboBox = new JComboBox<>();
-		System.out.println(Bot.getCommandManager().commands.entrySet());
 		for (Map.Entry<String, Command> entry : Bot.getCommandManager().commands.entrySet())
 			commandComboBox.addItem("~" + entry.getKey());
 		JButton buttonCommand = new JButton("Test");

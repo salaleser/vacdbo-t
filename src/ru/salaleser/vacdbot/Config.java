@@ -1,7 +1,5 @@
 package ru.salaleser.vacdbot;
 
-import ru.salaleser.vacdbot.bot.Bot;
-
 import java.util.HashMap;
 
 public class Config {
@@ -17,6 +15,9 @@ public class Config {
 	}
 	public static String getSteamWebApiKey() {
 		return config.get("SteamWebApiKey");
+	}
+	public static String getMarketCsgoComKey() {
+		return config.get("MarketCsgoComKey");
 	}
 
 	public static String getDBUrl() {
