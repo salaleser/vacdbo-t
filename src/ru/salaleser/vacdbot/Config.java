@@ -69,16 +69,13 @@ public class Config {
 	 * @return true, если файл загрузился успешно, false — если нет
 	 */
 	public static boolean readConfigFile(String filename) {
-		Bot.gui.addText("Пытаюсь прочитать конфигурационный файл " + filename + "...");
-		System.out.println("Пытаюсь прочитать конфигурационный файл " + filename + "...");
+		Logger.info("Пытаюсь прочитать конфигурационный файл " + filename + "...");
 		config = Util.storeToHashMapFromFile(filename, "=", false);
 		if (config != null) {
-			Bot.gui.addText("Конфигурационный файл считан успешно.");
-			System.out.println("Конфигурационный файл считан успешно.");
+			Logger.info("Конфигурационный файл считан успешно.");
 			return true;
 		} else {
-			Bot.gui.addText("Ошибка загрузки конфигурационного файла!");
-			System.out.println("Ошибка загрузки конфигурационного файла!");
+			Logger.info("Ошибка загрузки конфигурационного файла!");
 			return false;
 		}
 	}

@@ -1,26 +1,32 @@
 package ru.salaleser.vacdbot.bot;
 
+import ru.salaleser.vacdbot.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
+import sx.blah.discord.handle.obj.IGuild;
+
+import java.util.ArrayList;
 
 public class AnnotationListener {
 
-	private Snitch snitch = new Snitch();
-
 	@EventSubscriber
 	public void onReady(ReadyEvent event) {
-		Bot.gui.setConnected(event.getClient());
 		event.getClient().changePlayingText(Bot.status);
-		Bot.userBot = event.getClient().getUserByID(377411774254809088L);
 		Bot.guildKTO = event.getClient().getGuildByID(223560049937743872L);
 		Bot.channelKTOLog = event.getClient().getChannelByID(377431980658393088L);
 		Bot.channelKTOTest = event.getClient().getChannelByID(347333162449502208L);
 		Bot.channelKTOGeneral = event.getClient().getChannelByID(347088817729306624L);
 		Bot.roleOfficers = event.getClient().getRoleByID(382154712524259337L);
 		Bot.voiceChannelGeneral = event.getClient().getVoiceChannelByID(347089107949977601L);
-		Bot.gui.addText("Успешно подключен.");
+
+		StringBuilder guildsBuilder = new StringBuilder();
+		for (IGuild guild : event.getClient().getGuilds()) guildsBuilder.append(", ").append(guild.getName());
+		String guilds = guildsBuilder.toString();
+		guilds = guilds.substring(2);
+		Bot.gui.setConnected(event.getClient(), guilds);
+		Logger.info("Успешно подключен. Всего серверов — " + event.getClient().getGuilds().size() + ": " + guilds);
 	}
 
 	@EventSubscriber
@@ -33,7 +39,11 @@ public class AnnotationListener {
 
 	@EventSubscriber
 	public void onMessage(MessageReceivedEvent event) throws InterruptedException {
-		if (event.getMessage().getContent().equals("~")) return;
+		Logger.onMessage(event.getGuild().getName() + " / " +
+				event.getChannel().getName() + " / " +
+				event.getAuthor().getName() + ": " +
+				event.getMessage().getContent());
+		Snitch snitch = new Snitch();
 		if (event.getMessage().getContent().startsWith("~")) {
 			Bot.getCommandManager().handle(event.getMessage());
 		} else if (event.getMessage().getContent().startsWith("=")) {
@@ -44,7 +54,5 @@ public class AnnotationListener {
 			snitch.snitch(event.getMessage());
 		}
 	}
-
-//	@EventSubscriber
-
 }
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

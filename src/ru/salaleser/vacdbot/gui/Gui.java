@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.gui;
 
+import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.api.IDiscordClient;
@@ -25,39 +26,37 @@ public class Gui extends JFrame {
 
 	private JLabel labelStatus;
 
-	private ArrayList<IGuild> guildList = new ArrayList<>();
 	private DefaultListModel<String> listModelGuilds = new DefaultListModel<>();
-	private JList<String> listOfGuilds = new JList<>(listModelGuilds);;
+	private JList<String> listOfGuilds = new JList<>(listModelGuilds);
 
-	private ArrayList<IChannel> channelList = new ArrayList<>();
 	private DefaultListModel<String> listModelChannels = new DefaultListModel<>();
 	private JList<String> listOfChannels = new JList<>(listModelChannels);
 
-	private ArrayList<IUser> userList = new ArrayList<>();
 	private DefaultListModel<String> listModelUsers = new DefaultListModel<>();
 	private JList<String> listOfUsers = new JList<>(listModelUsers);
 
-	private JCheckBox checkBoxBots = new JCheckBox("Боты", false);
-	private JCheckBox checkBoxNotOfflineUsers = new JCheckBox("Неофлайн", true);
-	private JCheckBox checkBoxOfflineUsers = new JCheckBox("Офлайн", false);
+	private JCheckBox checkBoxBots = new JCheckBox("bots", false);
+	private JCheckBox checkBoxNotOfflineUsers = new JCheckBox("!offline", true);
+	private JCheckBox checkBoxOfflineUsers = new JCheckBox("offline", false);
 
 	private JTextArea textAreaLog;
 
 	public Gui() {
-		frame = new JFrame("Версия: " + serialVersionUID + " § Играет в " + Bot.status);
+		JFrame.setDefaultLookAndFeelDecorated(true);
+		frame = new JFrame("Версия: " + serialVersionUID + "  Играет в " + Bot.status);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setContentPane(new JPanel());
 		frame.setLayout(new BorderLayout());
 
 		//блок состояния:
-		JPanel panelStatus = new JPanel(new BorderLayout());
+		JPanel panelStatus = new JPanel();
 		panelStatus.setBorder(BorderFactory.createTitledBorder("Статус"));
 		ImageIcon disconnectedIcon = resizeImage("img/red_dot.png");
 		labelStatus = new JLabel("Disconnected", disconnectedIcon, JLabel.CENTER);
 		panelStatus.add(labelStatus);
 
 		//блок настроек:
-		JPanel panelSettings = new JPanel();
+		JPanel panelSettings = new JPanel(new GridLayout(2, 1));
 		panelSettings.setBorder(BorderFactory.createTitledBorder("Настройки"));
 		JButton buttonOpenFile = new JButton("Открыть конфигурационный файл");
 		buttonOpenFile.addActionListener(e -> new ConfigWindow());
@@ -67,10 +66,10 @@ public class Gui extends JFrame {
 		panelSettings.add(buttonRelogin);
 
 		//общий северный блок:
-		JPanel panelNorth = new JPanel();
+		JPanel panelNorth = new JPanel(new BorderLayout());
 		panelNorth.setBorder(BorderFactory.createTitledBorder("Северная панель"));
-		panelNorth.add(panelStatus);
-		panelNorth.add(panelSettings);
+		panelNorth.add(panelStatus, BorderLayout.WEST);
+		panelNorth.add(panelSettings, BorderLayout.EAST);
 
 		//блок гильдий:
 		JPanel panelServers = new JPanel();
@@ -80,7 +79,6 @@ public class Gui extends JFrame {
 			updateUsers(listOfGuilds.getSelectedIndices(), checkBoxBots.isSelected(),
 					checkBoxNotOfflineUsers.isSelected(), checkBoxOfflineUsers.isSelected());
 		});
-		listOfGuilds.setSelectedIndex(0);
 		panelServers.add(new JScrollPane(listOfGuilds));
 
 		//блок каналов:
@@ -90,20 +88,20 @@ public class Gui extends JFrame {
 		panelChannels.add(new JScrollPane(listOfChannels));
 
 		//блок пользователей:
-		JPanel panelUsers = new JPanel(new BorderLayout());
+		JPanel panelUsers = new JPanel(new GridLayout(1, 2));
 		panelUsers.setBorder(BorderFactory.createTitledBorder("Пользователи"));
 		checkBoxBots.addChangeListener(new ChangeListenerUsers());
 		checkBoxNotOfflineUsers.addChangeListener(new ChangeListenerUsers());
 		checkBoxOfflineUsers.addChangeListener(new ChangeListenerUsers());
-		listOfGuilds.setPreferredSize(new Dimension(60, 50));
-		listOfChannels.setPreferredSize(new Dimension(60, 50));
-//		listOfUsers.setPreferredSize(new Dimension(60, 50));
-		panelUsers.add(new JScrollPane(listOfUsers), BorderLayout.WEST);
-		JPanel panelUsersSettings = new JPanel(new BorderLayout());
-		panelUsersSettings.add(checkBoxBots, BorderLayout.NORTH);
-		panelUsersSettings.add(checkBoxNotOfflineUsers, BorderLayout.CENTER);
-		panelUsersSettings.add(checkBoxOfflineUsers, BorderLayout.SOUTH);
-		panelUsers.add(panelUsersSettings, BorderLayout.EAST);
+		listOfGuilds.setPreferredSize(new Dimension(64, 128));
+		listOfChannels.setPreferredSize(new Dimension(64, 128));
+		listOfUsers.setPreferredSize(new Dimension(256, 1024));
+		panelUsers.add(new JScrollPane(listOfUsers));
+		JPanel panelUsersSettings = new JPanel(new GridLayout(3, 1));
+		panelUsersSettings.add(checkBoxBots);
+		panelUsersSettings.add(checkBoxNotOfflineUsers);
+		panelUsersSettings.add(checkBoxOfflineUsers);
+		panelUsers.add(panelUsersSettings);
 
 		//общий блок слева:
 		JPanel panelWest = new JPanel();
@@ -112,30 +110,11 @@ public class Gui extends JFrame {
 		panelWest.add(panelChannels);
 		panelWest.add(panelUsers);
 
-		//блок отправки сообщения:
-		JPanel panelMessage = new JPanel();
-		panelMessage.setBorder(BorderFactory.createTitledBorder("Отправка сообщения:"));
-		JTextField textFieldMessage = new JTextField(12);
-		JButton buttonSendMessage = new JButton("Send");
-		buttonSendMessage.addActionListener(e -> {
-			// FIXME: 19.11.2017 отправляет сообщения не в тот канал
-			if (textFieldMessage.getText().isEmpty()) textFieldMessage.setText("null");
-			IChannel selectedChannel = client.getGuilds().get(0).getChannels().get(0);
-			if (!listOfChannels.isSelectionEmpty())
-				selectedChannel = channelList.get(listOfChannels.getSelectedIndex());
-			if (listOfUsers.isSelectionEmpty())
-				selectedChannel.sendMessage(textFieldMessage.getText());
-			else
-				selectedChannel.sendMessage(userList.get(listOfUsers.getSelectedIndex()) +
-						", " + textFieldMessage.getText());
-		});
-		panelMessage.add(textFieldMessage);
-		panelMessage.add(buttonSendMessage);
-
 		//блок списка команд:
 		JPanel panelCommands = new JPanel();
 		panelCommands.setBorder(BorderFactory.createTitledBorder("Отправка команды:"));
 		JComboBox<String> commandComboBox = new JComboBox<>();
+		System.out.println(Bot.getCommandManager().commands.entrySet());
 		for (Map.Entry<String, Command> entry : Bot.getCommandManager().commands.entrySet())
 			commandComboBox.addItem("~" + entry.getKey());
 		JButton buttonCommand = new JButton("Test");
@@ -143,18 +122,64 @@ public class Gui extends JFrame {
 		panelCommands.add(commandComboBox);
 		panelCommands.add(buttonCommand);
 
+		//блок отправки сообщения:
+		JPanel panelMessage = new JPanel();
+		panelMessage.setBorder(BorderFactory.createTitledBorder("Отправка сообщения:"));
+		JTextField textFieldMessage = new JTextField(12);
+		JButton buttonSendMessage = new JButton("Send");
+		buttonSendMessage.addActionListener(e -> {
+			if (textFieldMessage.getText().isEmpty()) textFieldMessage.setText("null");
+			IChannel channel = client.getChannels().get(listOfChannels.getSelectedIndex());
+			if (listOfUsers.isSelectionEmpty()) {
+				channel.sendMessage(textFieldMessage.getText());
+			}
+			else {
+				//сначала вырезаю айдишки дискорда из листа:
+				ArrayList<String> selectedIDs = new ArrayList<>();
+				for (String selected : listOfUsers.getSelectedValuesList()) {
+					// TODO: 21.11.2017 найти способ красивее обрезать элементы листа
+					selectedIDs.add(selected.substring(selected.length() - 18, selected.length()));
+				}
+				//далее кастую айдишки в лонги, ищу по ним юзеров и добавляю их в другой лист:
+				ArrayList<IUser> selectedUsersList = new ArrayList<>();
+				for (String selectedID : selectedIDs) {
+					selectedUsersList.add(client.getUserByID(Long.parseLong(selectedID)));
+				}
+				//наконец, добавляю всех юзеров в стрингбилдер через запятую:
+				StringBuilder selectedUsers = new StringBuilder();
+				for (IUser user : selectedUsersList) selectedUsers.append(user).append(", ");
+				//адресую сообщение всем выделенным в JList listOfUsers:
+				channel.sendMessage(selectedUsers + textFieldMessage.getText());
+			}
+		});
+		panelMessage.add(textFieldMessage);
+		panelMessage.add(buttonSendMessage);
+
 		//общий блок справа:
-		JPanel panelEast = new JPanel();
+		JPanel panelEast = new JPanel(new BorderLayout());
 		panelEast.setBorder(BorderFactory.createTitledBorder("Восточная панель"));
-		panelEast.add(panelMessage);
-		panelEast.add(panelCommands);
+		panelEast.add(panelCommands, BorderLayout.NORTH);
+		panelEast.add(panelMessage, BorderLayout.SOUTH);
 
 		//блок лога:
-		JPanel panelLog = new JPanel();
+		JPanel panelLog = new JPanel(new BorderLayout());
 		panelLog.setBorder(BorderFactory.createTitledBorder("Лог"));
 		textAreaLog = new JTextArea();
+		textAreaLog.setEditable(false);
 		textAreaLog.setColumns(64);
-		panelLog.add(textAreaLog);
+		JButton buttonClearLog = new JButton("Очистить");
+		JToggleButton toggleButtonWrap = new JToggleButton("Перенос слов");
+		JToggleButton toggleButtonWrapStyle = new JToggleButton("Перенос по словам");
+		buttonClearLog.addActionListener(e -> textAreaLog.setText(null));
+		toggleButtonWrap.addActionListener(e -> {
+			textAreaLog.setLineWrap(toggleButtonWrap.isSelected());
+			toggleButtonWrapStyle.setEnabled(toggleButtonWrap.isSelected());
+		});
+		toggleButtonWrapStyle.addActionListener(e -> textAreaLog.setWrapStyleWord(toggleButtonWrapStyle.isSelected()));
+		panelLog.add(buttonClearLog, BorderLayout.WEST);
+		panelLog.add(toggleButtonWrap, BorderLayout.CENTER);
+		panelLog.add(toggleButtonWrapStyle, BorderLayout.EAST);
+		panelLog.add(new JScrollPane(textAreaLog), BorderLayout.SOUTH);
 
 		frame.getContentPane().add(panelNorth, BorderLayout.PAGE_START);
 		frame.getContentPane().add(panelWest, BorderLayout.WEST);
@@ -181,15 +206,16 @@ public class Gui extends JFrame {
 	private void test(String text) {
 		Command command = Bot.getCommandManager().getCommand(text.substring(1));
 		try {
-			command.handle(Bot.channelKTOTest.sendMessage("*Тест* `" + text + "`:"), new String[]{});
+			command.handle(Bot.channelKTOTest.sendMessage(Util.b("Тест") + Util.code(text) + ":"), new String[]{});
 			TimeUnit.MILLISECONDS.sleep(2000);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
 	}
 
-	public void addText(String text) {
+	public void addText(String text, Color fg) {
 		if (textAreaLog.getText().length() != 0) textAreaLog.append("\n");
+		textAreaLog.setForeground(fg);
 		textAreaLog.append(text);
 		frame.pack();
 	}
@@ -200,59 +226,67 @@ public class Gui extends JFrame {
 		return new ImageIcon(scaledImage);
 	}
 
-	public void setConnected(IDiscordClient client) {
+	public void setConnecting() {
+		ImageIcon connectingIcon = resizeImage("img/yellow_dot.png");
+		labelStatus.setIcon(connectingIcon);
+		labelStatus.setText("Connecting...");
+	}
+
+	public void setConnected(IDiscordClient client, String guilds) {
 		this.client = client;
-		updateLists();
+		//выделяет все серверы:
+		int[] indices = new int[client.getGuilds().size()];
+		for (int i = 0; i < indices.length; i++) indices[i] = i;
+
+		updateGuilds(indices);
+		updateChannels(indices);
+		updateUsers(indices, false, true, false);
+
 		ImageIcon connectedIcon = resizeImage("img/green_dot.png");
 		labelStatus.setIcon(connectedIcon);
-		labelStatus.setText("Connected");
+		labelStatus.setText("Connected to: " + guilds);
 	}
 
-	private void updateLists() {
+	private void updateGuilds(int[] guildIndices) {
 		listModelGuilds.clear();
 		for (IGuild guild : client.getGuilds()) {
-			guildList.add(guild);
 			listModelGuilds.addElement(guild.getName());
 		}
-
-		updateChannels(new int[]{0});
-
-		updateUsers(new int[]{0}, false, true, false);
+		listOfGuilds.setSelectedIndices(guildIndices);
 	}
 
-	private void updateChannels(int[] ints) {
+	private void updateChannels(int[] guildIndices) {
 		listModelChannels.clear();
-		for (int index : ints) {
+		for (int index : guildIndices) {
 			for (IChannel channel : client.getGuilds().get(index).getChannels()) {
-				channelList.add(channel);
 				listModelChannels.addElement(channel.getName());
 			}
 		}
+		listOfChannels.setSelectedIndex(0);
 	}
 
-	private void updateUsers(int[] ints, boolean bots, boolean notOfflineUsers, boolean offlineUsers) {
+	private void updateUsers(int[] guildIndices, boolean bots, boolean notOfflineUsers, boolean offlineUsers) {
 		listModelUsers.clear();
-		for (int index : ints) {
+		for (int index : guildIndices) {
 			for (IUser user : client.getGuilds().get(index).getUsers()) {
 				if (bots) {
 					if (user.isBot()) {
-						userList.add(user);
-						listModelUsers.addElement(user.getDisplayName(Bot.guildKTO));
+						listModelUsers.addElement(user.getName() + " — " + user.getStringID());
 					}
 				}
 				if (offlineUsers) {
 					if (!user.isBot() && user.getPresence().getStatus() == StatusType.OFFLINE) {
-						userList.add(user);
-						listModelUsers.addElement(user.getName());
+						listModelUsers.addElement(user.getName() + " — " + user.getStringID());
 					}
 				}
 				if (notOfflineUsers) {
 					if (!user.isBot() && user.getPresence().getStatus() != StatusType.OFFLINE) {
-						userList.add(user);
-						listModelUsers.addElement(user.getName());
+						listModelUsers.addElement(user.getName() + " — " + user.getStringID());
 					}
 				}
 			}
 		}
+		listOfUsers.clearSelection();
 	}
 }
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

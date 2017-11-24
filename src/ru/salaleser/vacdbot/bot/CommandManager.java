@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot;
 
+import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.RateLimitException;
@@ -24,20 +25,27 @@ public class CommandManager {
 	}
 
 	public void handle(IMessage message) {
+		String content = message.getContent();
+		//если нет команды, покажу хелп хотя бы:
+		if (content.equals("~")) content = "~help";
+		//если есть, то распихать аргументы по ячейкам массива:
+		content = content.substring(1);
+		String[] args = content.split(" ");
+		Command command = getCommand(args[0].toLowerCase());
+		if (command == null) { // FIXME: 17.11.2017 сделать исключение так как код повторяется. такой же блок в хелпе
+			message.reply("команда `" + args[0] + "` не поддерживается");
+			return;
+		}
+		Logger.info("Получил команду " + command.name + ".");
+
+		//передаю управление дальше по команде:
 		try {
-			String messageContent = message.getContent().substring(1);
-			String[] args = messageContent.split(" ");
-			Command command = getCommand(args[0].toLowerCase());
-			if (command == null) { // FIXME: 17.11.2017 сделать исключение так как код повторяется. такой же блок в хелпе
-				message.reply("команда `" + args[0] + "` не поддерживается");
-				return;
-			}
-			Bot.gui.addText("Получил команду " + command.name + ".");
 			command.handle(message, Arrays.copyOfRange(args, 1, args.length));
 		} catch (RateLimitException e) {
-			message.getChannel().sendMessage("RateLimitException пойман, повторите операцию!");
+			Logger.error("RateLimitException отловлен!");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 }
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

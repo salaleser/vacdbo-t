@@ -42,10 +42,10 @@ public class HttpClient {
 					response.append("\n");
 				}
 			} else {
-				System.out.println("fail: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
+				Logger.info("fail: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
 			}
 		} catch (final java.net.SocketTimeoutException e) {
-			System.out.println("Время ожидания вышло, повторяю операцию...");
+			Logger.info("Время ожидания вышло, повторяю операцию...");
 			return null;
 		} catch (IOException e) {
 			e.printStackTrace();
