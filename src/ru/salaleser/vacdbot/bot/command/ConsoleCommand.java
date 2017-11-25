@@ -21,3 +21,4 @@ public class ConsoleCommand extends Command {
 		message.getChannel().sendMessage("Показ местоположения бомбы: " + "```alias +bombfind \"+use; gameinstructor_enable 1; cl_clearhinthistory\"\n" + "alias -bombfind \"-use; gameinstructor_enable 0; cl_clearhinthistory\"\n" + "bind e +bombfind```");
 	}
 }
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
