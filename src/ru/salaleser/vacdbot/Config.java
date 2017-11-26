@@ -16,8 +16,8 @@ public class Config {
 	public static String getSteamWebApiKey() {
 		return config.get("SteamWebApiKey");
 	}
-	public static String getMarketCsgoComKey() {
-		return config.get("MarketCsgoComKey");
+	public static String getCsgotmApiKey() {
+		return config.get("CsgotmApiKey");
 	}
 
 	public static String getDBUrl() {

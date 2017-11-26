@@ -3,6 +3,8 @@ package ru.salaleser.vacdbot.vacdbo;
 import ru.salaleser.vacdbot.Config;
 import ru.salaleser.vacdbot.HttpClient;
 
+import java.net.SocketTimeoutException;
+
 public class ScannerOwnedGames extends Scanner {
 
 	ScannerOwnedGames(long starts, long range, int instance) {

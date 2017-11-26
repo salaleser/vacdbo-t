@@ -3,6 +3,7 @@ package ru.salaleser.vacdbot.bot.command;
 import ru.salaleser.vacdbot.*;
 import sx.blah.discord.handle.obj.IMessage;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 public class VacCommand extends Command {
@@ -58,8 +59,9 @@ public class VacCommand extends Command {
 		ParserFriends parserFriends = new ParserFriends();
 		ArrayList<StringBuilder> hundredsOfSteamIDs = parserFriends.parse(jsonFriends);
 
-		message.getChannel().sendMessage("Всего друзей: **" +
-				hundredsOfSteamIDs.get(hundredsOfSteamIDs.size() - 1) + "**\n" + "Проверяю друзей на VAC-баны...");
+		message.getChannel().sendMessage("Всего друзей: " +
+				Util.b(hundredsOfSteamIDs.get(hundredsOfSteamIDs.size() - 1).toString()) +
+				"\nПроверяю друзей на VAC-баны...");
 		ParserFriendsBans parserBans = new ParserFriendsBans();
 		ArrayList<String> cheaters = new ArrayList<>();
 		//не забыть исключить из парсинга последний элемент массива (количество друзей)
@@ -85,7 +87,7 @@ public class VacCommand extends Command {
 			}
 			message.getChannel().sendMessage(String.valueOf(bannedFriendsMessage));
 		} else {
-			message.getChannel().sendMessage("Забаненных друзей нет. Пока нет...");
+			message.getChannel().sendMessage(Util.b("Забаненных друзей нет. Пока нет..."));
 		}
 	}
 }

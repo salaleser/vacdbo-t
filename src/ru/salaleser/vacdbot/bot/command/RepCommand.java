@@ -58,6 +58,8 @@ public class RepCommand extends Command {
 			message.reply("*Профиль не существует*");
 			return;
 		}
+
+		// FIXME: 26.11.2017 парсить джейсоны вместо эйчтиэмль https://lab.xpaw.me/steam_api_documentation.html#IPlayerService_GetSteamLevel_v1
 		String title = document.title();
 		profile_level = document.getElementsByClass("friendPlayerLevel").first().text();
 		String status = document.getElementsByClass("profile_in_game_header").text();

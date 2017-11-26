@@ -29,7 +29,7 @@ public class Logger {
 	}
 
 	public static void error(String message) {
-		System.err.println(LocalDateTime.now().format(formatter) + " [ERROR] " + message);
+		System.out.println(LocalDateTime.now().format(formatter) + " [ERROR] " + message);
 		Bot.gui.addText(LocalDateTime.now().format(formatter) + " [ERROR] " + message, Color.RED);
 	}
 }

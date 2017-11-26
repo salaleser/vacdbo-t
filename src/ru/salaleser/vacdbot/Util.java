@@ -2,10 +2,7 @@ package ru.salaleser.vacdbot;
 
 import ru.salaleser.vacdbot.bot.Bot;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -122,6 +119,25 @@ public class Util {
 			Logger.error("Ошибка при чтении файла " + filename);
 			return null;
 		}
+	}
+
+	public static String decode(String unicoded) {
+		byte[] utf8Bytes = new byte[0];
+		try {
+			utf8Bytes = unicoded.getBytes("UTF8");
+			return new String(utf8Bytes, "UTF8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return unicoded;
+	}
+
+	public static String toRubKop(String rubkop) {
+		if (rubkop.length() == 1) rubkop = "00" + rubkop;
+		if (rubkop.length() == 2) rubkop = "0" + rubkop;
+		String rub = rubkop.substring(0, rubkop.length() - 2);
+		String kop = rubkop.substring(rubkop.length() - 2, rubkop.length());
+		return rub + "," + kop + "₽";
 	}
 
 	public static String code(String text) {

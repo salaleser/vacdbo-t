@@ -26,7 +26,8 @@ public class TimerCommand extends Command {
 		message.getChannel().sendMessage(Util.i("Таймер установлен на " +
 				Util.b(finalTimer + "") + " минут."));
 		Thread thread = new Thread(() -> {
-			IMessage tMessage = message.getChannel().sendMessage(Util.b("Осталось " + Util.u(finalTimer + "") + " минут"));
+			IMessage tMessage = message.getChannel().sendMessage(Util.b("Осталось " +
+					Util.u(finalTimer + "") + " минут"));
 			for (int i = finalTimer; i > 0; i--) {
 				message.getChannel().changeTopic("таймер: " + i + " мин");
 				message.getClient().changePlayingText("таймер: " + i + " мин");
@@ -40,6 +41,7 @@ public class TimerCommand extends Command {
 			message.getChannel().changeTopic(channelTopic);
 			message.getClient().changePlayingText(Bot.status);
 			message.reply("Время истекло!");
+			message.getChannel().sendMessage("--airhorn");
 		});
 		thread.start();
 	}
