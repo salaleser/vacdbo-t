@@ -39,7 +39,7 @@ public class CostCommand extends Command {
 			message.reply(Util.b("аргументы не заданы") +
 					" (проверяю стоимость предметов инвентаря " + message.getAuthor() + ")");
 		}
-		String name = Util.getDiscordUserBySteamid(steamid);
+		String name = steamid;
 
 		message.getChannel().sendMessage("Проверяю стоимость предметов инвентаря " + name + "...");
 		StringBuilder jsonInventory;
@@ -67,7 +67,7 @@ public class CostCommand extends Command {
 
 		//целочисленная сумма в рублях и копейках:
 		String rubkop = Util.toRubKop(String.valueOf(totalCost));
-		message.reply("Общая стоимость предметов (context=2) " + Util.getDiscordUserBySteamid(args[0]) + ": " +
+		message.reply("Общая стоимость предметов (context=2) " + args[0] + ": " +
 				Util.b(rubkop));
 	}
 

@@ -1,18 +1,12 @@
 package ru.salaleser.vacdbot;
 
-import ru.salaleser.vacdbot.bot.Bot;
-
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.*;
 import java.util.HashMap;
-import java.util.TimeZone;
 
 public class Util {
 	public static final long MIN_STEAMID64 = 76561197960265729L;
 	public static final long MAX_STEAMID64 = 76561202255233023L;
-	public static HashMap<String, String> mapSteamidDiscordid = storeToHashMapFromFile("txt/ids.txt", "=", false);
-	public static HashMap<String, String> mapDiscordidSteamid = storeToHashMapFromFile("txt/ids.txt", "=", true);
 
 	/**
 	 * Проверяет аргумент на соответствие числу
@@ -72,21 +66,32 @@ public class Util {
 	 */
 	public static String getSteamidByDiscordUser(String discordid) {
 		discordid = discordid.replaceAll("[<@!>]", "");
-		String steamid = mapDiscordidSteamid.get(discordid);
+		String table = "ids";
+		String sql = "SELECT steamid FROM " + table + " WHERE discordid = \'" + discordid + "\'";
+		Connection connection = null;
+		Statement statement = null;
+		String steamid = null;
+		try {
+			Class.forName(Config.getDBDriver());
+			connection = DriverManager.getConnection(Config.getDBUrl(), Config.getDBLogin(), Config.getDBPassword());
+			connection.setAutoCommit(false);
+			statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				steamid = resultSet.getString("steamid");
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			Logger.error("Ошибка чтения из базы данных: " + e.getMessage());
+		} finally {
+			try {
+				if (statement != null) statement.close();
+				if (connection != null) connection.close();
+			} catch (SQLException e) {
+				Logger.error("Cannot close connection");
+			}
+		}
 		if (steamid == null) return "ноунейм какой-то";
 		return steamid;
-	}
-
-	/**
-	 * Возвращает Discord User, если такой SteamID64 есть в mapDiscordidSteamid
-	 *
-	 * @param steamid SteamID64
-	 * @return Discord User
-	 */
-	public static String getDiscordUserBySteamid(String steamid) {
-		String discordid = mapSteamidDiscordid.get(steamid);
-		if (discordid == null) return "ноунейм какой-то";
-		return "<@" + discordid + ">";
 	}
 
 	/**

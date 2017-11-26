@@ -20,6 +20,9 @@ public class Config {
 		return config.get("CsgotmApiKey");
 	}
 
+	public static String getDBDriver() {
+		return config.get("DBDriver");
+	}
 	public static String getDBUrl() {
 		return config.get("DBUrl");
 	}

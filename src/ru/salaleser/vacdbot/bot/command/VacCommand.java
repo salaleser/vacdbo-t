@@ -46,7 +46,7 @@ public class VacCommand extends Command {
 			message.reply(Util.b("аргументы не заданы") + " (проверяю баны друзей salaleser'а за сегодня)");
 		}
 
-		String name = Util.getDiscordUserBySteamid(steamid);
+		String name = steamid;
 		message.getChannel().sendMessage("Проверяю " +
 				"друзей " + name + "'а...");
 		StringBuilder jsonFriends = httpClient.connect("http://api.steampowered.com/" +
