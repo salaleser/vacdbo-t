@@ -31,6 +31,6 @@ public class Scheduler {
 
 		//каждые два часа проверяю подозреваемых:
 		time.schedule(checkSuspectsTask, 10000, TimeUnit.HOURS.toMillis(2));
-		time.schedule(inviteToVoiceChatTask, 15000, TimeUnit.MINUTES.toMillis(15));
+		time.schedule(inviteToVoiceChatTask, 30000, TimeUnit.MINUTES.toMillis(15));
 	}
 }

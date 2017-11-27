@@ -22,6 +22,7 @@ public class Bot {
 
 	public static Gui gui;
 	private static final Config CONFIG = new Config();
+	private static final String CFG = "vacdbot.cfg";
 	private static final ClientBuilder CLIENT_BUILDER = new ClientBuilder();
 	private static final CommandManager COMMAND_MANAGER = new CommandManager();
 
@@ -34,11 +35,9 @@ public class Bot {
 		gui = new Gui();
 		Logger.info("Графическая оболочка запущена.");
 
-		boolean isConfig = Config.readConfigFile("/" + "Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/vacdbot.cfg");
-		if (!isConfig) {
-			isConfig = Config.readConfigFile("/" + "Users/salaleser/IdeaProjects/vacdbo-t/out/artifacts/vacdbo_t_jar/vacdbot.cfg");
-		}
-		if (!isConfig) isConfig = Config.readConfigFile("vacdbot.cfg");
+		boolean isConfig = Config.readConfigFile(CFG);
+		if (!isConfig) isConfig = Config.readConfigFile("/Users/salaleser/IdeaProjects/" +
+				"vacdbo-t/out/artifacts/vacdbo_t_jar/" + CFG);
 		IDiscordClient client = login(isConfig);
 		if (client != null) {
 			EventDispatcher dispatcher = client.getDispatcher();
