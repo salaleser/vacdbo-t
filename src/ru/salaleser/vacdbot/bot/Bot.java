@@ -2,7 +2,6 @@ package ru.salaleser.vacdbot.bot;
 
 import ru.salaleser.vacdbot.Config;
 import ru.salaleser.vacdbot.Logger;
-import ru.salaleser.vacdbot.CheckSuspectsTask;
 import ru.salaleser.vacdbot.bot.command.*;
 import ru.salaleser.vacdbot.gui.Gui;
 import sx.blah.discord.api.ClientBuilder;
@@ -10,12 +9,6 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.DiscordException;
-
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
-import java.util.concurrent.TimeUnit;
 
 public class Bot {
 
@@ -33,21 +26,27 @@ public class Bot {
 	private static final CommandManager COMMAND_MANAGER = new CommandManager();
 
 	public static void main(String[] args) {
+		System.out.println("Загружаю модули...");
 		addCommands();
+		System.out.println("Всего модулей загружено — " + Command.count);
+
+		System.out.println("Загружаю графическую оболочку...");
 		gui = new Gui();
 		Logger.info("Графическая оболочка запущена.");
-		Logger.info("Загружаю модули...");
-		Logger.info("Всего модулей загружено — " + Command.count);
+
 		boolean isConfig = Config.readConfigFile("/" + "Users/aleksejsalienko/Documents/vacdbo-t/out/artifacts/vacdbo_t_jar/vacdbot.cfg");
-		if (!isConfig)
+		if (!isConfig) {
 			isConfig = Config.readConfigFile("/" + "Users/salaleser/IdeaProjects/vacdbo-t/out/artifacts/vacdbo_t_jar/vacdbot.cfg");
+		}
 		if (!isConfig) isConfig = Config.readConfigFile("vacdbot.cfg");
 		IDiscordClient client = login(isConfig);
 		if (client != null) {
 			EventDispatcher dispatcher = client.getDispatcher();
 			dispatcher.registerListener(new AnnotationListener());
 		}
-		runTask();
+
+		new Scheduler();
+		Logger.info("Планировщик запущен.");
 	}
 
 	private static IDiscordClient login(boolean login) {
@@ -99,22 +98,6 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new TransCommand());
 		COMMAND_MANAGER.addCommand(new CostCommand());
 		COMMAND_MANAGER.addCommand(new TimerCommand());
-	}
-
-	private static void runTask() {
-		Calendar evening = Calendar.getInstance();
-		evening.set(Calendar.HOUR_OF_DAY, 20);
-		evening.set(Calendar.MINUTE, 0);
-		evening.set(Calendar.SECOND, 0);
-		evening.set(Calendar.MILLISECOND, 0);
-
-		Calendar custom = Calendar.getInstance();
-		custom.set(Calendar.HOUR_OF_DAY, 4);
-		custom.set(Calendar.MINUTE, 59);
-
-		Timer time = new Timer();
-		time.schedule(new CheckSuspectsTask(), evening.getTime(), TimeUnit.HOURS.toMillis(4));
-		time.schedule(new CheckSuspectsTask(), custom.getTime());
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

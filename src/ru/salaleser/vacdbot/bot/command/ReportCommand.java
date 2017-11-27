@@ -27,6 +27,7 @@ public class ReportCommand extends Command {
 	@Override
 	public void handle(IMessage message, String[] args) {
 		if (args.length == 0) {
+			message.getChannel().sendMessage(Util.i("Проверяю подозреваемых..."));
 			String sql = "SELECT steamid FROM " + table;
 			Connection connection = null;
 			Statement statement = null;

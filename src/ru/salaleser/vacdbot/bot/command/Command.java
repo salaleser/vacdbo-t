@@ -15,5 +15,13 @@ public abstract class Command {
 	}
 
 	public abstract void handle(IMessage message, String[] args) throws InterruptedException;
+
+	public String get(String[] args) {
+		return "у этой команды нет настроек";
+	}
+
+	public boolean set(String[] args) {
+		return false;
+	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

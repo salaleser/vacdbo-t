@@ -1,7 +1,10 @@
 package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.Config;
+import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IMessage;
+
+import java.util.Arrays;
 
 public class SetCommand extends Command {
 
@@ -11,10 +14,12 @@ public class SetCommand extends Command {
 
 	@Override
 	public void handle(IMessage message, String[] args) {
-		if (args.length == 3 && args[0].equals("poll") && args[1].equals("countdown")) {
-			Config.setPollCountdown(args[2]);
+		Command command = Bot.getCommandManager().commands.get(args[0]);
+		if (command.set(Arrays.copyOfRange(args, 1, args.length))) {
+			message.reply("параметр установлен успешно.");
+		} else {
+			message.reply("параметр не установлен.");
 		}
-		else message.getChannel().sendMessage("неверный запрос");
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

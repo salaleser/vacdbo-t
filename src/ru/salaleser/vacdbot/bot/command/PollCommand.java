@@ -237,5 +237,23 @@ public class PollCommand extends Command {
 		for (int i = 0; i < c; i++) sb.append('█');
 		return sb;
 	}
+
+	@Override
+	public String get(String[] args) {
+		String config = "countdown = " + Config.getPollCountdown();
+		if (args.length == 0) return config;
+		return null;
+	}
+
+	@Override
+	public boolean set(String[] args) {
+		switch (args[0]) {
+			case "countdown":
+				Config.setPollCountdown(args[1]);
+				return true;
+			default:
+				return false;
+		}
+	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

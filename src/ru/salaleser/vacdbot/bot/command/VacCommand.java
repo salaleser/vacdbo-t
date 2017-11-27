@@ -1,10 +1,13 @@
 package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.*;
+import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VacCommand extends Command {
 
@@ -61,9 +64,9 @@ public class VacCommand extends Command {
 
 		message.getChannel().sendMessage("Всего друзей: " +
 				Util.b(hundredsOfSteamIDs.get(hundredsOfSteamIDs.size() - 1).toString()) +
-				"\nПроверяю друзей на VAC-баны...");
+				"\nПроверяю друзей на баны...");
 		ParserFriendsBans parserBans = new ParserFriendsBans();
-		ArrayList<String> cheaters = new ArrayList<>();
+		HashMap<String, Integer> cheaters = new HashMap<>();
 		//не забыть исключить из парсинга последний элемент массива (количество друзей)
 		for (int i = 0; i < hundredsOfSteamIDs.size() - 1; i++) {
 			StringBuilder jsonBans = httpClient.connect("http://api.steampowered.com/" +
@@ -74,19 +77,25 @@ public class VacCommand extends Command {
 						"*-ой итерации! Повторяю запрос...*");
 				i--;
 			} else {
-				cheaters.addAll(parserBans.parse(jsonBans, days));
+				cheaters.putAll(parserBans.parse(jsonBans));
 			}
 		}
-		StringBuilder bannedFriendsMessage = new StringBuilder("Профили друзей, получивших VAC-бан за последние " +
-				days + " д" + Util.ending(days) + " (" + cheaters.size() + "читерков):\n");
-		if (!cheaters.isEmpty()) {
-			for (String cheaterID : cheaters) {
-				bannedFriendsMessage.append("http://steamcommunity.com/profiles/").append(cheaterID).append("\n");
+
+		int lastOnesNumber = 0;
+		StringBuilder bMessage = new StringBuilder("Профили друзей " + name + ", получивших бан за последние " +
+				days + " д" + Util.ending(days));
+		for (Map.Entry<String, Integer> lastOne : cheaters.entrySet()) {
+			if (lastOne.getValue() < days) {
+				lastOnesNumber++;
+				bMessage.append("http://steamcommunity.com/profiles/").append(lastOne.getKey()).append("\n");
 			}
-			message.getChannel().sendMessage(String.valueOf(bannedFriendsMessage));
+		}
+		bMessage.append(" (").append(lastOnesNumber).append("читерков):\n");
+
+		if (lastOnesNumber > 0) {
+			Bot.channelKTOGeneral.sendMessage(String.valueOf(bMessage)); //fixme hardcode повтор кода
 		} else {
-			message.getChannel().sendMessage(Util.b("Забаненных друзей " + name + " за последние " +
-					days + " д" + Util.ending(days) + " нет. Пока нет..."));
+			Bot.channelKTOGeneral.sendMessage(Util.b("Забаненных друзей " + name + " за последние " + days + " д" + Util.ending(days) + " нет. Пока нет..."));
 		}
 	}
 }
