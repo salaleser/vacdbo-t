@@ -77,7 +77,7 @@ public class ParserPlayerBans extends Parser {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		try {
-			Class.forName("org.postgresql.Driver");
+			Class.forName(Config.getDBDriver());
 			connection = DriverManager.getConnection(Config.getDBUrl(),
 					Config.getDBLogin(), Config.getDBPassword());
 			connection.setAutoCommit(false);

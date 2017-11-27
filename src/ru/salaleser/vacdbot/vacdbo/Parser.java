@@ -1,6 +1,7 @@
 package ru.salaleser.vacdbot.vacdbo;
 
 import ru.salaleser.vacdbot.Config;
+import ru.salaleser.vacdbot.Logger;
 
 import java.sql.*;
 
@@ -38,33 +39,29 @@ public abstract class Parser {
 	 *
 	 * @return false if SteamID not exists
 	 */
-	boolean isExists(String customTable, String customSteamId) {
+	public boolean isExists(String customTable, String customSteamId) {
 		if (customTable == null) customTable = table;
 		if (customSteamId == null) customSteamId = steamid;
 		String sql = "SELECT * FROM " + customTable + " WHERE steamid = ?";
 		Connection connection = null;
 		PreparedStatement statement = null;
-		ResultSet resultSet = null;
 		try {
-			Class.forName("org.postgresql.Driver");
+			Class.forName(Config.getDBDriver());
 			connection = DriverManager.getConnection(Config.getDBUrl(),
 					Config.getDBLogin(), Config.getDBPassword());
 
 			statement = connection.prepareStatement(sql);
 			statement.setString(1, customSteamId);
 
-			resultSet = statement.executeQuery();
+			ResultSet resultSet = statement.executeQuery();
 			resultSet.next();
 			return resultSet.getRow() > 0;
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			System.out.println("Ошибка при запросе в базу данных");
+			Logger.error("Ошибка при запросе в базу данных");
 			return true; // TODO: 01.11.17 почему тру?
 		} finally {
 			try {
-				if (resultSet != null) {
-					resultSet.close();
-				}
 				if (statement != null) {
 					statement.close();
 				}
@@ -72,7 +69,7 @@ public abstract class Parser {
 					connection.close();
 				}
 			} catch (SQLException e) {
-				System.err.println("Cannot close connection");
+				Logger.error("Cannot close connection");
 				e.printStackTrace();
 			}
 		}

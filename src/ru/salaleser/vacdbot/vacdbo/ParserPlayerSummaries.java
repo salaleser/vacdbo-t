@@ -28,7 +28,7 @@ public class ParserPlayerSummaries extends Parser {
 	private String locstatecode;
 	private long loccityid;
 
-	ParserPlayerSummaries() {
+	public ParserPlayerSummaries() {
 		table = "player_summaries";
 	}
 
