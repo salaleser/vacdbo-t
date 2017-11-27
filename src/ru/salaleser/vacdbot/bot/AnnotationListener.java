@@ -27,6 +27,8 @@ public class AnnotationListener {
 		guilds = guilds.substring(2);
 		Bot.gui.setConnected(event.getClient(), guilds);
 		Logger.info("Успешно подключен. Всего серверов — " + event.getClient().getGuilds().size() + ": " + guilds);
+		new Scheduler();
+		Logger.info("Планировщик запущен.");
 	}
 
 	@EventSubscriber

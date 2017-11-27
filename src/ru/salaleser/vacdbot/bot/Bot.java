@@ -43,9 +43,6 @@ public class Bot {
 			EventDispatcher dispatcher = client.getDispatcher();
 			dispatcher.registerListener(new AnnotationListener());
 		}
-
-		new Scheduler();
-		Logger.info("Планировщик запущен.");
 	}
 
 	private static IDiscordClient login(boolean login) {
