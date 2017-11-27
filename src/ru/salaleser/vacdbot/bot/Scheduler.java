@@ -30,7 +30,7 @@ public class Scheduler {
 		InviteToVoiceChatTask inviteToVoiceChatTask = new InviteToVoiceChatTask();
 
 		//каждые два часа проверяю подозреваемых:
-		time.schedule(checkSuspectsTask, 10000, TimeUnit.HOURS.toMillis(2));
+		time.schedule(checkSuspectsTask, 10000, TimeUnit.HOURS.toMillis(1));
 		time.schedule(inviteToVoiceChatTask, 30000, TimeUnit.MINUTES.toMillis(15));
 	}
 }
