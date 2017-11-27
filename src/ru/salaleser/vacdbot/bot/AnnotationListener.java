@@ -18,7 +18,7 @@ public class AnnotationListener {
 		Bot.channelKTOLog = event.getClient().getChannelByID(377431980658393088L);
 		Bot.channelKTOTest = event.getClient().getChannelByID(347333162449502208L);
 		Bot.channelKTOGeneral = event.getClient().getChannelByID(347088817729306624L);
-		Bot.roleOfficers = event.getClient().getRoleByID(382154712524259337L);
+		Bot.roleOfficers = event.getClient().getRoleByID(286563715157852180L);
 		Bot.voiceChannelGeneral = event.getClient().getVoiceChannelByID(347089107949977601L);
 
 		StringBuilder guildsBuilder = new StringBuilder();

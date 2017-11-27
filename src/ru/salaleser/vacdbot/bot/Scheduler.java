@@ -30,7 +30,8 @@ public class Scheduler {
 		InviteToVoiceChatTask inviteToVoiceChatTask = new InviteToVoiceChatTask();
 
 		//каждые два часа проверяю подозреваемых:
-		time.schedule(checkSuspectsTask, 10000, TimeUnit.HOURS.toMillis(1));
-		time.schedule(inviteToVoiceChatTask, 15000, TimeUnit.SECONDS.toMillis(15));
+		time.schedule(checkSuspectsTask, 10000, TimeUnit.HOURS.toMillis(2));
+		time.schedule(inviteToVoiceChatTask, 15000, TimeUnit.MINUTES.toMillis(15));
 	}
 }
+// ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

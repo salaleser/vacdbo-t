@@ -19,14 +19,13 @@ public class InviteToVoiceChatTask extends TimerTask {
 			if (userHere.getPresence().getStatus() != StatusType.OFFLINE && !userHere.isBot() &&
 					userHere.hasRole(officer) && !voice.getConnectedUsers().contains(userHere)) {
 				channel.sendMessage(userHere +
-						", для вас последнее китайское приглашение в голосовой чат номер " + c);
+						", для вас последнее китайское приглашение в голосовой чат №" + c);
 				try {
-					TimeUnit.MILLISECONDS.sleep(500);
+					TimeUnit.SECONDS.sleep(3);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			if (c > 3) userHere.moveToVoiceChannel(voice);
 		}
 	}
 }

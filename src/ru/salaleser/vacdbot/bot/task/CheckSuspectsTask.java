@@ -4,7 +4,6 @@ import ru.salaleser.vacdbot.*;
 import ru.salaleser.vacdbot.bot.Bot;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
@@ -12,6 +11,7 @@ import java.util.TimerTask;
 public class CheckSuspectsTask extends TimerTask {
 
 	public void run() {
+		Bot.channelKTOGeneral.sendMessage(Util.i("Проверяю подозреваемых..."));
 		String table = "suspects";
 		String sql = "SELECT steamid FROM " + table;
 		Connection connection = null;
