@@ -9,6 +9,7 @@ import sx.blah.discord.handle.obj.StatusType;
 
 import java.util.ArrayList;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class InviteToVoiceChatTask extends TimerTask {
 
@@ -19,13 +20,17 @@ public class InviteToVoiceChatTask extends TimerTask {
 	public void run() {
 		c++;
 		for (IUser userHere : channel.getUsersHere()) {
-			if (userHere.hasRole(Bot.roleOfficers) || userHere.isBot() ||
-					userHere.getPresence().getStatus() == StatusType.OFFLINE) continue;
-			if (!voice.getConnectedUsers().contains(userHere)) {
+			if (userHere.getPresence().getStatus() != StatusType.OFFLINE || !userHere.isBot() ||
+					userHere.hasRole(Bot.roleOfficers) || !voice.getConnectedUsers().contains(userHere)) {
 				channel.sendMessage(userHere +
 						", для вас последнее китайское приглашение в голосовой чат номер " + c);
-				if (c > 3) userHere.moveToVoiceChannel(voice);
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+			if (c > 3) userHere.moveToVoiceChannel(voice);
 		}
 	}
 }
