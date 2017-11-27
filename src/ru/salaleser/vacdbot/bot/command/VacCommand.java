@@ -77,17 +77,16 @@ public class VacCommand extends Command {
 				cheaters.addAll(parserBans.parse(jsonBans, days));
 			}
 		}
-		StringBuilder bannedFriendsMessage = new StringBuilder("Профили друзей, " +
-				"получивших VAC-бан за " + days + " д" + Util.ending(days) + ":\n");
+		StringBuilder bannedFriendsMessage = new StringBuilder("Профили друзей, получивших VAC-бан за последние " +
+				days + " д" + Util.ending(days) + " (" + cheaters.size() + "читерков):\n");
 		if (!cheaters.isEmpty()) {
 			for (String cheaterID : cheaters) {
-				bannedFriendsMessage.append("");
-				bannedFriendsMessage.append("http://steamcommunity.com/profiles/");
-				bannedFriendsMessage.append(cheaterID).append("\n");
+				bannedFriendsMessage.append("http://steamcommunity.com/profiles/").append(cheaterID).append("\n");
 			}
 			message.getChannel().sendMessage(String.valueOf(bannedFriendsMessage));
 		} else {
-			message.getChannel().sendMessage(Util.b("Забаненных друзей нет. Пока нет..."));
+			message.getChannel().sendMessage(Util.b("Забаненных друзей " + name + " за последние " +
+					days + " д" + Util.ending(days) + " нет. Пока нет..."));
 		}
 	}
 }
