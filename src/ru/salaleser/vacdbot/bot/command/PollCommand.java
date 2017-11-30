@@ -1,8 +1,8 @@
 package ru.salaleser.vacdbot.bot.command;
 
+import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
-import ru.salaleser.vacdbot.Config;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IReaction;
 import sx.blah.discord.handle.obj.IUser;
@@ -29,8 +29,14 @@ public class PollCommand extends Command {
 	public void handle(IMessage message, String[] args) throws InterruptedException {
 		message.getClient().changePlayingText("голосование");
 
-		//defaults:
-		int finalCountdown = Config.getPollCountdown();
+		int countdown = 20;
+		String countdownValue = DBHelper.getValueFromSettings(name, "countdown");
+		if (Util.isNumeric(countdownValue) &&
+				Integer.parseInt(countdownValue) >= 5 &&
+				Integer.parseInt(countdownValue) <= 60) {
+			countdown = Integer.parseInt(countdownValue);
+		}
+
 		IMessage qMessage = message.getChannel().sendMessage("Инициализация голосования...");
 
 		StringBuilder answersEnum = new StringBuilder("\n");
@@ -39,6 +45,7 @@ public class PollCommand extends Command {
 		String answers[] = questionAndAnswers[1].split("/");
 
 		//добавляю кнопки для голосования в виде реакций:
+		// FIXME: 30.11.2017 Лёха из будущего, ну научись уже пользоваться новыми молодёжными эмодзи, а?
 		if (answers.length == 0 || answers.length == 1) {
 			TimeUnit.MILLISECONDS.sleep(100);
 			qMessage.addReaction("👍");
@@ -46,33 +53,28 @@ public class PollCommand extends Command {
 			qMessage.addReaction("👎");
 		} else if (answers.length <= 10) {
 			for (int i = 0; i < answers.length; i++) {
-				answersEnum.append(getNumberEmoji(i))
-						.append(" — ")
-						.append("`")
-						.append(answers[i])
-						.append("`")
-						.append("\n");
+				answersEnum.append(getNumberEmoji(i)).append(" — ").append(Util.code(answers[i])).append("\n");
 			}
 			for (int i = 0; i < answers.length; i++) {
 				TimeUnit.MILLISECONDS.sleep(100);
 				qMessage.addReaction(getNumberEmoji(i));
 			}
 		} else {
-			message.reply("*неправильное количество вариантов ответов*");
+			message.reply(Util.i("неправильное количество вариантов ответов"));
 		}
 
 		//перерисовываю сообщение:
-		StringBuilder progressBar = new StringBuilder(" ");
+		StringBuilder progressBar;
 		String pollWrapper = "\n" + question + "\n" + answersEnum;
-		for (int i = finalCountdown; i > 0; i--) {
+		for (int i = countdown; i > 0; i--) {
 			TimeUnit.SECONDS.sleep(1);
 			progressBar = fillProgressBar(i);
-			qMessage.edit("*Голосование завершится через " + i + " с*" +
-					"```" + progressBar + "```" + pollWrapper);
+			qMessage.edit(Util.i("Голосование завершится через " + i + " с") +
+					Util.block(progressBar.toString()) + pollWrapper);
 		}
 		TimeUnit.SECONDS.sleep(1);
-		qMessage.edit("*Ставки сделаны! Ставок больше нет. Идёт подсчёт голосов...*" +
-				"``` ```" + pollWrapper);
+		qMessage.edit(Util.i("Ставки сделаны! Ставок больше нет. Идёт подсчёт голосов...") +
+				Util.block(" ") + pollWrapper);
 
 		//получаю реакции-голоса пользователей в отдельный лист:
 		TimeUnit.SECONDS.sleep(2);
@@ -81,16 +83,12 @@ public class PollCommand extends Command {
 		// FIXME: 17.11.2017 чёрная магия:
 		//проверка на чёрную магию от дискорда (по невыясненным причинам иногда рекций нет совсем):
 		if (reactions.isEmpty()) {
-			qMessage.edit("*Произошла магия, скорее всего чёрная, реакции не посчитались, поэтому голосование" +
-					" объявляется несостоявшимся по техническим причинам. Попробуйте ещё раз позже.*");
+			qMessage.edit(Util.i("Произошла магия, скорее всего чёрная, реакции не посчитались, " +
+					"поэтому голосование объявляется несостоявшимся по техническим причинам. Попробуйте ещё раз."));
 			qMessage.removeAllReactions();
 			message.getClient().changePlayingText(Bot.status);
 			return;
 		}
-
-//		System.out.println("Всего реакций: " + reactions.size() + ":");
-//		for (IReaction reaction : reactions) System.out.println(reaction.getEmoji() + " -> " + reaction.getUsers());
-
 		HashSet<IUser> voters = new HashSet<>();
 		int winnerNumber = 0;
 		IReaction winner = reactions.get(0);
@@ -114,7 +112,7 @@ public class PollCommand extends Command {
 		//отменяю голосование, если никто не голосовал (не считая бота):
 		if (voters.isEmpty()) {
 			qMessage.edit("\n" + question + "\n\n" +
-					"*Никто не голосовал! Голосование отменено, результаты аннулированы.*");
+					Util.i("Никто не голосовал! Голосование отменено, результаты аннулированы."));
 			message.getClient().changePlayingText(Bot.status);
 			qMessage.removeAllReactions(); // FIXME: 17.11.2017 повтор кода
 			return;
@@ -157,18 +155,8 @@ public class PollCommand extends Command {
 
 	private String getMapQuestion() {
 		StringBuilder mapQuestion = new StringBuilder("В какую карту хочешь сыграть?");
-		String[] maps = {
-				"de_train",
-				"de_nuke",
-				"de_dust2",
-				"de_cache",
-				"de_mirage",
-				"de_inferno",
-				"de_cobblestone",
-				"de_overpass",
-				"cs_office",
-				"cs_agency"
-		};
+		String[] maps = {"de_train", "de_nuke", "de_dust2", "de_cache", "de_mirage",
+				"de_inferno", "de_cobblestone", "de_overpass", "cs_office", "cs_agency"};
 		for (int i = 0; i < maps.length; i++) {
 			mapQuestion.append(maps[i]);
 			if (i + 1 != maps.length) mapQuestion.append("/");
@@ -201,7 +189,6 @@ public class PollCommand extends Command {
 		for (String arg : args) {
 			newArgs.append(arg).append(" ");
 		}
-		System.out.println(newArgs.toString());
 		//выделяю вопрос отдельно от вариантов ответов.
 		return newArgs.toString().split("\\?");
 	}
@@ -212,7 +199,7 @@ public class PollCommand extends Command {
 		for (int i = 0; i < reactions.size(); i++) {
 			result.append(reactions.get(i).getEmoji());
 			if (answers.length > 1) result.append(Util.code(answers[i]));
-			result.append(" = ").append("**");
+			result.append(" = **");
 			int c = 0;
 			for (IUser user : reactions.get(i).getUsers()) {
 				if (!user.isBot()) c++;
@@ -233,27 +220,13 @@ public class PollCommand extends Command {
 	}
 
 	private StringBuilder fillProgressBar(int c) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < c; i++) sb.append('█');
-		return sb;
-	}
-
-	@Override
-	public String get(String[] args) {
-		String config = "countdown = " + Config.getPollCountdown();
-		if (args.length == 0) return config;
-		return null;
-	}
-
-	@Override
-	public boolean set(String[] args) {
-		switch (args[0]) {
-			case "countdown":
-				Config.setPollCountdown(args[1]);
-				return true;
-			default:
-				return false;
+		String barchar = "█";
+		if (DBHelper.getValueFromSettings(name, "barchar").length() == 1) {
+			barchar = DBHelper.getValueFromSettings(name, "barchar");
 		}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < c; i++) sb.append(barchar);
+		return sb;
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

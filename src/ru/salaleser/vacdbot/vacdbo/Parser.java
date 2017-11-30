@@ -34,6 +34,7 @@ public abstract class Parser {
 	 */
 	public abstract boolean parse(StringBuilder sb, String id);
 
+	// FIXME: 30.11.2017 есть похожий код в DBHelper
 	/**
 	 * Проверяет на существование id в базе данных
 	 *

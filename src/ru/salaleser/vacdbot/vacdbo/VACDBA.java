@@ -10,6 +10,7 @@ class VACDBA {
 
 	static Scanner[] scanners;
 	private static ColoredPrinter cp;
+	private static int threads;
 
 	public static void mainot(String args[]) {
 		cp = new ColoredPrinter.Builder(1, false)
@@ -49,13 +50,13 @@ class VACDBA {
 	private static boolean assign(String args[]) {
 		if (Util.isSteamID64(args[1])) return false;
 		Long range = Long.parseLong(args[2]);
-		if (args.length > 3) Config.setScannerThreads(args[3]);
+		if (args.length > 3) threads = Integer.parseInt(args[3]);
 		start("GetOwnedGames");
 		return true;
 	}
 
-	static void start(String method) {
-		int threads = Config.getScannerThreads();
+	private static void start(String method) {
+		threads = 20;
 		scanners = new Scanner[threads];
 		long starts = Util.MIN_STEAMID64;
 		long ends = Util.MAX_STEAMID64;

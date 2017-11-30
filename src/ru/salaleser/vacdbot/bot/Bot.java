@@ -1,6 +1,7 @@
 package ru.salaleser.vacdbot.bot;
 
 import ru.salaleser.vacdbot.Config;
+import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.bot.command.*;
 import ru.salaleser.vacdbot.gui.Gui;
@@ -43,6 +44,7 @@ public class Bot {
 			EventDispatcher dispatcher = client.getDispatcher();
 			dispatcher.registerListener(new AnnotationListener());
 		}
+		new DBHelper();
 	}
 
 	private static IDiscordClient login(boolean login) {

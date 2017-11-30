@@ -77,7 +77,7 @@ public class VacCommand extends Command {
 						"*-ой итерации! Повторяю запрос...*");
 				i--;
 			} else {
-				cheaters.putAll(parserBans.parse(jsonBans));
+				cheaters = parserBans.parse(jsonBans);
 			}
 		}
 
@@ -87,10 +87,9 @@ public class VacCommand extends Command {
 		for (Map.Entry<String, Integer> lastOne : cheaters.entrySet()) {
 			if (lastOne.getValue() < days) {
 				lastOnesNumber++;
-				bMessage.append("http://steamcommunity.com/profiles/").append(lastOne.getKey()).append("\n");
+				bMessage.append("\n").append("http://steamcommunity.com/profiles/").append(lastOne.getKey());
 			}
 		}
-		bMessage.append(" (").append(lastOnesNumber).append("читерков):\n");
 
 		if (lastOnesNumber > 0) {
 			Bot.channelKTOGeneral.sendMessage(String.valueOf(bMessage)); //fixme hardcode повтор кода

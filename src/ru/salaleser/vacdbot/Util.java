@@ -145,44 +145,54 @@ public class Util {
 		return rub + "," + kop + "₽";
 	}
 
+	/**
+	 * Добавляет пробелы к слову, чтобы таблица в дискорде выглядела красиво
+	 *
+	 * @param string исходная строка
+	 * @return строка с добавленными пробелами
+	 */
+	public static String addSpaces(String string) {
+		int columnWidth = 12;
+		int spacesToAdd = columnWidth - string.length();
+		if (spacesToAdd < 0) return string;
+		StringBuilder stringBuilder = new StringBuilder(string);
+		for (int i = 0; i < spacesToAdd; i++) stringBuilder.append(" ");
+		return stringBuilder.toString();
+	}
+
+	// Методы для упрощения форматирования текста в дискорде:
 	public static String code(String text) {
 		return "`" + text + "`";
 	}
-
 	public static String block(String text) {
 		return "```" + text + "```";
 	}
-
 	public static String i(String text) {
 		return "*" + text + "*";
 	}
-
 	public static String b(String text) {
 		return "**" + text + "**";
 	}
-
 	public static String bi(String text) {
 		return "***" + text + "***";
 	}
-
 	public static String s(String text) {
 		return "~~" + text + "~~";
 	}
-
 	public static String u(String text) {
 		return "__" + text + "__";
 	}
-
 	public static String ui(String text) {
 		return "__*" + text + "*__";
 	}
-
 	public static String ub(String text) {
 		return "__**" + text + "**__";
 	}
-
 	public static String ubi(String text) {
 		return "__***" + text + "***__";
+	}
+	public static String did(String text) {
+		return "<@" + text + ">";
 	}
 }
 

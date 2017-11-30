@@ -10,9 +10,6 @@ public class Config {
 	public static String getToken() {
 		return config.get("Token");
 	}
-	public static String getTrainingServerAddress() {
-		return config.get("TrainingServerAddress");
-	}
 	public static String getSteamWebApiKey() {
 		return config.get("SteamWebApiKey");
 	}
@@ -31,20 +28,6 @@ public class Config {
 	}
 	public static String getDBPassword() {
 		return config.get("DBPassword");
-	}
-
-	public static int getScannerThreads() {
-		return Integer.parseInt(config.get("ScannerThreads"));
-	}
-	public static void setScannerThreads(String value) {
-		config.put("ScannerThreads", value);
-	}
-
-	public static int getPollCountdown() {
-		return Integer.parseInt(config.get("PollCountdown"));
-	}
-	public static void setPollCountdown(String value) {
-		config.put("PollCountdown", value);
 	}
 
 	public static int getTotalScanned() {

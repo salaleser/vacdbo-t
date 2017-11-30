@@ -197,9 +197,8 @@ public class CostCommand extends Command {
 		long price = 0;
 		String url = "http://steamcommunity.com/market/priceoverview/?currency=5&country=us&appid=730&market_hash_name=";
 		String itemNameForUrl = market_hash_name.replace(" ", "%20");
-		StringBuilder jsonSteamMarket = new StringBuilder();
 
-		jsonSteamMarket = httpClient.connect(url + itemNameForUrl);
+		StringBuilder jsonSteamMarket = httpClient.connect(url + itemNameForUrl);
 		if (jsonSteamMarket == null) {
 			Logger.error("Время ожидания вышло. Возвращаю \"0\" (" + market_hash_name + ")");
 			return 0;

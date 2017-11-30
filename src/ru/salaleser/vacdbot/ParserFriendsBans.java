@@ -24,13 +24,13 @@ public class ParserFriendsBans {
 			for (Object item : players) {
 				JSONObject player = (JSONObject) item;
 				String steamid = (String) player.get("SteamId");
-				boolean communitybanned = (boolean) player.get("CommunityBanned");
+//				boolean communitybanned = (boolean) player.get("CommunityBanned");
 				boolean vacbanned = (boolean) player.get("VACBanned");
 //				long numberofvacbans = (long) player.get("NumberOfVACBans");
 				long dayssincelastban = (long) player.get("DaysSinceLastBan");
-//				long numberofgamebans = (long) player.get("NumberOfGameBans");
+				long numberofgamebans = (long) player.get("NumberOfGameBans");
 //				String economyban = (String) player.get("EconomyBan");
-				if (vacbanned || communitybanned) vacbannedMap.put(steamid, (int) dayssincelastban);
+				if (vacbanned || numberofgamebans > 0) vacbannedMap.put(steamid, (int) dayssincelastban);
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();

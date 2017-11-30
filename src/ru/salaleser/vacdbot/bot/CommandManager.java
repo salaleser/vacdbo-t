@@ -12,11 +12,11 @@ public class CommandManager {
 
 	public HashMap<String, Command> commands;
 
-	public CommandManager() {
+	CommandManager() {
 		this.commands = new HashMap<>();
 	}
 
-	public void addCommand(Command command) {
+	void addCommand(Command command) {
 		commands.put(command.name, command);
 	}
 

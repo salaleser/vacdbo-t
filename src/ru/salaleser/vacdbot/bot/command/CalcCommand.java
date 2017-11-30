@@ -17,7 +17,8 @@ public class CalcCommand extends Command {
 				Util.b("Использование:") + " `~calc <операнд1><оператор><операнд2>`.\n" +
 				Util.b("Предустановки:") + " пока нет.\n" +
 				Util.b("Пример:") + " `=103*23`.\n" +
-				Util.b("Поддерживаемые операции:") + " `+`, `-`, `*`, `/`, `^`. Пока только с двумя операндами за одну операцию.\n" +
+				Util.b("Поддерживаемые операции:") + " `+`, `-`, `*`, `/`, `^`. " +
+				"		Пока только с двумя операндами за одну операцию.\n" +
 				Util.b("Примечание:") + " можно использовать знак `=` для активации команды.");
 	}
 
@@ -41,7 +42,7 @@ public class CalcCommand extends Command {
 		System.out.println(operators);
 
 		if (operands.size() < 2) {
-			message.getChannel().sendMessage("Ниасилил, слишкам многа букав.");
+			message.getChannel().sendMessage("не могу такое, я всё ещё учусь.");
 			return;
 		}
 		double operand1 = Double.parseDouble(operands.get(0));
