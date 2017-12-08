@@ -13,7 +13,6 @@ public class ScannerPlayerSummaries extends Scanner {
 		String sMethod = "GetPlayerSummaries";
 		String sVersion = "v0002";
 		baseQuery = Config.BASE_URL + "/" + sInterface + "/" + sMethod + "/" + sVersion + "/?key=" + Config.getSteamWebApiKey() + "&steamids=";
-		steamidCount = 100;
 	}
 
 	protected void scan() {
@@ -22,11 +21,11 @@ public class ScannerPlayerSummaries extends Scanner {
 
 		StringBuilder steamids;
 
-		for (long i = 0; i < range; i += steamidCount) {
+		for (long i = 0; i < range; i += 100) {
 			steamids = new StringBuilder();
 			parser.setTime();
 
-			for (long id = i; id < i + steamidCount; id++) steamids.append(",").append(starts + id);
+			for (long id = i; id < i + 100; id++) steamids.append(",").append(starts + id);
 			String s = steamids.substring(1);
 			String sStarts = s.substring(0, 17);
 			String sEnds = s.substring(s.length() - 17, s.length());
@@ -35,15 +34,15 @@ public class ScannerPlayerSummaries extends Scanner {
 
 			response = httpClient.connect(baseQuery + steamids);
 			if (response == null) {
-				i -= steamidCount;
+				i -= 100;
 				continue;
 			}
 			if (!parser.parse(response, null)) {
-				i -= steamidCount;
+				i -= 100;
 				continue;
 			}
 			System.out.println(" \\ " + parser.getElapsed() + " ms");
-			Config.addTotalScanned(steamidCount);
+			Config.addTotalScanned(100);
 		}
 	}
 }

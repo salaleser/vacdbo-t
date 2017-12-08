@@ -1,12 +1,12 @@
 package ru.salaleser.vacdbot;
 
 import java.io.*;
-import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Util {
-	public static final long MIN_STEAMID64 = 76561197960265729L;
-	public static final long MAX_STEAMID64 = 76561202255233023L;
+	public static final long FIRST_STEAMID64 = 76561197960265729L;
+	public static final long LAST_STEAMID64 = 76561202255233023L;
 
 	/**
 	 * Проверяет аргумент на соответствие числу
@@ -15,9 +15,7 @@ public class Util {
 	 * @return true, если строка успешно прошла проверку, false — если нет
 	 */
 	public static boolean isNumeric(String string) {
-		return string.matches("\\d+") &&
-				string.length() < 10 &&
-				Integer.parseInt(string) > 0;
+		return string.matches("\\d+") && string.length() < 10 && Integer.parseInt(string) > 0;
 	}
 
 	/**
@@ -27,10 +25,9 @@ public class Util {
 	 * @return true, если строка успешно прошла проверку, false — если нет
 	 */
 	public static boolean isSteamID64(String string) {
-		return string.length() == 17 &&
-				string.matches("\\d+") &&
-				Long.parseLong(string) > MIN_STEAMID64 &&
-				Long.parseLong(string) < MAX_STEAMID64;
+		return string.length() == 17 && string.matches("\\d+") &&
+				Long.parseLong(string) > FIRST_STEAMID64 &&
+				Long.parseLong(string) < LAST_STEAMID64;
 	}
 
 	/**
@@ -66,32 +63,8 @@ public class Util {
 	 */
 	public static String getSteamidByDiscordUser(String discordid) {
 		discordid = discordid.replaceAll("[<@!>]", "");
-		String table = "ids";
-		String sql = "SELECT steamid FROM " + table + " WHERE discordid = \'" + discordid + "\'";
-		Connection connection = null;
-		Statement statement = null;
-		String steamid = null;
-		try {
-			Class.forName(Config.getDBDriver());
-			connection = DriverManager.getConnection(Config.getDBUrl(), Config.getDBLogin(), Config.getDBPassword());
-			connection.setAutoCommit(false);
-			statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
-			while (resultSet.next()) {
-				steamid = resultSet.getString("steamid");
-			}
-		} catch (SQLException | ClassNotFoundException e) {
-			Logger.error("Ошибка чтения из базы данных: " + e.getMessage());
-		} finally {
-			try {
-				if (statement != null) statement.close();
-				if (connection != null) connection.close();
-			} catch (SQLException e) {
-				Logger.error("Cannot close connection");
-			}
-		}
-		if (steamid == null) return "ноунейм какой-то";
-		return steamid;
+		String sql = "SELECT steamid FROM ids WHERE discordid = \'" + discordid + "\'";
+		return DBHelper.executeQuery(sql)[0][0];
 	}
 
 	/**
@@ -145,19 +118,100 @@ public class Util {
 		return rub + "," + kop + "₽";
 	}
 
+	public static String makeTable(String table, String[] columnNames, String[][] data) {
+		//сначала выясню какая колонка самая широкая:
+		//получаю названия колонок в массив:
+		StringBuilder columnNamesBuilder = new StringBuilder();
+		if (!columnNames[0].equals("*")) {
+			columnNamesBuilder.append(" AND column_name = '").append(columnNames[0]).append("'");
+			for (int i = 1; i < columnNames.length; i++) {
+				columnNamesBuilder.append(" OR column_name = '").append(columnNames[i]).append("'");
+			}
+		}
+		String sql = "SELECT column_name FROM information_schema.columns" +
+				" WHERE information_schema.columns.table_name = '" + table + "'" + columnNamesBuilder;
+		String[][] colNames = DBHelper.executeQuery(sql);
+		//заполняю массив lengths длинами названий колонок:
+		int[] lengths = new int[colNames.length];
+		for (int i = 0; i < colNames.length; i++) {
+			String query = "SELECT LENGTH(CAST(" + colNames[i][0] + " AS TEXT)) FROM " + table +
+					" WHERE " + colNames[i][0] + " IS NOT NULL ORDER BY length DESC";
+			lengths[i] = Integer.parseInt(DBHelper.executeQuery(query)[0][0]);
+		}
+
+		StringBuilder rowBuilder = new StringBuilder();
+
+		int size = data[0].length;
+		//первый ряд таблицы (верхняя граница):
+		for (int i = 0; i < size; i++) {
+			if (i == 0) rowBuilder.append("┌");
+			else rowBuilder.append("┬");
+			rowBuilder.append(dublicate("─", lengths[i] - 1));
+		}
+		rowBuilder.append("┐\n");
+
+		//названия столбцов таблицы:
+		for (int i = 0; i < size; i++) {
+			String colName = colNames[i][0];
+			if (colNames[i][0].length() > lengths[i]) colName = colNames[i][0].substring(0, lengths[i] - 1) + "…";
+			rowBuilder.append("│").append(addSpaces(colName, lengths[i]));
+		}
+		rowBuilder.append("│\n");
+
+		//первый ряд таблицы (средняя граница):
+		for (int i = 0; i < size; i++) {
+			if (i == 0) rowBuilder.append("├");
+			else rowBuilder.append("┼");
+			rowBuilder.append(dublicate("─", lengths[i] - 1));
+		}
+		rowBuilder.append("┤\n");
+
+		// TODO: 01.12.2017 продолжить извращаться с таблицей
+		for (String[] row : data) {
+			rowBuilder.append("│");
+			for (int i = 0; i < row.length; i++) {
+				if (row[i] == null) rowBuilder.append(addSpaces("NULL", lengths[i])).append("│");
+				else if (row[i].equals("t")) rowBuilder.append(addSpaces("TRUE", lengths[i])).append("│");
+				else if (row[i].equals("f")) rowBuilder.append(addSpaces("FALSE", lengths[i])).append("│");
+				else rowBuilder.append(addSpaces(row[i], lengths[i])).append("│");
+			}
+			rowBuilder.append("\n");
+		}
+
+		for (int i = 0; i < size; i++) {
+			if (i == 0) rowBuilder.append("└");
+			else rowBuilder.append("┴");
+			rowBuilder.append(dublicate("─", lengths[i] - 1));
+		}
+		rowBuilder.append("┘\n");
+
+		return block(rowBuilder.toString());
+	}
+
 	/**
 	 * Добавляет пробелы к слову, чтобы таблица в дискорде выглядела красиво
 	 *
-	 * @param string исходная строка
+	 * @param element исходная строка
 	 * @return строка с добавленными пробелами
 	 */
-	public static String addSpaces(String string) {
-		int columnWidth = 12;
-		int spacesToAdd = columnWidth - string.length();
-		if (spacesToAdd < 0) return string;
-		StringBuilder stringBuilder = new StringBuilder(string);
+	private static String addSpaces(String element, int columnWidth) {
+		int spacesToAdd = columnWidth - element.length();
+		if (spacesToAdd < 0) return element;
+		StringBuilder stringBuilder = new StringBuilder(element);
 		for (int i = 0; i < spacesToAdd; i++) stringBuilder.append(" ");
 		return stringBuilder.toString();
+	}
+
+	private static String dublicate(String character, int times) {
+		StringBuilder stringBuilder = new StringBuilder(character);
+		for (int i = 0; i < times; i++) stringBuilder.append(character);
+		return stringBuilder.toString();
+	}
+
+	static String getQMarks(int number) {
+		StringBuilder qMarks = new StringBuilder();
+		for (int i = 0; i < number; i++) qMarks.append(",?");
+		return qMarks.substring(1);
 	}
 
 	// Методы для упрощения форматирования текста в дискорде:

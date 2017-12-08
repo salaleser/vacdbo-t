@@ -13,7 +13,6 @@ public class ScannerOwnedGames extends Scanner {
 		String sMethod = "GetOwnedGames";
 		String sVersion = "v0001";
 		baseQuery = Config.BASE_URL + "/" + sInterface + "/" + sMethod + "/" + sVersion + "/?key=" + Config.getSteamWebApiKey() + "&steamid=";
-		steamidCount = 1;
 	}
 
 	protected void scan() {
@@ -24,7 +23,7 @@ public class ScannerOwnedGames extends Scanner {
 			String id = String.valueOf(starts + i);
 			parser.setTime();
 
-			System.out.print("Поток " + space() + thread + " => Сканирую SteamID: " + id + " | ");
+			System.out.print("Поток " + thread + " => Сканирую SteamID: " + id + " | ");
 
 			if (parser.isExists("player_summaries", id)) {
 				response = httpClient.connect(baseQuery + id);
@@ -40,7 +39,7 @@ public class ScannerOwnedGames extends Scanner {
 				System.out.println("SteamID не существует");
 			}
 			System.out.println(" \\ " + parser.getElapsed() + " ms");
-			Config.addTotalScanned(steamidCount);
+			Config.addTotalScanned(1);
 		}
 	}
 }

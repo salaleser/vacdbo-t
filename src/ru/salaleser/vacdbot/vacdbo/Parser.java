@@ -76,8 +76,12 @@ public abstract class Parser {
 		}
 	}
 
-	public abstract boolean insert();
+	public boolean insert() {
+		return false;
+	};
 
-	public abstract boolean update();
+	public boolean update() {
+		return false;
+	};
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

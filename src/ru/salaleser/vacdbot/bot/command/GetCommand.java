@@ -20,26 +20,21 @@ public class GetCommand extends Command {
 
 	@Override
 	public void handle(IMessage message, String[] args) {
-		if (args.length == 0) {
-			message.reply(" аргументы не заданы!");
-			return;
-		}
 		String table = "settings";
-		String name = args[0];
+		String name = "%";
 		String key = "%";
+		if (args.length > 0) name = args[0];
 		if (args.length == 2) key = args[1];
 
-		String sql = "SELECT * FROM " + table + " WHERE command = '" + name + "' AND key LIKE '" + key + "'";
-		ArrayList<String[]> settings = DBHelper.executeQuery(sql);
-		StringBuilder settingsBuilder = new StringBuilder();
-		if (!Bot.getCommandManager().commands.containsKey(name)) settingsBuilder.append("Команда не поддерживается!");
-		else if (settings.isEmpty()) settingsBuilder.append("У команды нет настроек!");
-		for (String[] row : settings) {
-			settingsBuilder.append("│");
-			for (String element : row) settingsBuilder.append(Util.addSpaces(element)).append("│");
-			settingsBuilder.append("\n");
+		String sql = "SELECT * FROM " + table + " WHERE command LIKE '" + name + "' AND key LIKE '" + key + "'";
+		String[][] data = DBHelper.executeQuery(sql);
+
+		if (args.length > 0 && !Bot.getCommandManager().commands.containsKey(name)) {
+			message.reply(" команда не поддерживается!");
+		} else if (data[0][0].isEmpty()) {
+			message.reply(" у команды нет настроек!");
 		}
-		message.getChannel().sendMessage(Util.block(settingsBuilder.toString()));
+		message.getChannel().sendMessage(Util.makeTable(table, new String[] {"*"}, data));
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

@@ -41,7 +41,6 @@ public class TimerCommand extends Command {
 			message.getChannel().changeTopic(channelTopic);
 			message.getClient().changePlayingText(Bot.status);
 			message.reply("Время истекло!");
-			message.getChannel().sendMessage("--airhorn");
 		});
 		thread.start();
 	}

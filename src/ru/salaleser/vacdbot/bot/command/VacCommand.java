@@ -2,6 +2,7 @@ package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.*;
 import ru.salaleser.vacdbot.bot.Bot;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.net.SocketTimeoutException;
@@ -25,9 +26,8 @@ public class VacCommand extends Command {
 	@Override
 	public void handle(IMessage message, String[] args) {
 		//defaults:
-		String steamid = Util
-				.getSteamidByDiscordUser(message.getAuthor().getStringID());
-		System.out.println(message.getAuthor().getStringID());
+		IChannel channel = message.getChannel();
+		String steamid = Util.getSteamidByDiscordUser(message.getAuthor().getStringID());
 		int days = 1;
 
 		if (args.length > 0) {
@@ -49,9 +49,9 @@ public class VacCommand extends Command {
 			message.reply(Util.b("аргументы не заданы") + " (проверяю баны друзей salaleser'а за сегодня)");
 		}
 
-		String name = steamid;
+		String name = message.getAuthor().getName();
 		message.getChannel().sendMessage("Проверяю " +
-				"друзей " + name + "'а...");
+				"друзей " + name + "...");
 		StringBuilder jsonFriends = httpClient.connect("http://api.steampowered.com/" +
 				"ISteamUser/GetFriendList/v0001/" + "?key=" + Config.getSteamWebApiKey() + "&steamid=" +
 				steamid + "&relationship=friend");
@@ -92,9 +92,9 @@ public class VacCommand extends Command {
 		}
 
 		if (lastOnesNumber > 0) {
-			Bot.channelKTOGeneral.sendMessage(String.valueOf(bMessage)); //fixme hardcode повтор кода
+			channel.sendMessage(String.valueOf(bMessage)); //fixme hardcode повтор кода
 		} else {
-			Bot.channelKTOGeneral.sendMessage(Util.b("Забаненных друзей " + name + " за последние " + days + " д" + Util.ending(days) + " нет. Пока нет..."));
+			channel.sendMessage(Util.b("Забаненных друзей " + name + " за последние " + days + " д" + Util.ending(days) + " нет. Пока нет..."));
 		}
 	}
 }

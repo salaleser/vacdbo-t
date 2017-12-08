@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="salaleser">
     <words>
+      <w>colstoupdate</w>
       <w>communitybanned</w>
       <w>coplay</w>
       <w>coplayer</w>
@@ -8,10 +9,14 @@
       <w>dayssincelastban</w>
       <w>economyban</w>
       <w>emoji</w>
+      <w>notreadycols</w>
       <w>numberofgamebans</w>
       <w>numberofvacbans</w>
+      <w>preparedstatement</w>
+      <w>readycols</w>
       <w>recentgames</w>
       <w>splitted</w>
+      <w>timeupdated</w>
       <w>vacbanned</w>
     </words>
   </dictionary>

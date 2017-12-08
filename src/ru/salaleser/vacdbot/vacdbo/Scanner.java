@@ -4,7 +4,7 @@ import ru.salaleser.vacdbot.HttpClient;
 
 import javax.swing.*;
 
-abstract class Scanner extends SwingWorker<Integer, String> {
+public abstract class Scanner {
 
 	/**
 	 * Примеры запросов:
@@ -20,7 +20,6 @@ abstract class Scanner extends SwingWorker<Integer, String> {
 	StringBuilder response;
 	long starts, range;
 	int thread;
-	int steamidCount;
 
 	Scanner(long starts, long range, int thread) {
 		this.starts = starts;
@@ -30,23 +29,14 @@ abstract class Scanner extends SwingWorker<Integer, String> {
 
 	protected abstract void scan();
 
+	/**
+	 * добавляет ноль перед одноразрядным числом потоков
+	 *
+	 * @return ничего не добавляет если номер потока двузначный
+	 */
 	String space() {
 		if (thread < 10) return "0";
 		else return "";
-	}
-
-	@Override
-	protected Integer doInBackground() throws Exception {
-		if (!isCancelled()) {
-			scan();
-		}
-		return 0;
-	}
-
-	@Override
-	protected void done() {
-		if (isCancelled()) System.out.println("\nПоток " + space() + thread + " => Сканирование отменено");
-		else System.out.println("\nПоток " + space() + thread + " => Сканирование завершено. Всего ");
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

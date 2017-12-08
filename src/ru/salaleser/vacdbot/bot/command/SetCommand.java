@@ -17,16 +17,18 @@ public class SetCommand extends Command {
 
 	@Override
 	public void handle(IMessage message, String[] args) {
+		// FIXME: 30.11.17 при установке несуществующего параметра возвращает true (есть мнение, что это не баг, а фича)
+		String table = "settings";
 		if (args.length != 3) {
 			message.reply(" неправильный синтаксис.");
 			return;
 		}
-		String name = args[0];
-		String key = args[1];
-		String value = args[2];
 
-		// FIXME: 30.11.17 при установке несуществующего параметра возвращает true (есть мнение, что это не баг, а фича)
-		if (DBHelper.setSettings(name, key, value)) message.reply(" параметр установлен успешно.");
+		//частный случай для DBHelper.update(), пока так удобней:
+		String sql = "UPDATE " + table + " SET value = ? WHERE command = ? AND key = ?";
+		String[] newArgs = new String[] {args[2], args[0], args[1]};
+
+		if (DBHelper.commit(table, sql, newArgs)) message.reply(" параметр установлен успешно.");
 		else message.reply(" параметр не установлен.");
 	}
 }

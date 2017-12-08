@@ -58,8 +58,8 @@ class VACDBA {
 	private static void start(String method) {
 		threads = 20;
 		scanners = new Scanner[threads];
-		long starts = Util.MIN_STEAMID64;
-		long ends = Util.MAX_STEAMID64;
+		long starts = Util.FIRST_STEAMID64;
+		long ends = Util.LAST_STEAMID64;
 		long range = ends - starts;
 		long part = range / threads;
 
