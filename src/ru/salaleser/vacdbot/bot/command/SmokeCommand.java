@@ -5,7 +5,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SmokeCommand extends Command {
 
 	public SmokeCommand() {
-		super("smoke", "**Описание:** Показывает смоки на карте.\n" +
+		super("smoke", 3, "**Описание:** Показывает смоки на карте.\n" +
 				"**Использование:** `~smoke [<название_карты>]`.\n" +
 				"**Предустановки:** `~smoke nuke` - смоки на ньюке.\n" +
 				"**Пример:** `~smoke nuke`.\n" +

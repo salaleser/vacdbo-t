@@ -12,7 +12,7 @@ public class CalcCommand extends Command {
 	private ArrayList<Character> operators = new ArrayList<>();
 
 	public CalcCommand() {
-		super("calc", "" +
+		super("calc", 999, "" +
 				Util.b("Описание:") + " Производит нехитрые манипуляции с числами.\n" +
 				Util.b("Использование:") + " `~calc <операнд1><оператор><операнд2>`.\n" +
 				Util.b("Предустановки:") + " пока нет.\n" +

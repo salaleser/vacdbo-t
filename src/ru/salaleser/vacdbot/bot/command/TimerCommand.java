@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class TimerCommand extends Command {
 
 	public TimerCommand() {
-		super("timer", "" +
+		super("timer", 3, "" +
 				Util.b("Описание:") + " По истечении времени проигрывает звук.\n" +
 				Util.b("Использование:") + " `~timer [<время_в_минутах>]`.\n" +
 				Util.b("Предустановки:") + " `~timer` — устанавливает таймер на 5 минут.\n" +
@@ -20,7 +20,7 @@ public class TimerCommand extends Command {
 	@Override
 	public void handle(IMessage message, String[] args) {
 		String channelTopic = message.getChannel().getTopic();
-		int timer = 5;
+		int timer = 5; // TODO: 10.12.2017 брать из базы
 		if (args.length == 1) timer = Integer.parseInt(args[0]);
 		int finalTimer = timer;
 		message.getChannel().sendMessage(Util.i("Таймер установлен на " +

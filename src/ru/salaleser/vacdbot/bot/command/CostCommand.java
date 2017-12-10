@@ -22,7 +22,7 @@ public class CostCommand extends Command {
 	private ParserInventory parserInventory = new ParserInventory();
 
 	public CostCommand() {
-		super("cost", "Стомость шмоток и игр на акке.");
+		super("cost", 999, "Стомость шмоток и игр на акке.");
 	}
 
 	@Override

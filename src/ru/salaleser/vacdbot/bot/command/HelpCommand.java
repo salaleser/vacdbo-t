@@ -10,7 +10,7 @@ public class HelpCommand extends Command {
 	private final CommandManager commandManager;
 
 	public HelpCommand(CommandManager manager) {
-		super("help", "" +
+		super("help", 999, "" +
 				Util.b("Описание:") + " Показывает как пользоваться командами.\n" +
 				Util.b("Использование:") + " `~help [<команда>]`.\n" +
 				Util.b("Предустановки:") + " `~help` — покажет все доступные команды.\n" +

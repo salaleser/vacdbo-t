@@ -6,7 +6,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class ServerCommand extends Command {
 
 	public ServerCommand() {
-		super("server", "даёт ссылку на сервер");
+		super("server", 3, "даёт ссылку на сервер");
 	}
 
 	@Override

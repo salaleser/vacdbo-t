@@ -34,7 +34,7 @@ public class RepCommand extends Command {
 	private static Document document;
 
 	public RepCommand() {
-		super("rep", "**Описание:** Считает репутацию по странной формуле.\n" +
+		super("rep", 999, "**Описание:** Считает репутацию по странной формуле.\n" +
 				"**Использование:** `~rep [<SteamID64>].`\n" +
 				"**Предустановки:** `~rep` — считает репутацию salaleser.\n" +
 				"**Пример:** `~rep 76561198095972970`.\n" +

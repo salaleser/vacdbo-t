@@ -14,7 +14,7 @@ import java.util.Set;
 public class FindCommand extends Command {
 
 	public FindCommand() {
-		super("find", "" +
+		super("find", 999, "" +
 				Util.b("Описание:") + " Возвращает четыре первые ссылки по запросу.\n" +
 				Util.b("Использование:") + " `~find <поисковый_запрос>`.\n" +
 				Util.b("Предустановки:") + " нет.\n" +

@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class PollCommand extends Command {
 
 	public PollCommand() {
-		super("poll", "" +
+		super("poll", 3, "" +
 				Util.b("Описание:") + " Создаёт голосование.\n" +
 				Util.b("Использование:") + " `~poll [<вопрос>?[<вариант_ответа>/[<вариант_ответа>]]]`.\n" +
 				Util.b("Предустановки:") + " `~poll` — голосование с рандомным вопросом;\n" +

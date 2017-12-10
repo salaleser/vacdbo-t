@@ -6,7 +6,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class ConsoleCommand extends Command {
 
 	public ConsoleCommand() {
-		super("console", "" +
+		super("console", 999, "" +
 				Util.b("Описание:") + " Показывает полезные консольные команды.\n" +
 				Util.b("Использование:") + " `~console`.\n" +
 				Util.b("Предустановки:") + " нет.\n" +

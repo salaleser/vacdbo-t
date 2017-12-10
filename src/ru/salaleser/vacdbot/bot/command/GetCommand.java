@@ -6,11 +6,12 @@ import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class GetCommand extends Command {
 
 	public GetCommand() {
-		super("get", "" +
+		super("get", 2, "" +
 				Util.b("Описание:") + " Возвращает значения параметров команд.\n" +
 				Util.b("Использование:") + " `~get <команда>`.\n" +
 				Util.b("Предустановки:") + " нет.\n" +
@@ -20,6 +21,15 @@ public class GetCommand extends Command {
 
 	@Override
 	public void handle(IMessage message, String[] args) {
+		if (args.length == 1 && args[0].equals("permissions")) {
+			StringBuilder stringBuilder = new StringBuilder();
+			ArrayList<Command> commands = new ArrayList<>();
+			for (Map.Entry e : Bot.getCommandManager().commands.entrySet()) commands.add((Command) e.getValue());
+			for (Command c : commands) stringBuilder.append(c.name).append(" — ").append(c.permissions).append("\n");
+			message.getChannel().sendMessage(Util.block(stringBuilder.toString()));
+			return;
+		}
+
 		String table = "settings";
 		String name = "%";
 		String key = "%";

@@ -8,7 +8,7 @@ import sx.blah.discord.handle.obj.IUser;
 public class IdCommand extends Command {
 
 	public IdCommand() {
-		super("id", "" +
+		super("id", 2, "" +
 				Util.b("Описание:") + " Возвращает ID.\n" +
 				Util.b("Использование:") + " `~id [<ID_пользователя_Discord>]`.\n" +
 				Util.b("Предустановки:") + " `~id` — возвращает SteamID64 автора сообщения.\n" +

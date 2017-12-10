@@ -7,9 +7,9 @@ import sx.blah.discord.handle.obj.IMessage;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Snitch {
+class Snitch {
 
-	public void snitch(IMessage message) throws InterruptedException {
+	void snitch(IMessage message) throws InterruptedException {
 		String content = message.getContent().toLowerCase();
 		IChannel channel = message.getChannel();
 

@@ -63,7 +63,7 @@ public class Util {
 	 */
 	public static String getSteamidByDiscordUser(String discordid) {
 		discordid = discordid.replaceAll("[<@!>]", "");
-		String sql = "SELECT steamid FROM ids WHERE discordid = \'" + discordid + "\'";
+		String sql = "SELECT steamid FROM ids WHERE discordid = '" + discordid + "'";
 		return DBHelper.executeQuery(sql)[0][0];
 	}
 
@@ -136,7 +136,11 @@ public class Util {
 		for (int i = 0; i < colNames.length; i++) {
 			String query = "SELECT LENGTH(CAST(" + colNames[i][0] + " AS TEXT)) FROM " + table +
 					" WHERE " + colNames[i][0] + " IS NOT NULL ORDER BY length DESC";
-			lengths[i] = Integer.parseInt(DBHelper.executeQuery(query)[0][0]);
+			try {
+				lengths[i] = Integer.parseInt(DBHelper.executeQuery(query)[0][0]);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				lengths[i] = 4;
+			}
 		}
 
 		StringBuilder rowBuilder = new StringBuilder();
@@ -212,6 +216,12 @@ public class Util {
 		StringBuilder qMarks = new StringBuilder();
 		for (int i = 0; i < number; i++) qMarks.append(",?");
 		return qMarks.substring(1);
+	}
+
+	public static int getPriority(String id) {
+		String steamid = getSteamidByDiscordUser(id);
+		String sql = "SELECT priority FROM ids WHERE steamid = '" + steamid + "'";
+		return Integer.parseInt(DBHelper.executeQuery(sql)[0][0]);
 	}
 
 	// Методы для упрощения форматирования текста в дискорде:

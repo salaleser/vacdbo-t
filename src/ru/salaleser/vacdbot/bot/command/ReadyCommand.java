@@ -25,7 +25,7 @@ public class ReadyCommand extends Command {
 	private StringBuilder notReadyBuilder;
 
 	public ReadyCommand() {
-		super("ready", "" + Util.b("Описание:") + " Оповещает тиммейтов о готовности к игре " +
+		super("ready", 3, "" + Util.b("Описание:") + " Оповещает тиммейтов о готовности к игре " +
 						"или занятости.\n" +
 				Util.b("Использование:") + " `~ready [<примечание>]`.\n" +
 				Util.b("Предустановки:") + " `~ready` — оповещает обладателей указанной роли о" +

@@ -7,7 +7,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SetCommand extends Command {
 
 	public SetCommand() {
-		super("set", "" +
+		super("set", 2, "" +
 				Util.b("Описание:") + " Устанавливает параметры командам.\n" +
 				Util.b("Использование:") + " `~set <команда> <параметр> <значение>`.\n" +
 				Util.b("Предустановки:") + " нет.\n" +

@@ -21,7 +21,7 @@ public class ReportCommand extends Command {
 	private StringBuilder resultBuilder = new StringBuilder();
 
 	public ReportCommand() {
-		super("report", "" +
+		super("report", 2, "" +
 				Util.b("Описание:") + " Добавляет подозрительный профиль в базу данных и позволяет отслеживать" +
 						"получение банов.\n" +
 				Util.b("Использование:") + " `~report [<SteamID64> [<описание>]]`.\n" +

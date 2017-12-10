@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class TransCommand extends Command {
 
 	public TransCommand() {
-		super("trans", "" +
+		super("trans", 999, "" +
 				Util.b("Описание:") + " Перевод слова с сайта http://wooordhunt.ru.\n" +
 				Util.b("Использование:") + " `~trans <русское_слово | английское_слово>`.\n" +
 				Util.b("Предустановки:") + " нет.\n" +

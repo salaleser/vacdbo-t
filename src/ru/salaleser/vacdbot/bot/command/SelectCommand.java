@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class SelectCommand extends Command {
 
 	public SelectCommand() {
-		super("select", "" +
+		super("select", 2, "" +
 				Util.b("Описание:") + " Запрашивает БД.\n" +
 				Util.b("Использование:") + " не надо ее использовать.\n" +
 				Util.b("Предустановки:") + " нет.\n" +

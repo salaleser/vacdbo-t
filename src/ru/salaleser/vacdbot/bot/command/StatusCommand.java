@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StatusCommand extends Command {
 
 	public StatusCommand() {
-		super("status", "**Описание:** Устанавливает боту статус.\n" +
+		super("status", 3, "**Описание:** Устанавливает боту статус.\n" +
 				"**Использование:** `~status [<ваш_остроумный_статус>]`.\n" +
 				"**Предустановки:** `~status` — гениальный статус для бота и в чат с сайта statusi.com.ru;\n" +
 				"`~status bot` — немного информации о боте;\n" +

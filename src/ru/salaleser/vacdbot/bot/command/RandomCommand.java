@@ -21,7 +21,7 @@ public class RandomCommand extends Command {
 	};
 
 	public RandomCommand() {
-		super("random", "" +
+		super("random", 999, "" +
 				Util.b("Описание:") + " Генерирует случайное число.\n" +
 				Util.b("Использование:") + " `~random [<диапазон>]`.\n" +
 				Util.b("Предустановки:") + " `~random` - генерация случайного числа от 1 до 6;" +

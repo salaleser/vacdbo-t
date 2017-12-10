@@ -10,7 +10,7 @@ import ru.salaleser.vacdbot.vacdbo.Scanner;
 public class ScanCommand extends Command {
 
 	public ScanCommand() {
-		super("scan", "Сканер читеров.");
+		super("scan", 1, "Сканер читеров.");
 	}
 
 	@Override
