@@ -28,12 +28,12 @@ class Scheduler {
 		everyday18.set(Calendar.MILLISECOND, 0);
 
 		Timer time = new Timer();
-		CheckSuspectsTask checkSuspectsTask = new CheckSuspectsTask();
-		InviteToVoiceChatTask inviteToVoiceChatTask = new InviteToVoiceChatTask();
+		CheckSuspectsTask checkSuspects = new CheckSuspectsTask();
+		InviteToVoiceChatTask inviteToVoiceChat = new InviteToVoiceChatTask();
 		SDTDFreeSlotCheckerTask sdtdFreeSlotCheckerTask = new SDTDFreeSlotCheckerTask();
 
-		time.schedule(checkSuspectsTask, everyday20.getTime(), TimeUnit.HOURS.toMillis(8));
-		time.schedule(inviteToVoiceChatTask, everyday18.getTime(), TimeUnit.MINUTES.toMillis(20));
+		time.schedule(checkSuspects, everyday20.getTime(), TimeUnit.HOURS.toMillis(8));
+		time.schedule(inviteToVoiceChat, everyday18.getTime(), TimeUnit.MINUTES.toMillis(20));
 //		time.schedule(sdtdFreeSlotCheckerTask, 5000, TimeUnit.HOURS.toMillis(10));
 	}
 }

@@ -85,7 +85,7 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new ReportCommand());
 		COMMAND_MANAGER.addCommand(new ServerCommand());
 		COMMAND_MANAGER.addCommand(new StatusCommand());
-		//		COMMAND_MANAGER.addCommand(new TipCommand());
+		COMMAND_MANAGER.addCommand(new TipCommand());
 		COMMAND_MANAGER.addCommand(new VacCommand());
 		COMMAND_MANAGER.addCommand(new SmokeCommand());
 		COMMAND_MANAGER.addCommand(new QuitCommand());
@@ -99,6 +99,8 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new ClearCommand());
 		COMMAND_MANAGER.addCommand(new ScanCommand());
 		COMMAND_MANAGER.addCommand(new SelectCommand());
+		COMMAND_MANAGER.addCommand(new CheckCommand());
+		System.out.println(getCommandManager().commands);
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

@@ -11,7 +11,7 @@ public class TipCommand extends Command {
 			"Не покупай петуха"};
 
 	public TipCommand() {
-		super("tip", 999, "Про типс от Лёхи всеведающего");
+		super("tip");
 	}
 
 	@Override

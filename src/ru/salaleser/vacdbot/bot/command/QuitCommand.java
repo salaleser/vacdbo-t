@@ -5,11 +5,19 @@ import sx.blah.discord.handle.obj.IMessage;
 public class QuitCommand extends Command {
 
 	public QuitCommand() {
-		super("quit", 1, "**Описание:** Выключает бота.\n" +
-				"**Использование:** `~quit`.\n" +
-				"**Предустановки:** нет.\n" +
-				"**Пример:** `~quit`.\n" +
-				"**Примечание:** команда для отладки, не используйте её.");
+		super("quit", new String[]{"exit"}, 1);
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Выключает бота.",
+				"`~quit`.",
+				"нет.",
+				"`~quit`.",
+				"команда для отладки, не используйте её."
+				)
+		);
 	}
 
 	@Override

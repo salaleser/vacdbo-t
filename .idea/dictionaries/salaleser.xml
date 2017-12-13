@@ -2,6 +2,11 @@
   <dictionary name="salaleser">
     <words>
       <w>adjs</w>
+      <w>aliales</w>
+      <w>alltalk</w>
+      <w>assaultsuit</w>
+      <w>bombfind</w>
+      <w>clearhinthistory</w>
       <w>colstoupdate</w>
       <w>communitybanned</w>
       <w>coplay</w>
@@ -10,17 +15,33 @@
       <w>dayssincelastban</w>
       <w>economyban</w>
       <w>emoji</w>
+      <w>flashbang</w>
+      <w>hashmap</w>
+      <w>hegrenade</w>
+      <w>incgrenade</w>
+      <w>noaliases</w>
+      <w>nohelp</w>
       <w>notreadycols</w>
       <w>numberofgamebans</w>
       <w>numberofvacbans</w>
+      <w>numplayers</w>
       <w>preparedstatement</w>
+      <w>rasmus</w>
+      <w>rcon</w>
       <w>readycols</w>
       <w>recentgames</w>
+      <w>showimpacts</w>
+      <w>smokegrenade</w>
       <w>splitted</w>
       <w>statusi</w>
+      <w>sublists</w>
       <w>timeupdated</w>
       <w>vacbanned</w>
+      <w>warmup</w>
+      <w>warmuptime</w>
+      <w>wooordhunt</w>
       <w>wordlist</w>
+      <w>yanica</w>
     </words>
   </dictionary>
 </component>

@@ -21,13 +21,19 @@ public class ReportCommand extends Command {
 	private StringBuilder resultBuilder = new StringBuilder();
 
 	public ReportCommand() {
-		super("report", 2, "" +
-				Util.b("Описание:") + " Добавляет подозрительный профиль в базу данных и позволяет отслеживать" +
-						"получение банов.\n" +
-				Util.b("Использование:") + " `~report [<SteamID64> [<описание>]]`.\n" +
-				Util.b("Предустановки:") + " `~report` — проверяет наличие банов у подозреваемых.\n" +
-				Util.b("Пример:") + " `~report 76561198446059611 nuke подрубил на счёте 13-8 играли впятером`.\n" +
-				Util.b("Примечание:") + " можно установить количество дней.");
+		super("report", 2);
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Добавляет подозрительный профиль в базу данных и позволяет отслеживать получение банов.",
+				"`~report [<SteamID64> [<описание>]]`.",
+				"`~report` — проверяет наличие банов у подозреваемых.",
+				"`~report 76561198446059611 nuke подрубил на счёте 13-8 играли впятером`.",
+				"можно установить количество дней."
+				)
+		);
 	}
 
 	@Override

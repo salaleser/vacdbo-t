@@ -11,12 +11,19 @@ import java.util.Map;
 public class GetCommand extends Command {
 
 	public GetCommand() {
-		super("get", 2, "" +
-				Util.b("Описание:") + " Возвращает значения параметров команд.\n" +
-				Util.b("Использование:") + " `~get <команда>`.\n" +
-				Util.b("Предустановки:") + " нет.\n" +
-				Util.b("Пример:") + " `~get poll`.\n" +
-				Util.b("Примечание:") + " ничего особенного.");
+		super("get", 2);
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Возвращает значения параметров команд.",
+				"`~get <команда>`.",
+				"нет.",
+				"`~get poll`.",
+				"ничего особенного."
+				)
+		);
 	}
 
 	@Override

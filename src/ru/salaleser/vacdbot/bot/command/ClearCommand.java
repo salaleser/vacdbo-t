@@ -18,12 +18,19 @@ public class ClearCommand extends Command {
 	private ArrayList<IMessage> dump = new ArrayList<>();
 
 	public ClearCommand() {
-		super("clear", 2, "" +
-				Util.b("Описание:") + " Удаляет сообщения.\n" +
-				Util.b("Использование:") + " `~clear <Discord_ID> <количество_соощений> [<условие>]`.\n" +
-				Util.b("Предустановки:") + " нет.\n" +
-				Util.b("Пример:") + " `~clear @salaleser 3 `.\n" +
-				Util.b("Примечание:") + " условие задаётся регулярным выражением.");
+		super("clear", new String[]{"c", "del", "remove"}, 2);
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Удаляет сообщения.",
+				"`~clear [<Discord_ID>] [<количество_соощений>] [<условие>]`.",
+				"нет.",
+				"`~clear @salaleser 10 \\u007e.*`.",
+				"условие задаётся регулярным выражением."
+				)
+		);
 	}
 
 	@Override
@@ -36,7 +43,7 @@ public class ClearCommand extends Command {
 		if (args.length != 0) {
 			if (args[0].equals("yes")) {
 				message.getClient().changePlayingText("удаляю сообщения");
-				IMessage m = message.getChannel().sendMessage(Util.i("Удаляю " + (dump.size() - 1) + " сообщений..."));
+				IMessage m = message.getChannel().sendMessage(Util.i("Удаляю " + (dump.size() - 2) + " сообщений..."));
 				dump.add(m);
 				message.delete();
 				for (IMessage msg : dump) {
@@ -88,7 +95,7 @@ public class ClearCommand extends Command {
 					"максимально допустимое (2000 символов)"));
 			dump.add(0, errorMessage);
 		} finally {
-			IMessage finalMessage = message.getChannel().sendMessage("Хотите удалить все " + dump.size() +
+			IMessage finalMessage = message.getChannel().sendMessage("Хотите удалить все " + (dump.size() - 1) +
 					" сообщений? Для подтверждения наберите `~clear yes`");
 			dump.add(0, finalMessage);
 		}

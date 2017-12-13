@@ -9,12 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class TimerCommand extends Command {
 
 	public TimerCommand() {
-		super("timer", 3, "" +
-				Util.b("Описание:") + " По истечении времени проигрывает звук.\n" +
-				Util.b("Использование:") + " `~timer [<время_в_минутах>]`.\n" +
-				Util.b("Предустановки:") + " `~timer` — устанавливает таймер на 5 минут.\n" +
-				Util.b("Пример:") + " `~timer 20`.\n" +
-				Util.b("Примечание:") + " таймер как таймер.");
+		super("timer", new String[]{"t"}, 3);
 	}
 
 	@Override

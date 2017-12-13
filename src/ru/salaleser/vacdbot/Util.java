@@ -1,7 +1,6 @@
 package ru.salaleser.vacdbot;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Util {
@@ -78,8 +77,7 @@ public class Util {
 	 *             будет key, а спарава — value; если false, то наоборот)
 	 * @return hashmap из ключей и значений, считанных из filename
 	 */
-	public static HashMap<String, String> storeToHashMapFromFile(
-			String filename, String separator, boolean swap) {
+	static HashMap<String, String> storeToHashMapFromFile(String filename, String separator, boolean swap) {
 		File file = new File(filename);
 		HashMap<String, String> hashMap = new HashMap<>();
 		try {
@@ -100,7 +98,7 @@ public class Util {
 	}
 
 	public static String decode(String unicoded) {
-		byte[] utf8Bytes = new byte[0];
+		byte[] utf8Bytes;
 		try {
 			utf8Bytes = unicoded.getBytes("UTF8");
 			return new String(utf8Bytes, "UTF8");

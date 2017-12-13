@@ -14,12 +14,19 @@ import java.util.Set;
 public class FindCommand extends Command {
 
 	public FindCommand() {
-		super("find", 999, "" +
-				Util.b("Описание:") + " Возвращает четыре первые ссылки по запросу.\n" +
-				Util.b("Использование:") + " `~find <поисковый_запрос>`.\n" +
-				Util.b("Предустановки:") + " нет.\n" +
-				Util.b("Пример:") + " `~find как похудеть`.\n" +
-				Util.b("Примечание:") + " ничего особенного.");
+		super("find");
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.reply(buildHelp(
+				"Возвращает четыре первые ссылки по запросу.",
+				"`~find <поисковый_запрос>`.",
+				"нет.",
+				"`~find как похудеть`.",
+				"ничего особенного."
+				)
+		);
 	}
 
 	@Override

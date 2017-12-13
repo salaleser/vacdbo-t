@@ -21,13 +21,20 @@ public class RandomCommand extends Command {
 	};
 
 	public RandomCommand() {
-		super("random", 999, "" +
-				Util.b("Описание:") + " Генерирует случайное число.\n" +
-				Util.b("Использование:") + " `~random [<диапазон>]`.\n" +
-				Util.b("Предустановки:") + " `~random` - генерация случайного числа от 1 до 6;" +
-				"`~random map [<число_карт>]` - выдача случайной карты (можно указать количество карт).\n" +
-				Util.b("Пример:") + " `~random 20`, `~random map 4`.\n" +
-				Util.b("Примечание:") + " допустимые значения для чисел от 1 до 9999.");
+		super("random");
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Генерирует случайное число.",
+				"`~random [<диапазон>]`.",
+				"`~random` - генерация случайного числа от 1 до 6;\n" +
+						"`~random map [<число_карт>]` - выдача случайной карты (можно указать количество карт).",
+				"`~random 20`, `~random map 4`.",
+				"допустимые значения для чисел от 1 до 9999."
+				)
+		);
 	}
 
 	@Override

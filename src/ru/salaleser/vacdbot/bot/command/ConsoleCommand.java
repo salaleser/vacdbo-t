@@ -6,12 +6,19 @@ import sx.blah.discord.handle.obj.IMessage;
 public class ConsoleCommand extends Command {
 
 	public ConsoleCommand() {
-		super("console", 999, "" +
-				Util.b("Описание:") + " Показывает полезные консольные команды.\n" +
-				Util.b("Использование:") + " `~console`.\n" +
-				Util.b("Предустановки:") + " нет.\n" +
-				Util.b("Пример:") + " `~console`.\n" +
-				Util.b("Примечание:") + " ничего особенного.");
+		super("console");
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Показывает полезные консольные команды.",
+				"`~console`.",
+				"нет.",
+				"`~console`.",
+				"ничего особенного."
+				)
+		);
 	}
 
 	@Override

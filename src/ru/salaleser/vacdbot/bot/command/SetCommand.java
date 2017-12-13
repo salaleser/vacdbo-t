@@ -7,12 +7,19 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SetCommand extends Command {
 
 	public SetCommand() {
-		super("set", 2, "" +
-				Util.b("Описание:") + " Устанавливает параметры командам.\n" +
-				Util.b("Использование:") + " `~set <команда> <параметр> <значение>`.\n" +
-				Util.b("Предустановки:") + " нет.\n" +
-				Util.b("Пример:") + " `~set poll countdown 15`.\n" +
-				Util.b("Примечание:") + " используйте с умом.");
+		super("set", 2);
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Устанавливает параметры командам.",
+				"`~set <команда> <параметр> <значение>`.",
+				"нет.",
+				"`~set poll countdown 15`.",
+				"используйте с умом, ибо можно прострелить себе ногу случайно этой командой."
+				)
+		);
 	}
 
 	@Override

@@ -34,11 +34,19 @@ public class RepCommand extends Command {
 	private static Document document;
 
 	public RepCommand() {
-		super("rep", 999, "**Описание:** Считает репутацию по странной формуле.\n" +
-				"**Использование:** `~rep [<SteamID64>].`\n" +
-				"**Предустановки:** `~rep` — считает репутацию salaleser.\n" +
-				"**Пример:** `~rep 76561198095972970`.\n" +
-				"**Примечание:** SteamID64 должен быть возможным.");
+		super("rep");
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Считает репутацию по странной формуле.",
+				"`~rep [<SteamID64>]`.",
+				"`~rep` — считает репутацию salaleser.",
+				"`~rep 76561198095972970`.",
+				"в разработке."
+				)
+		);
 	}
 
 	@Override

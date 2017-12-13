@@ -12,12 +12,21 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StatusCommand extends Command {
 
 	public StatusCommand() {
-		super("status", 3, "**Описание:** Устанавливает боту статус.\n" +
-				"**Использование:** `~status [<ваш_остроумный_статус>]`.\n" +
-				"**Предустановки:** `~status` — гениальный статус для бота и в чат с сайта statusi.com.ru;\n" +
-				"`~status bot` — немного информации о боте;\n" +
-				"`~status КТО` — бонус.\n" +
-				"**Пример:** `~status Понедельник - это не день недели, а состояние души....`.\n");
+		super("status", 3);
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Устанавливает боту статус.",
+				"`~status [<ваш_остроумный_статус>]`.",
+				"`~status` — гениальный статус для бота и в чат с сайта statusi.com.ru;\n" +
+						"`~status bot` — немного информации о боте;\n" +
+						"`~status КТО` — пасхалочка.",
+				"`~status Понедельник - это не день недели, а состояние души....`.",
+				"нет."
+				)
+		);
 	}
 
 	@Override

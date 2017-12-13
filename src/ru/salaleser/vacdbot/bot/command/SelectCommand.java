@@ -14,12 +14,19 @@ import java.util.concurrent.TimeUnit;
 public class SelectCommand extends Command {
 
 	public SelectCommand() {
-		super("select", 2, "" +
-				Util.b("Описание:") + " Запрашивает БД.\n" +
-				Util.b("Использование:") + " не надо ее использовать.\n" +
-				Util.b("Предустановки:") + " нет.\n" +
-				Util.b("Пример:") + " нет.\n" +
-				Util.b("Примечание:") + " добавлена для отладки.");
+		super("select", 2);
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"SELECT в БД бота.",
+				"не надо ее использовать.",
+				"не скажу.",
+				"не покажу.",
+				"добавлена для отладки."
+				)
+		);
 	}
 
 	@Override

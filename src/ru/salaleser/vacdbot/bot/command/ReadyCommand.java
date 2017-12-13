@@ -25,15 +25,21 @@ public class ReadyCommand extends Command {
 	private StringBuilder notReadyBuilder;
 
 	public ReadyCommand() {
-		super("ready", 3, "" + Util.b("Описание:") + " Оповещает тиммейтов о готовности к игре " +
-						"или занятости.\n" +
-				Util.b("Использование:") + " `~ready [<примечание>]`.\n" +
-				Util.b("Предустановки:") + " `~ready` — оповещает обладателей указанной роли о" +
-						" готовности к игре;\n" +
-						"`~ready remove` — удаляет из базы данных на сегодня;" +
-						"`~ready not` — заносит в список занятых.\n" +
-				Util.b("Пример:") + " `~ready сегодня играю до трех ночи`, " +
-						"`~ready две катки на трейне заверните`.");
+		super("ready", new String[]{"r"}, 3);
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Оповещает тиммейтов о готовности к игре или занятости.",
+				"`~ready [<примечание>]`.",
+				"`~ready` — оповещает обладателей указанной роли о готовности к игре;\n" +
+						"`~ready remove` — удаляет из базы данных на сегодня;\n" +
+						"`~ready not` — заносит в список занятых.",
+				"`~ready сегодня играю до трех ночи`, `~ready две катки на трейне заверните`.",
+				"нет."
+				)
+		);
 	}
 
 	@Override

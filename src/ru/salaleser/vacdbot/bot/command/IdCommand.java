@@ -8,11 +8,19 @@ import sx.blah.discord.handle.obj.IUser;
 public class IdCommand extends Command {
 
 	public IdCommand() {
-		super("id", 2, "" +
-				Util.b("Описание:") + " Возвращает ID.\n" +
-				Util.b("Использование:") + " `~id [<ID_пользователя_Discord>]`.\n" +
-				Util.b("Предустановки:") + " `~id` — возвращает SteamID64 автора сообщения.\n" +
-				Util.b("Пример:") + " `~id @salaleser`.");
+		super("id", 2);
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Возвращает ID.",
+				"`~id [<ID_пользователя_Discord>]`.",
+				"`~id` — возвращает SteamID64 автора сообщения.",
+				"`~id @salaleser`.",
+				"нет."
+				)
+		);
 	}
 
 	@Override

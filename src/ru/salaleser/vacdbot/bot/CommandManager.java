@@ -9,10 +9,11 @@ import sx.blah.discord.util.RateLimitException;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class CommandManager {
 
-	public HashMap<String, Command> commands;
+	public HashMap<String, Command> commands; // fixme это не должно быть паблик!
 
 	CommandManager() {
 		this.commands = new HashMap<>();
@@ -20,6 +21,7 @@ public class CommandManager {
 
 	void addCommand(Command command) {
 		commands.put(command.name, command);
+		for (String alias : command.aliases) commands.put(alias, command);
 	}
 
 	public Command getCommand(String commandsKey) {
@@ -40,7 +42,8 @@ public class CommandManager {
 		}
 		Logger.info("Получил команду " + command.name + ".");
 
-		if (Util.getPriority(message.getAuthor().getStringID()) > command.permissions) {
+		int priority = Util.getPriority(message.getAuthor().getStringID());
+		if (command.permissions != 0 && priority > command.permissions) {
 			message.reply("Вы не обладаете достаточными правами для использования " + command.name + "!");
 			return;
 		}

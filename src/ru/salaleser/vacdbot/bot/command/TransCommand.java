@@ -19,13 +19,19 @@ import java.util.ArrayList;
 public class TransCommand extends Command {
 
 	public TransCommand() {
-		super("trans", 999, "" +
-				Util.b("Описание:") + " Перевод слова с сайта http://wooordhunt.ru.\n" +
-				Util.b("Использование:") + " `~trans <русское_слово | английское_слово>`.\n" +
-				Util.b("Предустановки:") + " нет.\n" +
-				Util.b("Пример:") + " `~trans constellation`, `~trans кисломолочный`.\n" +
-				Util.b("Примечание:") + " пока перевод только одного слова с русского" +
-				" на английский и обратно.");
+		super("trans");
+	}
+
+	@Override
+	public void help(IMessage message) {
+		message.getChannel().sendMessage(buildHelp(
+				"Перевод слова с сайта http://wooordhunt.ru.",
+				"`~trans <русское_слово | английское_слово>`.",
+				"нет.",
+				"`~trans constellation`, `~trans кисломолочный`.",
+				"пока перевод только одного слова с русского на английский и обратно."
+				)
+		);
 	}
 
 	@Override
