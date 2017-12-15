@@ -100,7 +100,8 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new ScanCommand());
 		COMMAND_MANAGER.addCommand(new SelectCommand());
 		COMMAND_MANAGER.addCommand(new CheckCommand());
-		System.out.println(getCommandManager().commands);
+		COMMAND_MANAGER.addCommand(new InviteCommand());
+		COMMAND_MANAGER.addCommand(new TaskCommand());
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

@@ -41,7 +41,7 @@ public class ClearCommand extends Command {
 		String regexp = null;
 		int index = 0;
 		if (args.length != 0) {
-			if (args[0].equals("yes")) {
+			if (args[0].equals("yes") || args[0].equals("y")) {
 				message.getClient().changePlayingText("удаляю сообщения");
 				IMessage m = message.getChannel().sendMessage(Util.i("Удаляю " + (dump.size() - 2) + " сообщений..."));
 				dump.add(m);

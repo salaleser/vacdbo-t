@@ -7,8 +7,6 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.obj.IGuild;
 
-import java.util.ArrayList;
-
 public class AnnotationListener {
 
 	@EventSubscriber
