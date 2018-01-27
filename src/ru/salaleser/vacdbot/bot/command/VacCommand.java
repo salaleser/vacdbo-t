@@ -1,11 +1,9 @@
 package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.*;
-import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,8 +79,8 @@ public class VacCommand extends Command {
 					"ISteamUser/GetPlayerBans/v1/?key=" + Config.getSteamWebApiKey() + "&steamids=" +
 					hundredsOfSteamIDs.get(i));
 			if (jsonBans == null) {
-				message.getChannel().sendMessage("*Ошибка HTTP-соединения на *" + i +
-						"*-ой итерации! Повторяю запрос...*");
+				message.getChannel().sendMessage(Util.i("Ошибка HTTP-соединения на " + (i + 1) +
+						"-ой итерации! Повторяю запрос..."));
 				i--;
 			} else {
 				cheaters = parserBans.parse(jsonBans);

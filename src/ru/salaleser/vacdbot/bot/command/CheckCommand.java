@@ -2,13 +2,9 @@ package ru.salaleser.vacdbot.bot.command;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import ru.salaleser.vacdbot.HttpClient;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Parser7DTDServer;
 import ru.salaleser.vacdbot.Util;
-import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.IOException;

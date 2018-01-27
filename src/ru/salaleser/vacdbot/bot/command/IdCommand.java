@@ -37,5 +37,10 @@ public class IdCommand extends Command {
 		String steamid = Util.getSteamidByDiscordUser(discordid);
 		message.getChannel().sendMessage("SteamID64 " + username + ": " + steamid);
 	}
+
+	public void update() {
+		//здесь хотел добавить возможность обновлять таблицу профилей из дискорда,
+		//но что-то не сильно это и надо как мне показалось чуть позже
+	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

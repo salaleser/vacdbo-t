@@ -89,16 +89,18 @@ public class DBHelper {
 	 * @return true если операция завершена успешно
 	 */
 	public static boolean update(String table, String[] args) {
+		String[][] colNames = Util.getColNames(table, new String[]{"*"});
 		StringBuilder sqlBuilder = new StringBuilder("UPDATE " + table + " SET ");
-		for (int i = 0; i < args.length; i++) {
-			if (i == 0) sqlBuilder.append(args[1]).append(" = ? ");
-			else sqlBuilder.append(", ").append(args[i + 1]).append(" = ? ");
-		}
-		sqlBuilder.append("WHERE ").append(args[0]).append(" = ? ");
+		for (int i = 1; i < colNames.length; i++) sqlBuilder.append(colNames[i][0]).append(" = ?, ");
+		sqlBuilder.delete(sqlBuilder.length() - 2, sqlBuilder.length() - 1);
+		sqlBuilder.append("WHERE ").append(colNames[0][0]).append(" = ? ");
 		//первый элемент вставляю последним:
-		String[] newArgs = Arrays.copyOfRange(args, 1, args.length - 1);
-		newArgs[newArgs.length - 1] = args[0];
-
+		//только так умею, листом все меняю местами:
+		ArrayList<String> newArgsList = new ArrayList<>();
+		newArgsList.addAll(Arrays.asList(args).subList(1, args.length));
+		newArgsList.add(args[0]);
+		//...и кастую обратно в массив:
+		String[] newArgs = newArgsList.toArray(new String[newArgsList.size()]);
 		return commit(table, sqlBuilder.toString(), newArgs);
 	}
 
@@ -111,15 +113,20 @@ public class DBHelper {
 			connection.setAutoCommit(false);
 			statement = connection.prepareStatement(sql);
 			//если args[]=null значит операция DELETE, иначе — INSERT или UPDATE:
-			// TODO: 08.12.2017 нахрен эти листы массивов! все надо переделать в обычные двумерные массивы
 			if (args != null) {
 				//выясняю тип данных в таблице:
 				String getDataTypesQuery = "SELECT data_type FROM information_schema.columns" +
 						" WHERE information_schema.columns.table_name = '" + table + "'";
 				String[][] dataTypes = DBHelper.executeQuery(getDataTypesQuery);
+				ArrayList<String> dataTypesList = new ArrayList<>();
+				for (String[] dataType : dataTypes) dataTypesList.add(dataType[0]);
+				if (sql.startsWith("UPDATE")) {
+					dataTypesList.add(dataTypesList.get(0));
+					dataTypesList.remove(0);
+				}
 				//кастую в тип данных из таблицы:
 				for (int i = 0; i < args.length; i++) {
-					switch (dataTypes[i][0]) {
+					switch (dataTypesList.get(i)) {
 						case "boolean":
 							statement.setBoolean(i + 1, Boolean.valueOf(args[i]));
 							break;

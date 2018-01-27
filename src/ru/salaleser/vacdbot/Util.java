@@ -63,7 +63,13 @@ public class Util {
 	public static String getSteamidByDiscordUser(String discordid) {
 		discordid = discordid.replaceAll("[<@!>]", "");
 		String sql = "SELECT steamid FROM ids WHERE discordid = '" + discordid + "'";
-		return DBHelper.executeQuery(sql)[0][0];
+		String steamid = "noname";
+		try {
+			steamid = DBHelper.executeQuery(sql)[0][0];
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return steamid;
 	}
 
 	/**
@@ -116,9 +122,14 @@ public class Util {
 		return rub + "," + kop + "₽";
 	}
 
-	public static String makeTable(String table, String[] columnNames, String[][] data) {
-		//сначала выясню какая колонка самая широкая:
-		//получаю названия колонок в массив:
+	/**
+	 * Возвращает названия колонок
+	 *
+	 * @param table таблица
+	 * @param columnNames названия колонок (fixme я уже сам запутался зачем это надо)
+	 * @return массив названий колонок
+	 */
+	public static String[][] getColNames(String table, String[] columnNames) {
 		StringBuilder columnNamesBuilder = new StringBuilder();
 		if (!columnNames[0].equals("*")) {
 			columnNamesBuilder.append(" AND column_name = '").append(columnNames[0]).append("'");
@@ -128,7 +139,13 @@ public class Util {
 		}
 		String sql = "SELECT column_name FROM information_schema.columns" +
 				" WHERE information_schema.columns.table_name = '" + table + "'" + columnNamesBuilder;
-		String[][] colNames = DBHelper.executeQuery(sql);
+		return DBHelper.executeQuery(sql);
+	}
+
+	public static String makeTable(String table, String[] columnNames, String[][] data) {
+		//сначала выясню какая колонка самая широкая:
+		//получаю названия колонок в массив:
+		String[][] colNames = getColNames(table, columnNames);
 		//заполняю массив lengths длинами названий колонок:
 		int[] lengths = new int[colNames.length];
 		for (int i = 0; i < colNames.length; i++) {

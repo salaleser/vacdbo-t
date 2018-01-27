@@ -29,7 +29,8 @@ public class Scheduler {
 			int hourOfDay = Integer.parseInt(task[1]);
 			int minute = Integer.parseInt(task[2]);
 			int period = Integer.parseInt(task[3]);
-			createTask(commandName, new String[]{}, hourOfDay, minute, period);
+			boolean enabled = Boolean.valueOf(task[4]);
+			if (enabled) createTask(commandName, new String[]{}, hourOfDay, minute, period);
 		}
 		return tasks;
 	}

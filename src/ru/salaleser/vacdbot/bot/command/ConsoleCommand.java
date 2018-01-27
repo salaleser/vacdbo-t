@@ -1,6 +1,5 @@
 package ru.salaleser.vacdbot.bot.command;
 
-import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class ConsoleCommand extends Command {

@@ -1,11 +1,19 @@
 package ru.salaleser.vacdbot.bot;
 
+import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
+import ru.salaleser.vacdbot.Player;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserSpeakingEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
 import sx.blah.discord.handle.obj.IGuild;
+
+import java.util.concurrent.TimeUnit;
 
 public class AnnotationListener {
 
@@ -16,8 +24,9 @@ public class AnnotationListener {
 		Bot.channelKTOLog = event.getClient().getChannelByID(377431980658393088L);
 		Bot.channelKTOTest = event.getClient().getChannelByID(347333162449502208L);
 		Bot.channelKTOGeneral = event.getClient().getChannelByID(347088817729306624L);
+		Bot.channelKTOOfficers = event.getClient().getChannelByID(347088817729306624L);
 		Bot.roleOfficers = event.getClient().getRoleByID(286563715157852180L);
-		Bot.voiceChannelGeneral = event.getClient().getVoiceChannelByID(347089107949977601L);
+		Bot.voiceChannelGeneral = event.getClient().getVoiceChannelByID(399878431287803905L);
 
 		StringBuilder guildsBuilder = new StringBuilder();
 		for (IGuild guild : event.getClient().getGuilds()) guildsBuilder.append(", ").append(guild.getName());
@@ -52,6 +61,47 @@ public class AnnotationListener {
 			Bot.getCommandManager().getCommand("calc").handle(event.getMessage(), args);
 		} else {
 			snitch.snitch(event.getMessage());
+		}
+	}
+
+	@EventSubscriber
+	public void onUserSpeaking(UserSpeakingEvent event) {
+
+	}
+
+	@EventSubscriber
+	public void onUserVoiceChannelJoin(UserVoiceChannelJoinEvent event) {
+		String isTtsEnabled = DBHelper.getValueFromSettings("options", "tts");
+		if (isTtsEnabled.equals("1")) {
+			String discordid = event.getUser().getStringID();
+			String sql = "SELECT joinsound FROM ids WHERE discordid = '" + discordid + "'";
+			String filename = DBHelper.executeQuery(sql)[0][0];
+			Player.join();
+			Player.queueFile("sounds/" + filename + ".mp3");
+		}
+	}
+
+	@EventSubscriber
+	public void onUserVoiceChannelMove(UserVoiceChannelMoveEvent event) {
+		String isTtsEnabled = DBHelper.getValueFromSettings("options", "tts");
+		if (isTtsEnabled.equals("1")) {
+			String discordid = event.getUser().getStringID();
+			String sql = "SELECT leavesound FROM ids WHERE discordid = '" + discordid + "'";
+			String filename = DBHelper.executeQuery(sql)[0][0];
+			Player.join();
+			Player.queueFile("sounds/" + filename + ".mp3");
+		}
+	}
+
+	@EventSubscriber
+	public void onUserVoiceChannelLeave(UserVoiceChannelLeaveEvent event) {
+		String isTtsEnabled = DBHelper.getValueFromSettings("options", "tts");
+		if (isTtsEnabled.equals("1")) {
+			String discordid = event.getUser().getStringID();
+			String sql = "SELECT leavesound FROM ids WHERE discordid = '" + discordid + "'";
+			String filename = DBHelper.executeQuery(sql)[0][0];
+			Player.join();
+			Player.queueFile("sounds/" + filename + ".mp3");
 		}
 	}
 }

@@ -3,8 +3,6 @@ package ru.salaleser.vacdbot.bot.command;
 import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.util.Arrays;
-
 public abstract class Command {
 
 	public static int count = 0;
@@ -59,13 +57,18 @@ public abstract class Command {
 
 	String buildHelp(String description, String usage, String presets, String example, String note) {
 		StringBuilder aliasesBuilder = new StringBuilder();
-		for (String alias : this.aliases) aliasesBuilder.append(", ").append(Util.code(alias));
-		String aliases = aliasesBuilder.substring(1) + ".";
+		String aliasesString;
+		if (this.aliases.length > 0) {
+			for (String alias : this.aliases) aliasesBuilder.append(", ").append(Util.code(alias));
+			aliasesString = aliasesBuilder.substring(1) + ".";
+		} else {
+			aliasesString = "нет.";
+		}
 		return Util.ub("Помощь к команде \"" + name + "\":") + "\n" +
 				Util.b("Описание: ") + description + "\n" +
 				Util.b("Использование: ") + usage + "\n" +
 				Util.b("Предустановки: ") + presets + "\n" +
-				Util.b("Псевдонимы: ") + aliases + "\n" +
+				Util.b("Псевдонимы: ") + aliasesString + "\n" +
 				Util.b("Пример: ") + example + "\n" +
 				Util.b("Примечание: ") + note;
 	}

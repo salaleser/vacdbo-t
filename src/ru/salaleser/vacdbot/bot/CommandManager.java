@@ -37,7 +37,7 @@ public class CommandManager {
 		String[] args = content.split(" ");
 		Command command = getCommand(args[0].toLowerCase());
 		if (command == null) { // FIXME: 17.11.2017 сделать исключение так как код повторяется. такой же блок в хелпе
-			message.reply("команда `" + args[0] + "` не поддерживается");
+			message.reply("команда " + Util.code(args[0]) + " не поддерживается");
 			return;
 		}
 		Logger.info("Получил команду " + command.name + ".");

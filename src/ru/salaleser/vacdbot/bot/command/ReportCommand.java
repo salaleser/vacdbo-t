@@ -18,7 +18,7 @@ public class ReportCommand extends Command {
 
 	private int days = 1;
 	private IChannel channel;
-	private StringBuilder resultBuilder = new StringBuilder();
+	private StringBuilder resultBuilder;
 
 	public ReportCommand() {
 		super("report", 2);
@@ -40,6 +40,7 @@ public class ReportCommand extends Command {
 	public void handle(IMessage message, String[] args) {
 		days = Integer.parseInt(DBHelper.getValueFromSettings(name, "days"));
 		channel = message.getChannel();
+		resultBuilder = new StringBuilder();
 
 		if (args.length == 0) {
 			checkSuspects();
@@ -99,6 +100,7 @@ public class ReportCommand extends Command {
 		channel.sendMessage(Util.i("Проверяю подозреваемых...") + "\n");
 		StringBuilder steamidsBuilder = new StringBuilder();
 		String[][] suspects = DBHelper.executeQuery("SELECT steamid FROM suspects");
+		//перечисляю steamid через запятую:
 		for (String[] row : suspects) steamidsBuilder.append(",").append(row[0]);
 		String steamids = steamidsBuilder.substring(1);
 

@@ -17,9 +17,11 @@ public class Bot {
 	public static IChannel channelKTOLog; // FIXME: 21.11.2017 убрать хардкод
 	public static IChannel channelKTOTest;
 	public static IChannel channelKTOGeneral;
+	public static IChannel channelKTOOfficers;
 	public static IVoiceChannel voiceChannelGeneral;
 	public static IRole roleOfficers;
 	public static String status = "твои нервы!";
+	public static final String PREFIX = "~";
 
 	public static Gui gui;
 	private static final Config CONFIG = new Config();
@@ -102,6 +104,8 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new CheckCommand());
 		COMMAND_MANAGER.addCommand(new InviteCommand());
 		COMMAND_MANAGER.addCommand(new TaskCommand());
+		COMMAND_MANAGER.addCommand(new TestCommand());
+		COMMAND_MANAGER.addCommand(new PlayCommand());
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

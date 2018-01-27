@@ -2,14 +2,12 @@ package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
-import sx.blah.discord.handle.obj.ICategory;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ReadyCommand extends Command {
@@ -52,20 +50,27 @@ public class ReadyCommand extends Command {
 		time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
 
 		//читаю пользователей из таблицы ready в строку:
-		// FIXME: 30.11.2017 фильтровать по дате
 		String sql = "SELECT date, time, id, description, isready FROM ready WHERE date = '" + date + "'";
 		String[][] ready = DBHelper.executeQuery(sql);
 		readyBuilder = new StringBuilder();
 		notReadyBuilder = new StringBuilder();
 		for (String[] row : ready) {
-			String username = Util.b(message.getClient().getUserByID(Long.parseLong(row[2])).getName());
+			IUser user = message.getClient().getUserByID(Long.parseLong(row[2]));
 			if (row[4].equals("t")) {
-				readyBuilder.append(row[0]).append(" ").append(row[1]).append(" — ").append(username).append(":");
-				if (row[3].isEmpty()) readyBuilder.append(" (сегодня я свободен)\n");
+				readyBuilder.append(row[0]).append(" ").append(row[1]).append(" — ").append(user.getName()).append(":");
+				if (row[3].isEmpty()) {
+					//лишнее условие для девочек: fixme hardcode
+					if (user.getStringID().equals("278897176271126528")) readyBuilder.append(" (сегодня я свободна)\n");
+					else readyBuilder.append(" (сегодня я свободен)\n");
+				}
 				else readyBuilder.append(row[3]).append("\n");
 			} else {
-				notReadyBuilder.append(row[0]).append(" ").append(row[1]).append(" — ").append(username).append(":");
-				if (row[3].isEmpty()) notReadyBuilder.append(" (сегодня я занят)\n");
+				notReadyBuilder.append(row[0]).append(" ").append(row[1]).append(" — ").append(user.getName()).append(":");
+				if (row[3].isEmpty()) {
+					//лишнее условие для девочек: fixme hardcode
+					if (user.getStringID().equals("278897176271126528")) notReadyBuilder.append(" (сегодня я занята)\n");
+					else notReadyBuilder.append(" (сегодня я занят)\n");
+				}
 				else notReadyBuilder.append(row[3]).append("\n");
 			}
 		}
@@ -91,7 +96,6 @@ public class ReadyCommand extends Command {
 					break;
 				case "not":
 					if (DBHelper.isAlreadyExistToday(table, "id", id, date)) {
-						// FIXME: 30.11.2017 изменить строку в базе данных, isready=false
 						alreadyExist();
 						break;
 					}

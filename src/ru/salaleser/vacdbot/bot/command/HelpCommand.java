@@ -1,6 +1,7 @@
 package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.Util;
+import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.CommandManager;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -36,12 +37,18 @@ public class HelpCommand extends Command {
 			}
 			command.help(message);
 		} else {
-			StringBuilder msg = new StringBuilder(Util.b("Поддерживаемые команды: "));
+			int priority = Util.getPriority(message.getAuthor().getStringID());
+			StringBuilder msg = new StringBuilder(Util.b("Ваш уровень доступа " + Util.u(String.valueOf(priority)) +
+					", доступные команды: "));
 			for (Map.Entry<String, Command> entry : commandManager.commands.entrySet()) {
-				msg.append(Util.code(entry.getKey())).append(", ");
+				if (entry.getValue().permissions == 0 || priority <= entry.getValue().permissions) {
+					msg.append(Util.code(entry.getKey())).append(", ");
+				}
 			}
 			//удаляет лишнюю запятую и пробел в конце:
 			msg.delete(msg.length() - 2, msg.length());
+			msg.append("\n").append("Префикс бота — ").append(Util.code(Bot.PREFIX));
+			msg.append(". Пример использования: ").append(Util.code("~help")).append(".");
 			message.getChannel().sendMessage(msg.toString());
 		}
 	}

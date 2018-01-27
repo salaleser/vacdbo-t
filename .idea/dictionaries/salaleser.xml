@@ -5,6 +5,7 @@
       <w>aliales</w>
       <w>alltalk</w>
       <w>assaultsuit</w>
+      <w>bhelper</w>
       <w>bombfind</w>
       <w>clearhinthistory</w>
       <w>colstoupdate</w>
@@ -19,8 +20,11 @@
       <w>hashmap</w>
       <w>hegrenade</w>
       <w>incgrenade</w>
+      <w>joinsound</w>
+      <w>leavesound</w>
       <w>noaliases</w>
       <w>nohelp</w>
+      <w>noname</w>
       <w>notreadycols</w>
       <w>numberofgamebans</w>
       <w>numberofvacbans</w>
