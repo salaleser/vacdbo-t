@@ -1,15 +1,8 @@
 package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.DBHelper;
-import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.MessageHistory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 public class SelectCommand extends Command {
 
