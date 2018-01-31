@@ -3,6 +3,7 @@ package ru.salaleser.vacdbot.bot;
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Player;
+import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -12,8 +13,8 @@ import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelJoinE
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
 import sx.blah.discord.handle.obj.IGuild;
-
-import java.util.concurrent.TimeUnit;
+import sx.blah.discord.util.audio.events.TrackFinishEvent;
+import sx.blah.discord.util.audio.events.TrackStartEvent;
 
 public class AnnotationListener {
 
@@ -48,14 +49,15 @@ public class AnnotationListener {
 
 	@EventSubscriber
 	public void onMessage(MessageReceivedEvent event) throws InterruptedException {
-		Logger.onMessage(event.getGuild().getName() + " / " +
-				event.getChannel().getName() + " / " +
-				event.getAuthor().getName() + ": " +
-				event.getMessage().getContent());
+		String guild = "PM";
+		if (!event.getChannel().isPrivate()) guild = event.getGuild().getName();
+		Logger.onMessage(guild + " / " + event.getChannel().getName() + " / " +
+				event.getAuthor().getName() + ": " + event.getMessage().getContent());
 		Snitch snitch = new Snitch();
 		if (event.getMessage().getContent().startsWith("~")) {
 			Bot.getCommandManager().handle(event.getMessage());
 		} else if (event.getMessage().getContent().startsWith("=")) {
+			//Этот код для альтернативного вызова команды "Calc",
 			String messageContent = event.getMessage().getContent().substring(1);
 			String[] args = messageContent.split(" ");
 			Bot.getCommandManager().getCommand("calc").handle(event.getMessage(), args);
@@ -71,38 +73,31 @@ public class AnnotationListener {
 
 	@EventSubscriber
 	public void onUserVoiceChannelJoin(UserVoiceChannelJoinEvent event) {
-		String isTtsEnabled = DBHelper.getValueFromSettings("options", "tts");
-		if (isTtsEnabled.equals("1")) {
-			String discordid = event.getUser().getStringID();
-			String sql = "SELECT joinsound FROM ids WHERE discordid = '" + discordid + "'";
-			String filename = DBHelper.executeQuery(sql)[0][0];
-			Player.join();
-			Player.queueFile("sounds/" + filename + ".mp3");
-		}
+		String enabled = DBHelper.getValueFromSettings("options", "voice");
+		if (enabled.equals("1")) Player.queueFile("sounds/" + Util.getSound(event.getUser(), "joinsound") + ".mp3");
 	}
 
 	@EventSubscriber
 	public void onUserVoiceChannelMove(UserVoiceChannelMoveEvent event) {
-		String isTtsEnabled = DBHelper.getValueFromSettings("options", "tts");
-		if (isTtsEnabled.equals("1")) {
-			String discordid = event.getUser().getStringID();
-			String sql = "SELECT leavesound FROM ids WHERE discordid = '" + discordid + "'";
-			String filename = DBHelper.executeQuery(sql)[0][0];
-			Player.join();
-			Player.queueFile("sounds/" + filename + ".mp3");
-		}
+		String enabled = DBHelper.getValueFromSettings("options", "voice");
+		if (enabled.equals("1")) Player.queueFile("sounds/" + Util.getSound(event.getUser(), "leavesound") + ".mp3");
 	}
 
 	@EventSubscriber
 	public void onUserVoiceChannelLeave(UserVoiceChannelLeaveEvent event) {
-		String isTtsEnabled = DBHelper.getValueFromSettings("options", "tts");
-		if (isTtsEnabled.equals("1")) {
-			String discordid = event.getUser().getStringID();
-			String sql = "SELECT leavesound FROM ids WHERE discordid = '" + discordid + "'";
-			String filename = DBHelper.executeQuery(sql)[0][0];
-			Player.join();
-			Player.queueFile("sounds/" + filename + ".mp3");
-		}
+		String enabled = DBHelper.getValueFromSettings("options", "voice");
+		if (enabled.equals("1")) Player.queueFile("sounds/" + Util.getSound(event.getUser(), "leavesound") + ".mp3");
+	}
+
+	//Слушатели аудиоплеера:
+	@EventSubscriber
+	public void onTrackFinish(TrackFinishEvent event) {
+		if (event.getPlayer().getPlaylistSize() == 0) Bot.guildKTO.getConnectedVoiceChannel().leave();
+	}
+
+	@EventSubscriber
+	public void onTrackStart(TrackStartEvent event) {
+
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
