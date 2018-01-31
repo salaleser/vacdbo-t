@@ -105,7 +105,12 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new InviteCommand());
 		COMMAND_MANAGER.addCommand(new TaskCommand());
 		COMMAND_MANAGER.addCommand(new TestCommand());
+		COMMAND_MANAGER.addCommand(new PlayerCommand());
 		COMMAND_MANAGER.addCommand(new PlayCommand());
+		COMMAND_MANAGER.addCommand(new StopCommand());
+		COMMAND_MANAGER.addCommand(new SkipCommand());
+		COMMAND_MANAGER.addCommand(new PauseCommand());
+		COMMAND_MANAGER.addCommand(new LeaveCommand());
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
