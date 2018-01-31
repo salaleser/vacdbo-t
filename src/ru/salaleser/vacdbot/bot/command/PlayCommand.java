@@ -1,12 +1,13 @@
 package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.Player;
+import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class PlayCommand extends Command {
 
 	public PlayCommand() {
-		super("play", new String[]{"p"});
+		super("play", new String[]{"p"}, 3);
 	}
 
 	@Override
@@ -16,8 +17,11 @@ public class PlayCommand extends Command {
 		switch (args[0].toLowerCase()) {
 			case "сн":
 			case "gn":
-				message.getChannel().sendMessage("Здесь будет " +
-						"проигрываться музыка из телепередачи \"Спокойной ночи, малыши!\"");
+				Player.queueFile("music/spyat_ustalye_igrushki.mp3");
+				break;
+			default:
+				Player.queueUrl(args[0]);
+				Bot.channelKTOTest.sendMessage("{0}{1}\\n#Test.");
 		}
 	}
 }
