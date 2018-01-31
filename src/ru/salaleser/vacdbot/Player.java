@@ -19,6 +19,7 @@ import java.net.URL;
 public class Player {
 
 	private static IVoiceChannel voiceChannel = Bot.voiceChannelGeneral;
+	private static IGuild guild = Bot.guildKTO;
 
 	public static void join() throws RateLimitException, DiscordException, MissingPermissionsException {
 		if (!voiceChannel.getModifiedPermissions(voiceChannel.getClient().getOurUser()).contains(Permissions.VOICE_CONNECT))
@@ -34,7 +35,8 @@ public class Player {
 	public static void queueUrl(String url) throws RateLimitException, DiscordException, MissingPermissionsException {
 		try {
 			URL u = new URL(url);
-			setTrackTitle(getPlayer(voiceChannel.getGuild()).queue(u), u.getFile());
+			join();
+			setTrackTitle(getPlayer(guild).queue(u), u.getFile());
 		} catch (MalformedURLException e) {
 			Logger.error("That URL is invalid!");
 		} catch (IOException e) {
@@ -52,7 +54,8 @@ public class Player {
 			Logger.error("I don't have access to that file!");
 		else {
 			try {
-				setTrackTitle(getPlayer(voiceChannel.getGuild()).queue(f), f.toString());
+				join();
+				setTrackTitle(getPlayer(guild).queue(f), f.toString());
 			} catch (IOException e) {
 				Logger.error("An IO exception occured: " + e.getMessage());
 			} catch (UnsupportedAudioFileException e) {
@@ -61,26 +64,36 @@ public class Player {
 		}
 	}
 
-	public static void pause(IChannel channel, boolean pause) {
-		getPlayer(channel.getGuild()).setPaused(pause);
+	public static void stop() {
+		getPlayer(guild).clear();
 	}
 
-	public static void skip(IChannel channel) {
-		getPlayer(channel.getGuild()).skip();
+	public static void pause() {
+		getPlayer(guild).togglePause();
+	}
+
+	public static void skip() {
+		getPlayer(guild).skip();
+	}
+
+	public static int volume() throws RateLimitException, DiscordException, MissingPermissionsException {
+		int volume = (int) (getPlayer(guild).getVolume() * 100);
+		Logger.info("Volume is " + (volume * 100) + "%.");
+		return volume;
 	}
 
 	public static void volume(int percent) throws RateLimitException, DiscordException, MissingPermissionsException {
 		volume((float) (percent) / 100);
 	}
 
-	private static void volume(Float vol) throws RateLimitException, DiscordException, MissingPermissionsException {
+	public static void volume(Float vol) throws RateLimitException, DiscordException, MissingPermissionsException {
 		if (vol > 1.5) vol = 1.5f;
 		if (vol < 0) vol = 0f;
-		getPlayer(voiceChannel.getGuild()).setVolume(vol);
+		getPlayer(guild).setVolume(vol);
 		Logger.info("Set volume to " + (int) (vol * 100) + "%.");
 	}
 
-	public static AudioPlayer getPlayer(IGuild guild) {
+	private static AudioPlayer getPlayer(IGuild guild) {
 		return AudioPlayer.getAudioPlayerForGuild(guild);
 	}
 
