@@ -1,5 +1,7 @@
 package ru.salaleser.vacdbot;
 
+import sx.blah.discord.handle.obj.IUser;
+
 import java.io.*;
 import java.util.HashMap;
 
@@ -58,7 +60,7 @@ public class Util {
 	 * Возвращает SteamID64, если такой Discord User есть в mapSteamidDiscordid
 	 *
 	 * @param discordid Discord String ID
-	 * @return  SteamID64
+	 * @return SteamID64
 	 */
 	public static String getSteamidByDiscordUser(String discordid) {
 		discordid = discordid.replaceAll("[<@!>]", "");
@@ -239,6 +241,12 @@ public class Util {
 		return Integer.parseInt(DBHelper.executeQuery(sql)[0][0]);
 	}
 
+	public static String getSound(IUser user, String column) {
+		String steamid = getSteamidByDiscordUser(user.getStringID());
+		String sql = "SELECT " + column + " FROM ids WHERE steamid = '" + steamid + "'";
+		return DBHelper.executeQuery(sql)[0][0];
+	}
+
 	// Методы для упрощения форматирования текста в дискорде:
 	public static String code(String text) {
 		return "`" + text + "`";
@@ -284,4 +292,5 @@ http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730
 
 http://api.steampowered.com/ISteamApps/GetAppList/v2
 */
+
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
