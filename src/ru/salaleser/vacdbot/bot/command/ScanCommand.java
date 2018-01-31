@@ -1,13 +1,9 @@
 package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.DBHelper;
-import ru.salaleser.vacdbot.HttpClient;
 import ru.salaleser.vacdbot.Util;
-import ru.salaleser.vacdbot.bot.Bot;
-import ru.salaleser.vacdbot.bot.CommandManager;
 import ru.salaleser.vacdbot.vacdbo.ScannerPlayerBans;
 import sx.blah.discord.handle.obj.IMessage;
-import ru.salaleser.vacdbot.vacdbo.Scanner;
 
 public class ScanCommand extends Command {
 

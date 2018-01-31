@@ -9,7 +9,6 @@ import sx.blah.discord.util.RateLimitException;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class CommandManager {
 
@@ -44,7 +43,8 @@ public class CommandManager {
 
 		int priority = Util.getPriority(message.getAuthor().getStringID());
 		if (command.permissions != 0 && priority > command.permissions) {
-			message.reply("Вы не обладаете достаточными правами для использования " + command.name + "!");
+			message.reply("Вы не обладаете достаточными правами " +
+					"для использования команды " + Util.code(command.name) + "!");
 			return;
 		}
 		//передаю управление дальше по команде:

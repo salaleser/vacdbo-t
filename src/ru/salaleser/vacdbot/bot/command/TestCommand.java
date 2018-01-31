@@ -6,29 +6,18 @@ import sx.blah.discord.handle.obj.IPrivateChannel;
 
 public class TestCommand extends Command {
 
-	IPrivateChannel privateChannel;
+	private IPrivateChannel privateChannel;
 
 	public TestCommand() {
 		super("test", new String[]{"тест"});
 	}
-
-//	@Override
-//	public void help(IMessage message) {
-//		message.getChannel().sendMessage(buildHelp(
-//				"Тестирует новичков на совместимость.",
-//				"`~test`.",
-//				"нет.",
-//				"`~test`.",
-//				"в разработке."
-//				)
-//		);
-//	}
 
 	@Override
 	public void handle(IMessage message, String[] args) throws InterruptedException {
 		privateChannel = message.getAuthor().getOrCreatePMChannel();
 		privateChannel.sendMessage("" +
 				"Вы готовы потратить 10 минут времени на то, чтобы ответить на все вопросы теста?");
+
 	}
 
 	private void ask(int number) {
