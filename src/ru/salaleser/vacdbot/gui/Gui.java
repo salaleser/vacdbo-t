@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.gui;
 
+import ru.salaleser.vacdbot.Player;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
@@ -88,7 +89,7 @@ public class Gui extends JFrame {
 		panelChannels.add(new JScrollPane(listOfChannels));
 
 		//блок пользователей:
-		JPanel panelUsers = new JPanel(new GridLayout(1, 2));
+		JPanel panelUsers = new JPanel(new GridLayout(1, 3));
 		panelUsers.setBorder(BorderFactory.createTitledBorder("Пользователи"));
 		checkBoxBots.addChangeListener(new ChangeListenerUsers());
 		checkBoxNotOfflineUsers.addChangeListener(new ChangeListenerUsers());
@@ -102,6 +103,15 @@ public class Gui extends JFrame {
 		panelUsersSettings.add(checkBoxNotOfflineUsers);
 		panelUsersSettings.add(checkBoxOfflineUsers);
 		panelUsers.add(panelUsersSettings);
+		JPanel panelVoiceChannel = new JPanel(new GridLayout(2, 1));
+		panelVoiceChannel.setBorder(BorderFactory.createTitledBorder("Голосовой канал"));
+		JButton buttonVoiceChannelJoin = new JButton("Подключиться");
+		buttonVoiceChannelJoin.addActionListener(e -> Player.join());
+		panelVoiceChannel.add(buttonVoiceChannelJoin);
+		JButton buttonVoiceChannelLeave = new JButton("Покинуть");
+		buttonVoiceChannelLeave.addActionListener(e -> Bot.guildKTO.getConnectedVoiceChannel().leave());
+		panelVoiceChannel.add(buttonVoiceChannelLeave);
+		panelUsers.add(panelVoiceChannel);
 
 		//общий блок слева:
 		JPanel panelWest = new JPanel();
