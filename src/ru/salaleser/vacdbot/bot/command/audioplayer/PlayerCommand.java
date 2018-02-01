@@ -1,8 +1,9 @@
-package ru.salaleser.vacdbot.bot.command;
+package ru.salaleser.vacdbot.bot.command.audioplayer;
 
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Player;
 import ru.salaleser.vacdbot.Util;
+import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class PlayerCommand extends Command {
