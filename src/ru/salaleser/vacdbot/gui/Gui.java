@@ -40,8 +40,6 @@ public class Gui extends JFrame {
 	private JCheckBox checkBoxNotOfflineUsers = new JCheckBox("!offline", true);
 	private JCheckBox checkBoxOfflineUsers = new JCheckBox("offline", false);
 
-	private JTextArea textAreaLog;
-
 	public Gui() {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		frame = new JFrame("Версия: " + serialVersionUID + "  Играет в " + Bot.status);
@@ -57,8 +55,11 @@ public class Gui extends JFrame {
 		panelStatus.add(labelStatus);
 
 		//блок настроек:
-		JPanel panelSettings = new JPanel(new GridLayout(2, 1));
+		JPanel panelSettings = new JPanel(new GridLayout(3, 1));
 		panelSettings.setBorder(BorderFactory.createTitledBorder("Настройки"));
+		JButton buttonOpenLog = new JButton("Показать лог");
+		buttonOpenLog.addActionListener(e -> Bot.log.setVisible(true));
+		panelSettings.add(buttonOpenLog);
 		JButton buttonOpenFile = new JButton("Открыть конфигурационный файл");
 		buttonOpenFile.addActionListener(e -> new ConfigWindow());
 		panelSettings.add(buttonOpenFile);
@@ -170,30 +171,10 @@ public class Gui extends JFrame {
 		panelEast.add(panelCommands, BorderLayout.NORTH);
 		panelEast.add(panelMessage, BorderLayout.SOUTH);
 
-		//блок лога:
-		JPanel panelLog = new JPanel(new BorderLayout());
-		panelLog.setBorder(BorderFactory.createTitledBorder("Лог"));
-		textAreaLog = new JTextArea();
-		textAreaLog.setEditable(false);
-		textAreaLog.setColumns(64);
-		JButton buttonClearLog = new JButton("Очистить");
-		JToggleButton toggleButtonWrap = new JToggleButton("Перенос слов");
-		JToggleButton toggleButtonWrapStyle = new JToggleButton("Перенос по словам");
-		buttonClearLog.addActionListener(e -> textAreaLog.setText(null));
-		toggleButtonWrap.addActionListener(e -> {
-			textAreaLog.setLineWrap(toggleButtonWrap.isSelected());
-			toggleButtonWrapStyle.setEnabled(toggleButtonWrap.isSelected());
-		});
-		toggleButtonWrapStyle.addActionListener(e -> textAreaLog.setWrapStyleWord(toggleButtonWrapStyle.isSelected()));
-		panelLog.add(buttonClearLog, BorderLayout.WEST);
-		panelLog.add(toggleButtonWrap, BorderLayout.CENTER);
-		panelLog.add(toggleButtonWrapStyle, BorderLayout.EAST);
-		panelLog.add(new JScrollPane(textAreaLog), BorderLayout.SOUTH);
-
 		frame.getContentPane().add(panelNorth, BorderLayout.PAGE_START);
 		frame.getContentPane().add(panelWest, BorderLayout.WEST);
 		frame.getContentPane().add(panelEast, BorderLayout.EAST);
-		frame.getContentPane().add(panelLog, BorderLayout.PAGE_END);
+//		frame.getContentPane().add(panelLog, BorderLayout.PAGE_END);
 
 		frame.getRootPane().setDefaultButton(buttonSendMessage);
 
@@ -223,10 +204,11 @@ public class Gui extends JFrame {
 	}
 
 	public void addText(String text, Color fg) {
-		if (textAreaLog.getText().length() != 0) textAreaLog.append("\n");
-		textAreaLog.setForeground(fg);
-		textAreaLog.append(text);
-		frame.pack();
+		Log log = Bot.log;
+		if (log.getTextAreaLog().getText().length() != 0) log.getTextAreaLog().append("\n");
+		log.getTextAreaLog().setForeground(fg);
+		log.getTextAreaLog().append(text);
+		log.pack();
 	}
 
 	private ImageIcon resizeImage(String filename) {

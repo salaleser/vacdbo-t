@@ -5,7 +5,11 @@ import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.bot.command.*;
 import ru.salaleser.vacdbot.bot.command.audioplayer.*;
+import ru.salaleser.vacdbot.bot.command.steam.*;
+import ru.salaleser.vacdbot.bot.command.support.*;
+import ru.salaleser.vacdbot.bot.command.utility.*;
 import ru.salaleser.vacdbot.gui.Gui;
+import ru.salaleser.vacdbot.gui.Log;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
@@ -25,6 +29,7 @@ public class Bot {
 	public static final String PREFIX = "~";
 
 	public static Gui gui;
+	public static Log log;
 	private static final Config CONFIG = new Config();
 	private static final String CFG = "vacdbot.cfg";
 	private static final ClientBuilder CLIENT_BUILDER = new ClientBuilder();
@@ -37,6 +42,7 @@ public class Bot {
 
 		System.out.println("Загружаю графическую оболочку...");
 		gui = new Gui();
+		log = new Log();
 		Logger.info("Графическая оболочка запущена.");
 
 		boolean isConfig = Config.readConfigFile(CFG);
