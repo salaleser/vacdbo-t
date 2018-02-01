@@ -4,6 +4,7 @@ import ru.salaleser.vacdbot.Config;
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.bot.command.*;
+import ru.salaleser.vacdbot.bot.command.audioplayer.*;
 import ru.salaleser.vacdbot.gui.Gui;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;

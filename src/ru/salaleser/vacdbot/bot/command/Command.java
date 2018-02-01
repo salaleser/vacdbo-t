@@ -12,21 +12,21 @@ public abstract class Command {
 
 	// TODO: 10.12.2017 создать универсальный способ для всех команд для определения возможных значений переменных
 
-	Command(String name) {
+	protected Command(String name) {
 		count++;
 		this.name = name;
 		this.aliases = new String[0];
 		this.permissions = 0;
 	}
 
-	Command(String name, String[] aliases) {
+	protected Command(String name, String[] aliases) {
 		count++;
 		this.name = name;
 		this.aliases = aliases;
 		this.permissions = 0;
 	}
 
-	Command(String name, int permissions) {
+	protected Command(String name, int permissions) {
 		count++;
 		this.name = name;
 		this.aliases = new String[0];
@@ -40,14 +40,14 @@ public abstract class Command {
 	 * @param aliases псевдонимы
 	 * @param permissions необходимый priority для использования команды
 	 */
-	Command(String name, String[] aliases, int permissions) {
+	protected Command(String name, String[] aliases, int permissions) {
 		count++;
 		this.name = name;
 		this.aliases = aliases;
 		this.permissions = permissions;
 	}
 
-	public void help(IMessage message) {
+	protected void help(IMessage message) {
 		message.getChannel().sendMessage(Util.ub("Помощь к команде \"" + name + "\":") + "\n" +
 				Util.i("Помощи «нигде нет». Просто слов нет. Найдем слова – сделаем помощь." +
 				" Вы держитесь здесь, вам всего доброго, хорошего настроения и здоровья."));
@@ -55,7 +55,7 @@ public abstract class Command {
 
 	public abstract void handle(IMessage message, String[] args) throws InterruptedException;
 
-	String buildHelp(String description, String usage, String presets, String example, String note) {
+	protected String buildHelp(String description, String usage, String presets, String example, String note) {
 		StringBuilder aliasesBuilder = new StringBuilder();
 		String aliasesString;
 		if (this.aliases.length > 0) {
