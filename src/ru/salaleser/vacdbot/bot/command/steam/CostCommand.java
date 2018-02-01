@@ -1,4 +1,4 @@
-package ru.salaleser.vacdbot.bot.command;
+package ru.salaleser.vacdbot.bot.command.steam;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -9,6 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.salaleser.vacdbot.*;
+import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.IOException;

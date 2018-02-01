@@ -1,6 +1,7 @@
-package ru.salaleser.vacdbot.bot.command;
+package ru.salaleser.vacdbot.bot.command.steam;
 
 import ru.salaleser.vacdbot.DBHelper;
+import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class ServerCommand extends Command {

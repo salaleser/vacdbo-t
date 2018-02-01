@@ -1,10 +1,11 @@
-package ru.salaleser.vacdbot.bot.command;
+package ru.salaleser.vacdbot.bot.command.steam;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import ru.salaleser.vacdbot.*;
+import ru.salaleser.vacdbot.bot.command.Command;
 import ru.salaleser.vacdbot.vacdbo.ParserPlayerSummaries;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;

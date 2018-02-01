@@ -1,4 +1,4 @@
-package ru.salaleser.vacdbot.bot.command;
+package ru.salaleser.vacdbot.bot.command.support;
 
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
