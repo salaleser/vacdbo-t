@@ -29,6 +29,9 @@ public class Config {
 	public static String getDBPassword() {
 		return config.get("DBPassword");
 	}
+	public static String getVoiceRssApiKey() {
+		return config.get("VoiceRssApiKey");
+	}
 
 	public static int getTotalScanned() {
 		return totalScanned;
