@@ -21,7 +21,9 @@
       <w>hegrenade</w>
       <w>incgrenade</w>
       <w>joinsound</w>
+      <w>jointts</w>
       <w>leavesound</w>
+      <w>leavetts</w>
       <w>noaliases</w>
       <w>nohelp</w>
       <w>noname</w>

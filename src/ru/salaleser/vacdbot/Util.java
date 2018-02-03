@@ -241,8 +241,8 @@ public class Util {
 		return Integer.parseInt(DBHelper.executeQuery(sql)[0][0]);
 	}
 
-	public static String getSound(IUser user, String column) {
-		String steamid = getSteamidByDiscordUser(user.getStringID());
+	public static String getSound(String discordid, String column) {
+		String steamid = getSteamidByDiscordUser(discordid);
 		String sql = "SELECT " + column + " FROM ids WHERE steamid = '" + steamid + "'";
 		return DBHelper.executeQuery(sql)[0][0];
 	}

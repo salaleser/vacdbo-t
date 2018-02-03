@@ -29,10 +29,18 @@ public class CommandManager {
 
 	public void handle(IMessage message) {
 		String content = message.getContent();
-		//если нет команды, покажу хелп хотя бы:
-		if (content.equals("~")) content = "~help";
-		//если есть, то распихать аргументы по ячейкам массива:
-		content = content.substring(1);
+		//проверю на особые алиасы:
+		switch (content.substring(0, 1)) {
+			case "=":
+				content = "calc " + content.substring(1);
+				break;
+			case "\"":
+				content = "tts " + content.substring(1);
+				break;
+			default:
+				content = content.substring(1);
+		}
+		//распихать аргументы по ячейкам массива:
 		String[] args = content.split(" ");
 		Command command = getCommand(args[0].toLowerCase());
 		if (command == null) { // FIXME: 17.11.2017 сделать исключение так как код повторяется. такой же блок в хелпе
@@ -41,6 +49,7 @@ public class CommandManager {
 		}
 		Logger.info("Получил команду " + command.name + ".");
 
+		//Проверка на право использования команды:
 		int priority = Util.getPriority(message.getAuthor().getStringID());
 		if (command.permissions != 0 && priority > command.permissions) {
 			message.reply("Вы не обладаете достаточными правами " +
@@ -53,7 +62,7 @@ public class CommandManager {
 		} catch (DiscordException e) {
 			Logger.error(e.getMessage());
 		} catch (RateLimitException e) {
-			Logger.error("RateLimitException отловлен!");
+			Logger.error("RateLimitException!");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

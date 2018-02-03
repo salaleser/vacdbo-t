@@ -118,6 +118,7 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new SkipCommand());
 		COMMAND_MANAGER.addCommand(new PauseCommand());
 		COMMAND_MANAGER.addCommand(new LeaveCommand());
+		COMMAND_MANAGER.addCommand(new TTSCommand());
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
