@@ -28,7 +28,7 @@ class Snitch {
 		for (String word : kidWordlist) {
 			if (content.contains(word)) {
 				message.addReaction("🎒");
-				message.getChannel().sendMessage("школьник detected", true);
+				message.getChannel().sendMessage("школьник detected");
 			}
 		}
 
