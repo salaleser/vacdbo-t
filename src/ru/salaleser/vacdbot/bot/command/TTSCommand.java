@@ -15,11 +15,12 @@ public class TTSCommand extends Command {
 	}
 
 	public void handle(IMessage message, String[] args) {
-		// TODO: 02.02.2018 добавить проверку на язык текста и подстановку соответствующего голоса
+		String language = Languages.Russian;
+//		if (Util.isRussian(args[0])) language = Languages.Russian;
 		String text = String.join(" ", args);
 		VoiceProvider tts = new VoiceProvider(Config.getVoiceRssApiKey());
 
-		VoiceParameters params = new VoiceParameters(text, Languages.Russian);
+		VoiceParameters params = new VoiceParameters(text, language);
 		params.setCodec(AudioCodec.WAV);
 		params.setFormat(AudioFormat.Format_44KHZ.AF_44khz_16bit_stereo);
 		params.setBase64(false);

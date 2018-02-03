@@ -41,6 +41,11 @@ public class Util {
 				string.startsWith("<@") && string.endsWith(">");
 	}
 
+	public static boolean isRussian(String string) {
+		String ruNameRegEx = "[А-ЯЁ][-А-яЁё]+";
+		return string.substring(0, 1).matches(ruNameRegEx);
+	}
+
 	/**
 	 * Возвращает правильное окончание для слова "день"
 	 *

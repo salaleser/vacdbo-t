@@ -13,7 +13,6 @@ import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelJoinE
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
 import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.audio.events.TrackFinishEvent;
 import sx.blah.discord.util.audio.events.TrackStartEvent;
 
@@ -76,28 +75,32 @@ public class AnnotationListener {
 
 	@EventSubscriber
 	public void onUserVoiceChannelJoin(UserVoiceChannelJoinEvent event) throws InterruptedException {
+		if (event.getUser().isBot()) return;
 		playsound(event.getUser().getStringID(), "join");
 	}
 
 	@EventSubscriber
 	public void onUserVoiceChannelMove(UserVoiceChannelMoveEvent event) throws InterruptedException {
+		if (event.getUser().isBot()) return;
 		playsound(event.getUser().getStringID(), "move");
 	}
 
 	@EventSubscriber
 	public void onUserVoiceChannelLeave(UserVoiceChannelLeaveEvent event) throws InterruptedException {
+		if (event.getUser().isBot()) return;
 		playsound(event.getUser().getStringID(), "leave");
 	}
 
 	private void playsound(String discordid, String event) throws InterruptedException {
-		if (Bot.guildKTO.getClient().getUserByID(Long.parseLong(discordid)).isBot()) return;
 		if (DBHelper.getValueFromSettings("options", "voice").equals("0")) return;
 		String sound = Util.getSound(discordid, event + "sound");
+		System.out.println(sound);
 		try {
 			if (!sound.isEmpty()) Player.queueFile("sounds/" + sound + ".mp3");
 		} catch (NullPointerException e) {
 			System.out.println("поймал нпе на саунде");
 			sound = Util.getSound(discordid, event + "tts");
+			System.out.println(sound);
 			try {
 				if (!sound.isEmpty()) {
 					Bot.getCommandManager().getCommand("tts").handle(null, new String[]{sound});
@@ -105,19 +108,24 @@ public class AnnotationListener {
 			} catch (NullPointerException e2) {
 				System.out.println("поймал нпе на ттс");
 				sound = Util.getSound(discordid, "name");
+				System.out.println(sound);
+				String text = "Ошибка! ";
 				switch (event) {
 					case "join":
-						event = "Пришёл ";
+						text = "Пришёл ";
 						break;
 					case "move":
-						event = "Перешёл ";
+						text = "Перешёл ";
 						break;
 					case "leave":
-						event = "Ушёл ";
+						text = "Ушёл ";
 						break;
 				}
+				System.out.println(text);
 				try {
-					Bot.getCommandManager().getCommand("tts").handle(null, new String[]{event, sound});
+					if (!sound.isEmpty()) {
+						Bot.getCommandManager().getCommand("tts").handle(null, new String[]{text, sound});
+					}
 				} catch (NullPointerException e3) {
 					System.out.println("поймал нпе на имени");
 					playsound("noname", event);
