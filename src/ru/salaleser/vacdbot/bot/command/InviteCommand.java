@@ -1,6 +1,5 @@
 package ru.salaleser.vacdbot.bot.command;
 
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.*;
 
@@ -12,18 +11,6 @@ public class InviteCommand extends Command {
 
 	public InviteCommand() {
 		super("invite", 1);
-	}
-
-	@Override
-	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Приглашает в голосовой чат.",
-				"`~invite`.",
-				"`~invite`.",
-				"`~invite`.",
-				"создан для использования в планировщике."
-				)
-		);
 	}
 
 	@Override

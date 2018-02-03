@@ -1,7 +1,6 @@
 package ru.salaleser.vacdbot.bot.command.audioplayer;
 
 import ru.salaleser.vacdbot.Player;
-import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -22,7 +21,6 @@ public class PlayCommand extends Command {
 				break;
 			default:
 				Player.queueUrl(args[0]);
-				Bot.channelKTOTest.sendMessage("{0}{1}\\n#Test.");
 		}
 	}
 }
