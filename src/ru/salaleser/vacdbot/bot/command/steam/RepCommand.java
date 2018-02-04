@@ -53,7 +53,7 @@ public class RepCommand extends Command {
 	@Override
 	public void handle(IMessage message, String[] args) throws InterruptedException {
 		String steamid = Util
-				.getSteamidByDiscordUser(message.getAuthor().getStringID());
+				.getSteamidByDiscordid(message.getAuthor().getStringID());
 		if (args.length > 0 && Util.isSteamID64(args[0])) steamid = args[0];
 		else message.reply("*ошибка в профиле*");
 
