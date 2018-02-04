@@ -17,10 +17,22 @@ public class DBHelper {
 	 *
 	 * @return значение
 	 */
-	public static String getValueFromSettings(String name, String key) {
-		String sql = "SELECT value FROM settings WHERE command = '" + name + "' AND key LIKE '" + key + "'";
-		String[][] value = executeQuery(sql);
-		return value[0][0];
+	public static String getValueFromSettings(String commandname, String key) {
+		String sql = "SELECT value FROM settings WHERE command = '" + commandname + "' AND key LIKE '" + key + "'";
+		return executeQuery(sql)[0][0];
+	}
+
+	/**
+	 * Проверяет строку value на существование в колонке column таблицы table
+	 *
+	 * @param table таблица, в которой надо проверить значение
+	 * @param column колонка в таблице, в которой содержится значение
+	 * @param value значение, которое надо проверить на существование
+	 * @return true если существует, false -- наоборот
+	 */
+	public static boolean isExist(String table, String column, String value) {
+		String sql = "SELECT " + column + " FROM " + table + " WHERE " + column + " = '" + value + "'";
+		return executeQuery(sql).length != 0;
 	}
 
 	public static boolean isAlreadyExistToday(String table, String column, String value, String date) {
