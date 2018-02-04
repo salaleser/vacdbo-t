@@ -28,7 +28,7 @@ public class CostCommand extends Command {
 
 	@Override
 	public void handle(IMessage message, String[] args) throws InterruptedException {
-		String steamid = Util.getSteamidByDiscordUser(message.getAuthor().getStringID());
+		String steamid = Util.getSteamidByDiscordid(message.getAuthor().getStringID());
 		if (args.length > 0) {
 			if (Util.isSteamID64(args[0])) {
 				steamid = args[0];
