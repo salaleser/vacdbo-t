@@ -7,13 +7,17 @@
       <w>assaultsuit</w>
       <w>bhelper</w>
       <w>bombfind</w>
+      <w>channelconnected</w>
       <w>clearhinthistory</w>
       <w>colstoupdate</w>
+      <w>commandname</w>
       <w>communitybanned</w>
       <w>coplay</w>
       <w>coplayer</w>
       <w>coplayers</w>
       <w>dayssincelastban</w>
+      <w>discordids</w>
+      <w>discrod</w>
       <w>economyban</w>
       <w>emoji</w>
       <w>flashbang</w>
@@ -31,6 +35,8 @@
       <w>numberofgamebans</w>
       <w>numberofvacbans</w>
       <w>numplayers</w>
+      <w>occured</w>
+      <w>playsound</w>
       <w>preparedstatement</w>
       <w>rasmus</w>
       <w>rcon</w>
@@ -44,6 +50,7 @@
       <w>sublists</w>
       <w>timeupdated</w>
       <w>vacbanned</w>
+      <w>volevju</w>
       <w>warmup</w>
       <w>warmuptime</w>
       <w>wooordhunt</w>

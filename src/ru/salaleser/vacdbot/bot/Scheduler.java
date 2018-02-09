@@ -1,9 +1,11 @@
 package ru.salaleser.vacdbot.bot;
 
 import ru.salaleser.vacdbot.DBHelper;
+import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Calendar;
@@ -15,10 +17,10 @@ public class Scheduler {
 
 	Scheduler() {
 		getTasks();
+		Logger.info("Планировщик запущен.");
 	}
 
 	private static Timer timer;
-	private static IChannel channel = Bot.channelKTOGeneral;
 
 	public static String[][] getTasks() {
 		timer = new Timer();
@@ -44,13 +46,15 @@ public class Scheduler {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				IMessage message = channel.sendMessage(Util.i("Запланированная задача:"));
-				try {
-					command.handle(message, args);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} finally {
-					message.delete();
+				for (IGuild guild : Bot.getGuilds()) {
+					IMessage message = guild.getDefaultChannel().sendMessage(Util.i("Запланированная задача:"));
+					try {
+						command.handle(guild, message, args);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} finally {
+						message.delete();
+					}
 				}
 			}
 		}, calendar.getTime(), TimeUnit.MINUTES.toMillis(period));

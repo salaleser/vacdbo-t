@@ -1,9 +1,7 @@
 package ru.salaleser.vacdbot.gui;
 
 import ru.salaleser.vacdbot.Player;
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
-import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -15,12 +13,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class Gui extends JFrame {
 
-	private JFrame frame;
 	public static final long serialVersionUID = 1L;
 
 	private IDiscordClient client;
@@ -42,7 +37,7 @@ public class Gui extends JFrame {
 
 	public Gui() {
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		frame = new JFrame("Версия: " + serialVersionUID + "  Играет в " + Bot.status);
+		JFrame frame = new JFrame("Версия: " + serialVersionUID + "  Играет в " + Bot.STATUS);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setContentPane(new JPanel());
 		frame.setLayout(new BorderLayout());
@@ -107,11 +102,8 @@ public class Gui extends JFrame {
 		JPanel panelVoiceChannel = new JPanel(new GridLayout(2, 1));
 		panelVoiceChannel.setBorder(BorderFactory.createTitledBorder("Голосовой канал"));
 		JButton buttonVoiceChannelJoin = new JButton("Подключиться");
-		buttonVoiceChannelJoin.addActionListener(e -> Player.join());
+		buttonVoiceChannelJoin.addActionListener(e -> Player.join(client.getGuilds().get(listOfGuilds.getSelectedIndices()[0])));
 		panelVoiceChannel.add(buttonVoiceChannelJoin);
-		JButton buttonVoiceChannelLeave = new JButton("Покинуть");
-		buttonVoiceChannelLeave.addActionListener(e -> Bot.guildKTO.getConnectedVoiceChannel().leave());
-		panelVoiceChannel.add(buttonVoiceChannelLeave);
 		panelUsers.add(panelVoiceChannel);
 
 		//общий блок слева:
@@ -120,17 +112,6 @@ public class Gui extends JFrame {
 		panelWest.add(panelServers);
 		panelWest.add(panelChannels);
 		panelWest.add(panelUsers);
-
-		//блок списка команд:
-		JPanel panelCommands = new JPanel();
-		panelCommands.setBorder(BorderFactory.createTitledBorder("Отправка команды:"));
-		JComboBox<String> commandComboBox = new JComboBox<>();
-		for (Map.Entry<String, Command> entry : Bot.getCommandManager().commands.entrySet())
-			commandComboBox.addItem("~" + entry.getKey());
-		JButton buttonCommand = new JButton("Test");
-		buttonCommand.addActionListener(e -> test((String) commandComboBox.getSelectedItem()));
-		panelCommands.add(commandComboBox);
-		panelCommands.add(buttonCommand);
 
 		//блок отправки сообщения:
 		JPanel panelMessage = new JPanel();
@@ -168,7 +149,6 @@ public class Gui extends JFrame {
 		//общий блок справа:
 		JPanel panelEast = new JPanel(new BorderLayout());
 		panelEast.setBorder(BorderFactory.createTitledBorder("Восточная панель"));
-		panelEast.add(panelCommands, BorderLayout.NORTH);
 		panelEast.add(panelMessage, BorderLayout.SOUTH);
 
 		frame.getContentPane().add(panelNorth, BorderLayout.PAGE_START);
@@ -190,16 +170,6 @@ public class Gui extends JFrame {
 					checkBoxBots.isSelected(),
 					checkBoxNotOfflineUsers.isSelected(),
 					checkBoxOfflineUsers.isSelected());
-		}
-	}
-
-	private void test(String text) {
-		Command command = Bot.getCommandManager().getCommand(text.substring(1));
-		try {
-			command.handle(Bot.channelKTOTest.sendMessage(Util.b("Тест") + Util.code(text) + ":"), new String[]{});
-			TimeUnit.MILLISECONDS.sleep(2000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
 		}
 	}
 
