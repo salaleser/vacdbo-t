@@ -3,6 +3,9 @@ package ru.salaleser.vacdbot.bot;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
@@ -27,7 +30,7 @@ public class CommandManager {
 		return commands.get(commandsKey);
 	}
 
-	public void handle(IMessage message) {
+	public void handle(IGuild guild, IMessage message) {
 		String content = message.getContent();
 		//проверю на особые алиасы:
 		switch (content.substring(0, 1)) {
@@ -58,7 +61,8 @@ public class CommandManager {
 		}
 		//передаю управление дальше по команде:
 		try {
-			command.handle(message, Arrays.copyOfRange(args, 1, args.length));
+			System.out.println(Arrays.toString(Arrays.copyOfRange(args, 1, args.length)));
+			command.handle(guild, message, Arrays.copyOfRange(args, 1, args.length));
 		} catch (DiscordException e) {
 			Logger.error(e.getMessage());
 		} catch (RateLimitException e) {

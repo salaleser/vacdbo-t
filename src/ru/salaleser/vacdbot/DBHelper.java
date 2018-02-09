@@ -54,10 +54,8 @@ public class DBHelper {
 			while (resultSet.next()) {
 				int columnCount = resultSet.getMetaData().getColumnCount();
 				String[] row = new String[columnCount];
-				for (int i = 0; i < columnCount; i++) {
-					row[i] = resultSet.getString(i + 1);
-				}
-				resultSets.add(row);
+				for (int i = 0; i < columnCount; i++) row[i] = resultSet.getString(i + 1);
+				if (!resultSet.wasNull()) resultSets.add(row);
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			Logger.error("Ошибка чтения из базы данных: " + e.getMessage());
@@ -69,9 +67,9 @@ public class DBHelper {
 				Logger.error("Cannot close connection");
 			}
 		}
-		if (resultSets.isEmpty()) return new String[0][0];
 		//ужасный отстой... этот дикий каст из листа массивов в двумерный массив пришлось сделать потому, что
 		//я не знаю как объявить массив не зная заранее его размер, поэтому я вынужден создать сначала лист fixme
+		if (resultSets.isEmpty()) return new String[][]{{null},{}};
 		String[][] resultArray = new String[resultSets.size()][resultSets.get(0).length];
 		for (int i = 0; i < resultSets.size(); i++) {
 			System.arraycopy(resultSets.get(i), 0, resultArray[i], 0, resultSets.get(i).length);

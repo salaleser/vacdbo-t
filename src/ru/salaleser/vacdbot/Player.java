@@ -1,8 +1,7 @@
 package ru.salaleser.vacdbot;
 
-import ru.salaleser.vacdbot.bot.Bot;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
@@ -18,24 +17,29 @@ import java.net.URL;
 
 public class Player {
 
-	private static IVoiceChannel voiceChannel = Bot.voiceChannelGeneral;
-	private static IGuild guild = Bot.guildKTO;
-
-	public static void join() throws RateLimitException, DiscordException, MissingPermissionsException {
-		if (!voiceChannel.getModifiedPermissions(voiceChannel.getClient().getOurUser()).contains(Permissions.VOICE_CONNECT))
+	public static void join(IGuild guild) throws RateLimitException, DiscordException, MissingPermissionsException {
+		System.out.println(guild.getName());//fixme
+		if (guild.getVoiceChannels() == null) return;
+		IVoiceChannel mainVoiceChannel = guild.getVoiceChannels().get(0);
+		for (IVoiceChannel voiceChannel : guild.getVoiceChannels()) {
+			if (voiceChannel.getConnectedUsers().size() > mainVoiceChannel.getConnectedUsers().size()) {
+				mainVoiceChannel = voiceChannel;
+			}
+		}
+		if (!mainVoiceChannel.getModifiedPermissions(mainVoiceChannel.getClient().getOurUser()).contains(Permissions.VOICE_CONNECT))
 			Logger.error("I can't join that voice channel!");
-		else if (voiceChannel.getUserLimit() != 0 && voiceChannel.getConnectedUsers().size() >= voiceChannel.getUserLimit())
+		else if (mainVoiceChannel.getUserLimit() != 0 && mainVoiceChannel.getConnectedUsers().size() >= mainVoiceChannel.getUserLimit())
 			Logger.error("That room is full!");
 		else {
-			voiceChannel.join();
-			Logger.info("Connected to " + voiceChannel.getName() + ".");
+			mainVoiceChannel.join();
+			Logger.info("Connected to " + mainVoiceChannel.getGuild().getName() + ":" + mainVoiceChannel.getName() + ".");
 		}
 	}
 
-	public static void queueUrl(String url) throws RateLimitException, DiscordException, MissingPermissionsException {
+	public static void queueUrl(IGuild guild, String url) throws RateLimitException, DiscordException, MissingPermissionsException {
 		try {
 			URL u = new URL(url);
-			join();
+			join(guild);
 			setTrackTitle(getPlayer(guild).queue(u), u.getFile());
 		} catch (MalformedURLException e) {
 			Logger.error("That URL is invalid!");
@@ -46,7 +50,7 @@ public class Player {
 		}
 	}
 
-	public static void queueFile(String file) throws RateLimitException, DiscordException, MissingPermissionsException {
+	public static void queueFile(IGuild guild, String file) throws RateLimitException, DiscordException, MissingPermissionsException {
 		File f = new File(file);
 		if (!f.exists())
 			Logger.error("That file doesn't exist!");
@@ -54,7 +58,7 @@ public class Player {
 			Logger.error("I don't have access to that file!");
 		else {
 			try {
-				join();
+				join(guild);
 				setTrackTitle(getPlayer(guild).queue(f), f.toString());
 			} catch (IOException e) {
 				Logger.error("An IO exception occured: " + e.getMessage());
@@ -64,19 +68,19 @@ public class Player {
 		}
 	}
 
-	public static void stop() {
+	public static void stop(IGuild guild) {
 		getPlayer(guild).clear();
 	}
 
-	public static void pause() {
+	public static void pause(IGuild guild) {
 		getPlayer(guild).togglePause();
 	}
 
-	public static void skip() {
+	public static void skip(IGuild guild) {
 		getPlayer(guild).skip();
 	}
 
-	public static int volume() throws RateLimitException, DiscordException, MissingPermissionsException {
+	public static int volume(IGuild guild) throws RateLimitException, DiscordException, MissingPermissionsException {
 		int volume = (int) (getPlayer(guild).getVolume() * 100);
 		Logger.info("Volume is " + (volume * 100) + "%.");
 		return volume;
@@ -86,10 +90,10 @@ public class Player {
 		volume((float) (percent) / 100);
 	}
 
-	public static void volume(Float vol) throws RateLimitException, DiscordException, MissingPermissionsException {
+	private static void volume(Float vol) throws RateLimitException, DiscordException, MissingPermissionsException {
 		if (vol > 1.5) vol = 1.5f;
 		if (vol < 0) vol = 0f;
-		getPlayer(guild).setVolume(vol);
+//		getPlayer(guild).setVolume(vol);
 		Logger.info("Set volume to " + (int) (vol * 100) + "%.");
 	}
 

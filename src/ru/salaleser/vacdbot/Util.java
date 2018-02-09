@@ -1,9 +1,11 @@
 package ru.salaleser.vacdbot;
 
+import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 
 public class Util {
 	public static final long FIRST_STEAMID64 = 76561197960265729L;
@@ -67,16 +69,33 @@ public class Util {
 	 * @param discordid Discord String ID
 	 * @return SteamID64
 	 */
-	public static String getSteamidByDiscordUser(String discordid) {
+	public static String getSteamidByDiscordid(String discordid) {
 		discordid = discordid.replaceAll("[<@!>]", "");
-		String sql = "SELECT steamid FROM ids WHERE discordid = '" + discordid + "'";
-		String steamid = "noname";
-		try {
-			steamid = DBHelper.executeQuery(sql)[0][0];
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		if (!DBHelper.isExist("users", "discordid", discordid)) refreshUsers();
+		String sql = "SELECT steamid FROM users WHERE discordid = '" + discordid + "'";
+		String steamid = DBHelper.executeQuery(sql)[0][0];
+		if (steamid == null || !Util.isSteamID64(steamid)) steamid = "noname";
 		return steamid;
+	}
+
+	public static String getDiscordidBySteamid(String steamid) {
+		if (!DBHelper.isExist("users", "steamid", steamid)) return "noname";
+		String sql = "SELECT discordid FROM users WHERE steamid = '" + steamid + "'";
+		return DBHelper.executeQuery(sql)[0][0];
+	}
+
+	public static int refreshUsers() {
+		List<IUser> users = Bot.getClient().getUsers();
+		String table = "users";
+		int counter = 0;
+		for (IUser user : users) {
+			if (!DBHelper.isExist(table, "discordid", user.getStringID())) {
+				if (DBHelper.insert(table, new String[]{null, user.getStringID()})) {
+					counter++;
+				}
+			}
+		}
+		return counter;
 	}
 
 	/**
@@ -240,15 +259,15 @@ public class Util {
 		return qMarks.substring(1);
 	}
 
-	public static int getPriority(String id) {
-		String steamid = getSteamidByDiscordUser(id);
-		String sql = "SELECT priority FROM ids WHERE steamid = '" + steamid + "'";
+	public static int getPriority(String discordid) {
+		String steamid = getSteamidByDiscordid(discordid);
+		String sql = "SELECT priority FROM users WHERE steamid = '" + steamid + "'";
 		return Integer.parseInt(DBHelper.executeQuery(sql)[0][0]);
 	}
 
 	public static String getSound(String discordid, String column) {
-		String steamid = getSteamidByDiscordUser(discordid);
-		String sql = "SELECT " + column + " FROM ids WHERE steamid = '" + steamid + "'";
+		String steamid = getSteamidByDiscordid(discordid);
+		String sql = "SELECT " + column + " FROM users WHERE steamid = '" + steamid + "'";
 		return DBHelper.executeQuery(sql)[0][0];
 	}
 

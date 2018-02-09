@@ -16,16 +16,30 @@ import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.DiscordException;
 
+import java.util.ArrayList;
+
 public class Bot {
 
-	public static IGuild guildKTO;
-	public static IChannel channelKTOLog; // FIXME: 21.11.2017 убрать хардкод
-	public static IChannel channelKTOTest;
-	public static IChannel channelKTOGeneral;
-	public static IChannel channelKTOOfficers;
-	public static IVoiceChannel voiceChannelGeneral;
-	public static IRole roleOfficers;
-	public static String status = "твои нервы!";
+	private static ArrayList<IGuild> guilds = new ArrayList<>();
+	public static ArrayList<IGuild> getGuilds() {
+		return guilds;
+	}
+	public static void setGuilds(ArrayList<IGuild> guilds) {
+		Bot.guilds = guilds;
+	}
+	public static void addGuild(IGuild guild) {
+		Bot.guilds.add(guild);
+	}
+
+	private static IDiscordClient client;
+	public static void setClient(IDiscordClient client) {
+		Bot.client = client;
+	}
+	public static IDiscordClient getClient() {
+		return client;
+	}
+
+	public static final String STATUS = "твои нервы!";
 	public static final String PREFIX = "~";
 
 	public static Gui gui;
@@ -51,7 +65,7 @@ public class Bot {
 		IDiscordClient client = login(isConfig);
 		if (client != null) {
 			EventDispatcher dispatcher = client.getDispatcher();
-			dispatcher.registerListener(new AnnotationListener());
+			dispatcher.registerListener(new Listener());
 		}
 		new DBHelper();
 	}
@@ -83,7 +97,7 @@ public class Bot {
 		return COMMAND_MANAGER;
 	}
 
-	private static void addCommands() {
+	private static void addCommands() { // TODO: 09.02.2018 скан на новые модули и подключаемые пользовательские модули
 		COMMAND_MANAGER.addCommand(new ConsoleCommand());
 		COMMAND_MANAGER.addCommand(new FindCommand());
 		COMMAND_MANAGER.addCommand(new HelpCommand(COMMAND_MANAGER));
@@ -119,6 +133,7 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new PauseCommand());
 		COMMAND_MANAGER.addCommand(new LeaveCommand());
 		COMMAND_MANAGER.addCommand(new TTSCommand());
+		COMMAND_MANAGER.addCommand(new UserCommand());
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
