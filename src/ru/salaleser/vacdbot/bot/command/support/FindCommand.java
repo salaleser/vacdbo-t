@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class FindCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		StringBuilder query = new StringBuilder();
 		for (String arg : args) query.append(arg).append("+");
 		query.replace(query.length() - 1, query.length(), "");

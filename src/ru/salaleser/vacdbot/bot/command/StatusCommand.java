@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot.command;
 
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.BufferedReader;
@@ -30,7 +31,7 @@ public class StatusCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		//заполняю массив строками из файла
 		ArrayList<String> list = new ArrayList<>();
 		try {

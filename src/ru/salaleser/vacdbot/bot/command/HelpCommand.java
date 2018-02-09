@@ -3,6 +3,7 @@ package ru.salaleser.vacdbot.bot.command;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.CommandManager;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Map;
@@ -28,7 +29,7 @@ public class HelpCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		if (args.length != 0) {
 			Command command = commandManager.getCommand(args[0]);
 			if (command == null) {// FIXME: 17.11.2017 такой же блок в менеджере команд

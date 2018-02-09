@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class TransCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		StringBuilder argsSB = new StringBuilder();
 		//перегоняю все аргументы в одну строку
 		for (String arg : args) argsSB.append(arg).append("%20");

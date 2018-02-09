@@ -4,6 +4,7 @@ import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
 import ru.salaleser.vacdbot.vacdbo.ScannerPlayerBans;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class ScanCommand extends Command {
@@ -13,7 +14,7 @@ public class ScanCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		int threads = Integer.parseInt(DBHelper.getValueFromSettings(name, "threads"));
 		ScannerPlayerBans[] scanners;
 

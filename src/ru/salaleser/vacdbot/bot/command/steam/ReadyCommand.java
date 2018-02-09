@@ -4,6 +4,7 @@ import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -42,7 +43,7 @@ public class ReadyCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		channel = message.getChannel();
 		author = message.getAuthor();
 		id = author.getStringID();

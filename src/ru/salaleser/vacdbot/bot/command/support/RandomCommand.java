@@ -2,6 +2,7 @@ package ru.salaleser.vacdbot.bot.command.support;
 
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Random;
@@ -39,7 +40,7 @@ public class RandomCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		int range = 6;
 
 		if (args.length != 0) {

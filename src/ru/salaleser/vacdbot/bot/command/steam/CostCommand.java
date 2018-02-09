@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.salaleser.vacdbot.*;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class CostCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		String steamid = Util.getSteamidByDiscordid(message.getAuthor().getStringID());
 		if (args.length > 0) {
 			if (Util.isSteamID64(args[0])) {
@@ -68,8 +69,7 @@ public class CostCommand extends Command {
 
 		//целочисленная сумма в рублях и копейках:
 		String rubkop = Util.toRubKop(String.valueOf(totalCost));
-		message.reply("Общая стоимость предметов (context=2) " + args[0] + ": " +
-				Util.b(rubkop));
+		message.reply("Общая стоимость предметов (context=2) " + args[0] + ": " + Util.b(rubkop));
 	}
 
 	/**

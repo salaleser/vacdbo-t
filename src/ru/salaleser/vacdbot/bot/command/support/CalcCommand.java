@@ -2,6 +2,7 @@ package ru.salaleser.vacdbot.bot.command.support;
 
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class CalcCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		operands.clear();
 		operators.clear();
 		if (args.length == 0) return;

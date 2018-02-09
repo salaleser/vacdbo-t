@@ -3,6 +3,7 @@ package ru.salaleser.vacdbot.bot.command.support;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.concurrent.TimeUnit;
@@ -14,7 +15,7 @@ public class TimerCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		String channelTopic = message.getChannel().getTopic();
 		int timer = 5; // TODO: 10.12.2017 брать из базы
 		if (args.length == 1) timer = Integer.parseInt(args[0]);
@@ -35,7 +36,8 @@ public class TimerCommand extends Command {
 				}
 			}
 			message.getChannel().changeTopic(channelTopic);
-			message.getClient().changePlayingText(Bot.status);
+			message.getClient().changePlayingText(Bot.STATUS);
+
 			message.reply("Время истекло!");
 		});
 		thread.start();

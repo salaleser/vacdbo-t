@@ -4,6 +4,7 @@ import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
@@ -35,7 +36,7 @@ public class ClearCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		IUser user = null;
 		int limit = Integer.parseInt(DBHelper.getValueFromSettings(name, "limit"));
 		String regexp = null;
@@ -50,7 +51,7 @@ public class ClearCommand extends Command {
 					msg.delete();
 					TimeUnit.MILLISECONDS.sleep(500);
 				}
-				message.getClient().changePlayingText(Bot.status);
+				message.getClient().changePlayingText(Bot.STATUS);
 				return;
 			}
 			if (Util.isDiscordUser(args[index])) {

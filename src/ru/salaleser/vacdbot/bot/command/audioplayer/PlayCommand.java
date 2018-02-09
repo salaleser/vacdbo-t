@@ -2,6 +2,7 @@ package ru.salaleser.vacdbot.bot.command.audioplayer;
 
 import ru.salaleser.vacdbot.Player;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class PlayCommand extends Command {
@@ -11,16 +12,16 @@ public class PlayCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		if (args.length == 0) return;
-		Player.join();
+		Player.join(guild);
 		switch (args[0].toLowerCase()) {
 			case "сн":
 			case "gn":
-				Player.queueFile("music/spyat_ustalye_igrushki.mp3");
+				Player.queueFile(guild, "music/spyat_ustalye_igrushki.mp3");
 				break;
 			default:
-				Player.queueUrl(args[0]);
+				Player.queueUrl(guild, args[0]);
 		}
 	}
 }

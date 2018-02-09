@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Parser7DTDServer;
 import ru.salaleser.vacdbot.Util;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class CheckCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		Parser7DTDServer parser = new Parser7DTDServer();
 		Document document = null;
 		try {

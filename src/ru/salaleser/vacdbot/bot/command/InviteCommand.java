@@ -14,10 +14,10 @@ public class InviteCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		final IChannel channel = message.getChannel();
-		final IVoiceChannel voice = Bot.voiceChannelGeneral;
-		final IRole officer = Bot.roleOfficers;
+		final IVoiceChannel voice = Bot.getGuilds().get(0).getVoiceChannelsByName("General").get(0); //fixme hardcode
+		final IRole officer = Bot.getGuilds().get(0).getRolesByName("Офицеры").get(0); //fixme hardcode
 
 		for (IUser userHere : channel.getUsersHere()) {
 			if (userHere.getPresence().getStatus() != StatusType.OFFLINE && !userHere.isBot() &&

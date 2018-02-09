@@ -4,6 +4,7 @@ import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IReaction;
 import sx.blah.discord.handle.obj.IUser;
@@ -34,7 +35,7 @@ public class PollCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		message.getClient().changePlayingText("голосование");
 
 		int countdown = 20;
@@ -94,7 +95,7 @@ public class PollCommand extends Command {
 			qMessage.edit(Util.i("Произошла магия, скорее всего чёрная, реакции не посчитались, " +
 					"поэтому голосование объявляется несостоявшимся по техническим причинам. Попробуйте ещё раз."));
 			qMessage.removeAllReactions();
-			message.getClient().changePlayingText(Bot.status);
+			message.getClient().changePlayingText(Bot.STATUS);
 			return;
 		}
 		HashSet<IUser> voters = new HashSet<>();
@@ -121,7 +122,7 @@ public class PollCommand extends Command {
 		if (voters.isEmpty()) {
 			qMessage.edit("\n" + question + "\n\n" +
 					Util.i("Никто не голосовал! Голосование отменено, результаты аннулированы."));
-			message.getClient().changePlayingText(Bot.status);
+			message.getClient().changePlayingText(Bot.STATUS);
 			qMessage.removeAllReactions(); // FIXME: 17.11.2017 повтор кода
 			return;
 		}
@@ -146,7 +147,7 @@ public class PollCommand extends Command {
 		else result += " набрал наибольшее количество голосов!";
 		qMessage.edit(result);
 
-		message.getClient().changePlayingText(Bot.status);
+		message.getClient().changePlayingText(Bot.STATUS);
 	}
 
 	private String getRandomQuestion() {
@@ -215,7 +216,7 @@ public class PollCommand extends Command {
 			result.append(c).append("**: ");
 			for (IUser user : reactions.get(i).getUsers()) {
 				if (!user.isBot()) {
-					result.append(user.getDisplayName(Bot.guildKTO)).append(", ");
+					result.append(user.getName()).append(", ");
 				}
 			}
 			if (!reactions.get(i).getUsers().isEmpty()) {

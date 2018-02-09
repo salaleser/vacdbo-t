@@ -1,6 +1,7 @@
 package ru.salaleser.vacdbot.bot.command.steam;
 
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class SmokeCommand extends Command {
@@ -22,7 +23,7 @@ public class SmokeCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		String nukeSmokeOutsideCorner = "https://steamuserimages-a.akamaihd.net/ugc/861738620619026170/0A11B22B786B66FE6301BD871E5A6C690FABDBA0/";
 		message.getChannel().sendMessage("**Смок на Периметр:**\n" +
 				nukeSmokeOutsideCorner + "\n" +

@@ -2,6 +2,7 @@ package ru.salaleser.vacdbot.bot.command.steam;
 
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class ServerCommand extends Command {
@@ -11,7 +12,7 @@ public class ServerCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		String trainingServerAddress = DBHelper.getValueFromSettings("server", "ip");
 		message.getChannel().sendMessage("Тренировочный сервер: " + "steam://" + trainingServerAddress + "//\n" + "```connect " + trainingServerAddress + "; password 2002```" + "```connect " + trainingServerAddress + "; password 2002; rcon_password ```");
 

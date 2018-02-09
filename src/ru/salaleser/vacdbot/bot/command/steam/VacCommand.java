@@ -4,6 +4,7 @@ import ru.salaleser.vacdbot.*;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -33,7 +34,7 @@ public class VacCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		//defaults:
 		IChannel channel = message.getChannel();
 		IUser user = message.getAuthor();
@@ -48,11 +49,11 @@ public class VacCommand extends Command {
 						steamid = args[1];
 						String discordid = Util.getDiscordidBySteamid(steamid);
 						if (!discordid.equals("noname")) {
-							user = Bot.guildKTO.getClient().getUserByID(Long.parseLong(discordid));
+							user = Bot.getClient().getUserByID(Long.parseLong(discordid));
 						}
 					} else if (Util.isDiscordUser(args[1])) {
 						String discordid = args[1].replaceAll("[<@!>]", "");
-						user = Bot.guildKTO.getClient().getUserByID(Long.parseLong(discordid));
+						user = Bot.getClient().getUserByID(Long.parseLong(discordid));
 						steamid = Util.getSteamidByDiscordid(discordid);
 					} else {
 						message.reply(Util.b("ошибка в SteamID") + " (установлен SteamID: " + steamid + ")");

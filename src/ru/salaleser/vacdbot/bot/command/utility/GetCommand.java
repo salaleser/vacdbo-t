@@ -4,6 +4,7 @@ import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class GetCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		if (args.length == 1 && args[0].equals("permissions")) {
 			StringBuilder stringBuilder = new StringBuilder();
 			ArrayList<Command> commands = new ArrayList<>();

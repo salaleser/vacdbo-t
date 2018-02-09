@@ -1,6 +1,7 @@
 package ru.salaleser.vacdbot.bot.command.steam;
 
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class ConsoleCommand extends Command {
@@ -22,7 +23,7 @@ public class ConsoleCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		message.getChannel().sendMessage("Получить бронежилет, каску, гранаты и AK-47 на **K**: " +
 				"```bind k \"give weapon_ak47; give weapon_hegrenade; give weapon_flashbang;" +
 				" give weapon_smokegrenade; give weapon_incgrenade; give item_assaultsuit\"```");

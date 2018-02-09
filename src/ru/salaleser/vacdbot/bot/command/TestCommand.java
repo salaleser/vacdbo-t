@@ -1,6 +1,7 @@
 package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.DBHelper;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 
@@ -13,7 +14,7 @@ public class TestCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		privateChannel = message.getAuthor().getOrCreatePMChannel();
 		privateChannel.sendMessage("" +
 				"Вы готовы потратить 10 минут времени на то, чтобы ответить на все вопросы теста?");

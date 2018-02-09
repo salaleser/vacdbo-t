@@ -5,6 +5,7 @@ import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Scheduler;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class TaskCommand extends Command {
@@ -27,7 +28,7 @@ public class TaskCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		String table = "schedule";
 		if (args.length == 0) {
 			message.getChannel().sendMessage(Util.makeTable(table, new String[]{"*"}, Scheduler.getTasks()));

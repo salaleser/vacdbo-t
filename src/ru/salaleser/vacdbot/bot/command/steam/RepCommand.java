@@ -4,9 +4,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.BufferedReader;
@@ -51,7 +53,7 @@ public class RepCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		String steamid = Util
 				.getSteamidByDiscordid(message.getAuthor().getStringID());
 		if (args.length > 0 && Util.isSteamID64(args[0])) steamid = args[0];
@@ -253,10 +255,10 @@ public class RepCommand extends Command {
 		try {
 			document = Jsoup.connect(url).get();
 		} catch (IOException e) {
-			Bot.channelKTOLog.sendMessage("*Нет соединения с интернетом*");
+			Logger.error("Нет соединения с интернетом");
 		}
 		if (document == null) {
-			Bot.channelKTOLog.sendMessage("*Пустой ответ от сервера*");
+			Logger.error("Пустой ответ от сервера");
 		}
 		return document;
 	}

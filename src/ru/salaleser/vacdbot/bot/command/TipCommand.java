@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot.command;
 
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -15,7 +16,7 @@ public class TipCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		message.getChannel().sendMessage(TIPS[ThreadLocalRandom.current().nextInt(TIPS.length)]);
 	}
 }

@@ -1,15 +1,17 @@
 package ru.salaleser.vacdbot.bot.command.steam;
 
+import ru.salaleser.vacdbot.DBHelper;
+import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 public class IdCommand extends Command {
 
 	public IdCommand() {
-		super("id", 2);
+		super("id", 5);
 	}
 
 	@Override
@@ -25,23 +27,20 @@ public class IdCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		String discordid = message.getAuthor().getStringID();
-		if (args.length != 0) {
-			if (Util.isDiscordUser(args[0])) {
-				discordid = args[0];
-				discordid = discordid.replaceAll("[<@!>]", "");
-			}
-			else message.getChannel().sendMessage("Неверный ID");
+		switch (args.length) {
+			case 1:
+				if (Util.isDiscordUser(args[0])) {
+					discordid = args[0].replaceAll("[<@!>]", "");
+				} else {
+					message.getChannel().sendMessage("Неверный ID");
+				}
+				break;
 		}
 		String username = message.getClient().getUserByID(Long.parseLong(discordid)).getName();
-		String steamid = Util.getSteamidByDiscordUser(discordid);
+		String steamid = Util.getSteamidByDiscordid(discordid);
 		message.getChannel().sendMessage("SteamID64 " + username + ": " + steamid);
-	}
-
-	public void update() {
-		//здесь хотел добавить возможность обновлять таблицу профилей из дискорда,
-		//но что-то не сильно это и надо как мне показалось чуть позже
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

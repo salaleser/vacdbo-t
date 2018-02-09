@@ -2,6 +2,7 @@ package ru.salaleser.vacdbot.bot.command;
 
 import com.voicerss.tts.*;
 import ru.salaleser.vacdbot.*;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.FileNotFoundException;
@@ -14,7 +15,8 @@ public class TTSCommand extends Command {
 		super("tts", 2);
 	}
 
-	public void handle(IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) {
+		if (args.length == 0) return;
 		String language = Languages.Russian;
 //		if (Util.isRussian(args[0])) language = Languages.Russian;
 		String text = String.join(" ", args);
@@ -56,7 +58,7 @@ public class TTSCommand extends Command {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Player.queueFile("tts.mp3");
+		Player.queueFile(guild, "tts.mp3");
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

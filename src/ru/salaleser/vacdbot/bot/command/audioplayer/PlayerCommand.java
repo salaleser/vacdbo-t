@@ -4,6 +4,7 @@ import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Player;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 public class PlayerCommand extends Command {
@@ -13,7 +14,7 @@ public class PlayerCommand extends Command {
 	}
 
 	@Override
-	public void handle(IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		if (args.length == 0) return;
 		switch (args[0]) {
 			case "volume":
@@ -23,12 +24,12 @@ public class PlayerCommand extends Command {
 					if (Util.isNumeric(args[1])) {
 						int v = Integer.parseInt(args[1]);
 						Player.volume(v);
-						message.getChannel().sendMessage("Громкость установлена на " + Player.volume() + "%.");
+						message.getChannel().sendMessage("Громкость установлена на " + Player.volume(guild) + "%.");
 					} else {
 						Logger.error("Не число!");
 					}
 				} else {
-					message.getChannel().sendMessage("Громкость равна " + Player.volume() + "%.");
+					message.getChannel().sendMessage("Громкость равна " + Player.volume(guild) + "%.");
 				}
 				break;
 		}

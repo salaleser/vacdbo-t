@@ -1,6 +1,7 @@
 package ru.salaleser.vacdbot.bot.command;
 
 import ru.salaleser.vacdbot.Util;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 public abstract class Command {
@@ -53,7 +54,7 @@ public abstract class Command {
 				" Вы держитесь здесь, вам всего доброго, хорошего настроения и здоровья."));
 	}
 
-	public abstract void handle(IMessage message, String[] args) throws InterruptedException;
+	public abstract void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException;
 
 	protected String buildHelp(String description, String usage, String presets, String example, String note) {
 		StringBuilder aliasesBuilder = new StringBuilder();
