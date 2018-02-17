@@ -9,7 +9,6 @@ public abstract class Command {
 	public static int count = 0;
 	public final String name;
 	public final String[] aliases;
-	public final int permissions;
 
 	// TODO: 10.12.2017 создать универсальный способ для всех команд для определения возможных значений переменных
 
@@ -17,35 +16,12 @@ public abstract class Command {
 		count++;
 		this.name = name;
 		this.aliases = new String[0];
-		this.permissions = 0;
 	}
 
 	protected Command(String name, String[] aliases) {
 		count++;
 		this.name = name;
 		this.aliases = aliases;
-		this.permissions = 0;
-	}
-
-	protected Command(String name, int permissions) {
-		count++;
-		this.name = name;
-		this.aliases = new String[0];
-		this.permissions = permissions;
-	}
-
-	/**
-	 * Команда
-	 *
-	 * @param name имя команды
-	 * @param aliases псевдонимы
-	 * @param permissions необходимый priority для использования команды
-	 */
-	protected Command(String name, String[] aliases, int permissions) {
-		count++;
-		this.name = name;
-		this.aliases = aliases;
-		this.permissions = permissions;
 	}
 
 	protected void help(IMessage message) {

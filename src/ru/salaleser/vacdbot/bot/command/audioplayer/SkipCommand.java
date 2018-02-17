@@ -8,7 +8,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SkipCommand extends Command {
 
 	public SkipCommand() {
-		super("skip", 3);
+		super("skip");
 	}
 
 	@Override

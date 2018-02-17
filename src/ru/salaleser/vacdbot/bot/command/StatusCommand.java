@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StatusCommand extends Command {
 
 	public StatusCommand() {
-		super("status", 3);
+		super("status");
 	}
 
 	@Override

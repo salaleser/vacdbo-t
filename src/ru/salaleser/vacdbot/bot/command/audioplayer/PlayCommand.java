@@ -8,7 +8,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class PlayCommand extends Command {
 
 	public PlayCommand() {
-		super("play", new String[]{"p"}, 3);
+		super("play", new String[]{"p"});
 	}
 
 	@Override
@@ -21,7 +21,8 @@ public class PlayCommand extends Command {
 				Player.queueFile(guild, "music/spyat_ustalye_igrushki.mp3");
 				break;
 			default:
-				Player.queueUrl(guild, args[0]);
+				Player.queueFile(guild, args[0]);
+//				Player.queueUrl(guild, args[0]);
 		}
 	}
 }

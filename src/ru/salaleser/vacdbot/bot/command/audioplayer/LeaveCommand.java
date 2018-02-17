@@ -9,12 +9,12 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 public class LeaveCommand extends Command {
 
 	public LeaveCommand() {
-		super("leave", 3);
+		super("leave");
 	}
 
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
-		guild.leave();
+		guild.getConnectedVoiceChannel().leave();
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

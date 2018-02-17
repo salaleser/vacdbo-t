@@ -10,7 +10,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class PlayerCommand extends Command {
 
 	public PlayerCommand() {
-		super("player", 2);
+		super("player");
 	}
 
 	@Override
@@ -22,8 +22,8 @@ public class PlayerCommand extends Command {
 			case "v":
 				if (args.length > 1) {
 					if (Util.isNumeric(args[1])) {
-						int v = Integer.parseInt(args[1]);
-						Player.volume(v);
+						int volume = Integer.parseInt(args[1]);
+						Player.volume(guild, volume);
 						message.getChannel().sendMessage("Громкость установлена на " + Player.volume(guild) + "%.");
 					} else {
 						Logger.error("Не число!");

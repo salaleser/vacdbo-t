@@ -9,7 +9,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SelectCommand extends Command {
 
 	public SelectCommand() {
-		super("select", 2);
+		super("select");
 	}
 
 	@Override

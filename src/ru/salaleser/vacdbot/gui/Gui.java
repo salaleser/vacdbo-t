@@ -20,7 +20,9 @@ public class Gui extends JFrame {
 
 	private IDiscordClient client;
 
+	private JFrame frame;
 	private JLabel labelStatus;
+	ArrayList<JPanel> panels = new ArrayList<>();
 
 	private DefaultListModel<String> listModelGuilds = new DefaultListModel<>();
 	private JList<String> listOfGuilds = new JList<>(listModelGuilds);
@@ -37,10 +39,9 @@ public class Gui extends JFrame {
 
 	public Gui() {
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		JFrame frame = new JFrame("Версия: " + serialVersionUID + "  Играет в " + Bot.STATUS);
+		frame = new JFrame("Версия: " + serialVersionUID + "  Играет в " + Bot.STATUS);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setContentPane(new JPanel());
-		frame.setLayout(new BorderLayout());
 
 		//блок состояния:
 		JPanel panelStatus = new JPanel();
@@ -52,21 +53,19 @@ public class Gui extends JFrame {
 		//блок настроек:
 		JPanel panelSettings = new JPanel(new GridLayout(3, 1));
 		panelSettings.setBorder(BorderFactory.createTitledBorder("Настройки"));
-		JButton buttonOpenLog = new JButton("Показать лог");
-		buttonOpenLog.addActionListener(e -> Bot.log.setVisible(true));
-		panelSettings.add(buttonOpenLog);
+		JToggleButton toggleButtonOpenLog = new JToggleButton("Показать лог");
+		toggleButtonOpenLog.addActionListener(e -> {
+			Bot.log.frame.setVisible(toggleButtonOpenLog.isSelected());
+			if (toggleButtonOpenLog.isSelected()) toggleButtonOpenLog.setText("Скрыть лог");
+			else toggleButtonOpenLog.setText("Показать лог");
+		});
+		panelSettings.add(toggleButtonOpenLog);
 		JButton buttonOpenFile = new JButton("Открыть конфигурационный файл");
 		buttonOpenFile.addActionListener(e -> new ConfigWindow());
 		panelSettings.add(buttonOpenFile);
 		JButton buttonRelogin = new JButton("Перелогиниться");
 		buttonRelogin.addActionListener(e -> Bot.relogin());
 		panelSettings.add(buttonRelogin);
-
-		//общий северный блок:
-		JPanel panelNorth = new JPanel(new BorderLayout());
-		panelNorth.setBorder(BorderFactory.createTitledBorder("Северная панель"));
-		panelNorth.add(panelStatus, BorderLayout.WEST);
-		panelNorth.add(panelSettings, BorderLayout.EAST);
 
 		//блок гильдий:
 		JPanel panelServers = new JPanel();
@@ -85,38 +84,32 @@ public class Gui extends JFrame {
 		panelChannels.add(new JScrollPane(listOfChannels));
 
 		//блок пользователей:
-		JPanel panelUsers = new JPanel(new GridLayout(1, 3));
+		JPanel panelUsers = new JPanel();
 		panelUsers.setBorder(BorderFactory.createTitledBorder("Пользователи"));
 		checkBoxBots.addChangeListener(new ChangeListenerUsers());
+		checkBoxBots.setBorderPainted(true);
 		checkBoxNotOfflineUsers.addChangeListener(new ChangeListenerUsers());
+		checkBoxNotOfflineUsers.setBorderPainted(true);
 		checkBoxOfflineUsers.addChangeListener(new ChangeListenerUsers());
-		listOfGuilds.setPreferredSize(new Dimension(64, 128));
-		listOfChannels.setPreferredSize(new Dimension(64, 128));
-		listOfUsers.setPreferredSize(new Dimension(256, 1024));
+		checkBoxOfflineUsers.setBorderPainted(true);
 		panelUsers.add(new JScrollPane(listOfUsers));
 		JPanel panelUsersSettings = new JPanel(new GridLayout(3, 1));
+		panelUsersSettings.setMaximumSize(new Dimension(64, 64));
 		panelUsersSettings.add(checkBoxBots);
 		panelUsersSettings.add(checkBoxNotOfflineUsers);
 		panelUsersSettings.add(checkBoxOfflineUsers);
-		panelUsers.add(panelUsersSettings);
-		JPanel panelVoiceChannel = new JPanel(new GridLayout(2, 1));
+
+		//блок голосового канала:
+		JPanel panelVoiceChannel = new JPanel();
 		panelVoiceChannel.setBorder(BorderFactory.createTitledBorder("Голосовой канал"));
 		JButton buttonVoiceChannelJoin = new JButton("Подключиться");
 		buttonVoiceChannelJoin.addActionListener(e -> Player.join(client.getGuilds().get(listOfGuilds.getSelectedIndices()[0])));
 		panelVoiceChannel.add(buttonVoiceChannelJoin);
-		panelUsers.add(panelVoiceChannel);
-
-		//общий блок слева:
-		JPanel panelWest = new JPanel();
-		panelWest.setBorder(BorderFactory.createTitledBorder("Западная панель"));
-		panelWest.add(panelServers);
-		panelWest.add(panelChannels);
-		panelWest.add(panelUsers);
 
 		//блок отправки сообщения:
 		JPanel panelMessage = new JPanel();
 		panelMessage.setBorder(BorderFactory.createTitledBorder("Отправка сообщения:"));
-		JTextField textFieldMessage = new JTextField(12);
+		JTextField textFieldMessage = new JTextField(32);
 		JButton buttonSendMessage = new JButton("Send");
 		buttonSendMessage.addActionListener(e -> {
 			if (textFieldMessage.getText().isEmpty()) textFieldMessage.setText("null");
@@ -146,20 +139,29 @@ public class Gui extends JFrame {
 		panelMessage.add(textFieldMessage);
 		panelMessage.add(buttonSendMessage);
 
-		//общий блок справа:
-		JPanel panelEast = new JPanel(new BorderLayout());
-		panelEast.setBorder(BorderFactory.createTitledBorder("Восточная панель"));
-		panelEast.add(panelMessage, BorderLayout.SOUTH);
-
-		frame.getContentPane().add(panelNorth, BorderLayout.PAGE_START);
-		frame.getContentPane().add(panelWest, BorderLayout.WEST);
-		frame.getContentPane().add(panelEast, BorderLayout.EAST);
-//		frame.getContentPane().add(panelLog, BorderLayout.PAGE_END);
+		frame.getContentPane().add(panelStatus);
+		frame.getContentPane().add(panelSettings);
+		frame.getContentPane().add(panelServers);
+		frame.getContentPane().add(panelChannels);
+		frame.getContentPane().add(panelUsers);
+		frame.getContentPane().add(panelUsersSettings);
+		frame.getContentPane().add(panelVoiceChannel);
+		frame.getContentPane().add(panelMessage);
 
 		frame.getRootPane().setDefaultButton(buttonSendMessage);
 
+		panels.add(panelServers);
+		panels.add(panelChannels);
+		panels.add(panelUsers);
+		panels.add(panelUsersSettings);
+		panels.add(panelVoiceChannel);
+		panels.add(panelMessage);
+		for (JPanel panel : panels) panel.setVisible(false);
+
 		frame.pack();
-		frame.setLocationRelativeTo(null);
+//		frame.setLocationRelativeTo(null);
+		frame.setLocation(128, 128);
+		frame.setSize(new Dimension(512, 512));
 		frame.setVisible(true);
 	}
 
@@ -206,6 +208,7 @@ public class Gui extends JFrame {
 		ImageIcon connectedIcon = resizeImage("img/green_dot.png");
 		labelStatus.setIcon(connectedIcon);
 		labelStatus.setText("Connected to: " + guilds);
+		for (JPanel panel : panels) panel.setVisible(true);
 	}
 
 	private void updateGuilds(int[] guildIndices) {

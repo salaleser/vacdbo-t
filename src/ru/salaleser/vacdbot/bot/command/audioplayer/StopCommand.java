@@ -8,7 +8,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class StopCommand extends Command {
 
 	public StopCommand() {
-		super("stop", 3);
+		super("stop");
 	}
 
 	@Override

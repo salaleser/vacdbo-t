@@ -7,7 +7,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class QuitCommand extends Command {
 
 	public QuitCommand() {
-		super("quit", new String[]{"exit"}, 1);
+		super("quit", new String[]{"exit"});
 	}
 
 	@Override

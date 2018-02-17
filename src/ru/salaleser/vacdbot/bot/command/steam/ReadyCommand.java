@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
-public class ReadyCommand extends Command {
+public class ReadyCommand extends Command { // TODO: 17.02.2018 добавить проверки на гильдию
 
 	private IChannel channel;
 	private IUser author;
@@ -25,7 +25,7 @@ public class ReadyCommand extends Command {
 	private StringBuilder notReadyBuilder;
 
 	public ReadyCommand() {
-		super("ready", new String[]{"r"}, 3);
+		super("ready", new String[]{"r"});
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class ReadyCommand extends Command {
 				case "remove":
 				case "delete":
 					if (DBHelper.isAlreadyExistToday(table, "id", id, date)) {
-						String deleteQuery = "DELETE FROM ready WHERE date = '" + date + "' AND id = '" + id + "'";
+						String deleteQuery = "DELETE FROM " + " WHERE date = '" + date + "' AND id = '" + id + "'";
 						if (DBHelper.commit(table, deleteQuery, null)) {
 							message.reply(" вы удалили себя из базы данных.");
 						} else {

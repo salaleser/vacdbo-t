@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class InviteCommand extends Command {
 
 	public InviteCommand() {
-		super("invite", 1);
+		super("invite");
 	}
 
 	@Override

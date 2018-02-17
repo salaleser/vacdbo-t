@@ -9,7 +9,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SetCommand extends Command {
 
 	public SetCommand() {
-		super("set", 2);
+		super("set");
 	}
 
 	@Override

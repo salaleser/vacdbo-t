@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class PollCommand extends Command {
 
 	public PollCommand() {
-		super("poll", 3);
+		super("poll");
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class PollCommand extends Command {
 		message.getClient().changePlayingText("голосование");
 
 		int countdown = 20;
-		String countdownValue = DBHelper.getValueFromSettings(name, "countdown");
+		String countdownValue = DBHelper.getOption(guild.getStringID(), name, "countdown");
 		if (Util.isNumeric(countdownValue) &&
 				Integer.parseInt(countdownValue) >= 5 &&
 				Integer.parseInt(countdownValue) <= 60) {
@@ -74,10 +74,14 @@ public class PollCommand extends Command {
 
 		//перерисовываю сообщение:
 		StringBuilder progressBar;
+		String barchar = "█";
+		if (DBHelper.getOption(guild.getStringID(), name, "barchar").length() == 1) {
+			barchar = DBHelper.getOption(guild.getStringID(), name, "barchar");
+		}
 		String pollWrapper = "\n" + question + "\n" + answersEnum;
 		for (int i = countdown; i > 0; i--) {
 			TimeUnit.SECONDS.sleep(1);
-			progressBar = fillProgressBar(i);
+			progressBar = fillProgressBar(barchar, i);
 			qMessage.edit(Util.i("Голосование завершится через " + i + " с") +
 					Util.block(progressBar.toString()) + pollWrapper);
 		}
@@ -228,11 +232,7 @@ public class PollCommand extends Command {
 		return result;
 	}
 
-	private StringBuilder fillProgressBar(int c) {
-		String barchar = "█";
-		if (DBHelper.getValueFromSettings(name, "barchar").length() == 1) {
-			barchar = DBHelper.getValueFromSettings(name, "barchar");
-		}
+	private StringBuilder fillProgressBar(String barchar, int c) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < c; i++) sb.append(barchar);
 		return sb;

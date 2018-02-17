@@ -71,7 +71,7 @@ public class VacCommand extends Command {
 		}
 
 		channel.sendMessage("Проверяю друзей " + user.getName() + "…");
-		if (steamid.equals("noname") || !DBHelper.isExist("users", "steamid", steamid)) {
+		if (steamid.equals("noname") || !DBHelper.isExists("users", "steamid", steamid)) {
 			channel.sendMessage(Util.i("С пользователем " + user.getName() +
 					" не ассоциирован SteamID, взаимодействие со Steam API невозможно."));
 			return;

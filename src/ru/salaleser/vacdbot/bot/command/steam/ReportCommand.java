@@ -11,7 +11,6 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +22,7 @@ public class ReportCommand extends Command {
 	private StringBuilder resultBuilder;
 
 	public ReportCommand() {
-		super("report", 2);
+		super("report");
 	}
 
 	@Override
@@ -40,7 +39,7 @@ public class ReportCommand extends Command {
 
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
-		days = Integer.parseInt(DBHelper.getValueFromSettings(name, "days"));
+		days = Integer.parseInt(DBHelper.getOption(guild.getStringID(), name, "days"));
 		channel = message.getChannel();
 		resultBuilder = new StringBuilder();
 
@@ -51,7 +50,7 @@ public class ReportCommand extends Command {
 
 		if (!Util.isSteamID64(args[0])) {
 			Logger.error("Ошибка в SteamID!");
-			message.reply("ошибка в SteamID!");
+			message.reply("Ошибка в SteamID!");
 			return;
 		}
 

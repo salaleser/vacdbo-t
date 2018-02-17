@@ -11,7 +11,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class TaskCommand extends Command {
 
 	public TaskCommand() {
-		super("task", 2);
+		super("task");
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class TaskCommand extends Command {
 					message.getChannel().sendMessage("Недостаточно аргументов!");
 					return;
 				}
-				String[] task = new String[] {args[1], args[2], args[3], args[4], "true"};
+				String[] task = new String[] {args[1], args[2], args[3], args[4], "true", guild.getStringID()};
 				DBHelper.insert(table, task);
 				break;
 			case "remove":
@@ -51,14 +51,16 @@ public class TaskCommand extends Command {
 					message.getChannel().sendMessage("Неверное количество аргументов!");
 					return;
 				}
-				String deleteQuery = "DELETE FROM " + table + " WHERE command = '" + args[1] + "'";
+				String deleteQuery = "DELETE FROM " + table + " " +
+						"WHERE guildid = '" + guild.getStringID() + "' AND command = '" + args[1] + "'";
 				if (DBHelper.commit(table, deleteQuery, null)) message.reply(" вы удалили задачу планировщика.");
 				else message.reply(" произошла ошибка при попытке удаления задачи.");
 				break;
 			case "on":
 			case "off":
 			case "toggle":
-				String getRowQuery = "SELECT * FROM " + table + " WHERE command = '" + args[1] + "'";
+				String getRowQuery = "SELECT * FROM " + table + " " +
+						"WHERE guildid = '" + guild.getStringID() + "' AND command = '" + args[1] + "'";
 				String[] taskRow = DBHelper.executeQuery(getRowQuery)[0];
 				switch (args[0]) {
 					case "on":

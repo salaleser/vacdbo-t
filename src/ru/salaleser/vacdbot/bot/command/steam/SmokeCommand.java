@@ -7,7 +7,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SmokeCommand extends Command {
 
 	public SmokeCommand() {
-		super("smoke", 3);
+		super("smoke");
 	}
 
 	@Override

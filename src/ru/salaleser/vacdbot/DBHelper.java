@@ -17,9 +17,32 @@ public class DBHelper {
 	 *
 	 * @return значение
 	 */
-	public static String getValueFromSettings(String commandname, String key) {
-		String sql = "SELECT value FROM settings WHERE command = '" + commandname + "' AND key LIKE '" + key + "'";
-		return executeQuery(sql)[0][0];
+	public static String getOption(String guildid, String commandname, String key) {
+		String sqlFirstPart = "SELECT value FROM settings WHERE guildid = '";
+		String sqlSecondPart = "' AND command = '" + commandname + "' AND key LIKE '" + key + "'";
+		String value = executeQuery(sqlFirstPart + guildid + sqlSecondPart)[0][0];
+		if (value == null) value = executeQuery(sqlFirstPart + "default" + sqlSecondPart)[0][0];
+		return value;
+	}
+
+	/**
+	 * Доморощенный serial увеличитель что-то там спать хочу не соображаю ничего
+	 * Определяет номер последней записи и возвращает номер следующей строки.
+	 * Решил сделать такое, чтобы при удалении записи нумерация не сбивалась,
+	 * последовательность номеров строк будет постоянно увеличиваться, кроме
+	 * одного случая, если удален как раз последний номер, но это не страшно
+	 *
+	 * @param table таблица
+	 * @param column колонка
+	 * @return следующий номер строки
+	 */
+	public static String getNewId(String table, String column) {
+		String sql = "SELECT " + column + " FROM " + table + " ORDER BY " + column + " DESC";
+		String lastNumber = DBHelper.executeQuery(sql)[0][0];
+		//если таблица пуста, то назначаю имя вручную:
+		if (lastNumber == null) lastNumber = "0";
+		int filesCount = Integer.parseInt(lastNumber);
+		return String.valueOf(++filesCount);
 	}
 
 	/**
@@ -30,16 +53,23 @@ public class DBHelper {
 	 * @param value значение, которое надо проверить на существование
 	 * @return true если существует, false -- наоборот
 	 */
-	public static boolean isExist(String table, String column, String value) {
+	public static boolean isExists(String table, String column, String value) {
 		String sql = "SELECT " + column + " FROM " + table + " WHERE " + column + " = '" + value + "'";
-		return executeQuery(sql).length != 0;
+		return executeQuery(sql)[0][0] != null;
 	}
 
 	public static boolean isAlreadyExistToday(String table, String column, String value, String date) {
 		String sql = "SELECT " + column + " FROM " + table + " " +
 				"WHERE " + column + " = '" + value + "' AND date = '" + date + "'";
-		return executeQuery(sql).length != 0;
+		return executeQuery(sql)[0][0] != null;
 	}
+
+//	todo запилить обертку может быть... а может быть и нет
+//	public static String getValue(String table, String column, String conditionColumn, String condition) {
+//		String sql = "SELECT " + column + " FROM " + table + " " +
+//				"WHERE " + conditionColumn + " = '" + condition + "'";
+//		return executeQuery(sql)[0][0];
+//	}
 
 	public static String[][] executeQuery(String sql) {
 		Connection connection = null;

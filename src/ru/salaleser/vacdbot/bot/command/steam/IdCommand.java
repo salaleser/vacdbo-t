@@ -11,7 +11,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class IdCommand extends Command {
 
 	public IdCommand() {
-		super("id", 5);
+		super("id");
 	}
 
 	@Override

@@ -3,8 +3,6 @@ package ru.salaleser.vacdbot.bot;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
@@ -54,14 +52,14 @@ public class CommandManager {
 
 		//Проверка на право использования команды:
 		int priority = Util.getPriority(message.getAuthor().getStringID());
-		if (command.permissions != 0 && priority > command.permissions) {
+		int permissions = Util.getPermission(guild.getStringID(), command.name);
+		if (priority > permissions) {
 			message.reply("Вы не обладаете достаточными правами " +
 					"для использования команды " + Util.code(command.name) + "!");
 			return;
 		}
 		//передаю управление дальше по команде:
 		try {
-			System.out.println(Arrays.toString(Arrays.copyOfRange(args, 1, args.length)));
 			command.handle(guild, message, Arrays.copyOfRange(args, 1, args.length));
 		} catch (DiscordException e) {
 			Logger.error(e.getMessage());

@@ -4,13 +4,13 @@ import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Player;
 import ru.salaleser.vacdbot.Util;
-import sx.blah.discord.api.events.Event;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.*;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.audio.events.TrackFinishEvent;
 import sx.blah.discord.util.audio.events.TrackStartEvent;
 
@@ -63,60 +63,85 @@ public class Listener {
 	}
 
 	@EventSubscriber
-	public void onUserSpeaking(UserSpeakingEvent event) {
-
+	public void onUserSpeaking(UserSpeakingEvent event) throws InterruptedException {
+		if (event.getUser().isBot()) return;
+		String id = event.getUser().getStringID();
+		if (event.isSpeaking()) Bot.exec(event.getGuild(), "foreveralone", new String[]{"started", id});
+		else Bot.exec(event.getGuild(), "foreveralone", new String[]{"ended", id});
 	}
 
 	@EventSubscriber
 	public void onUserVoiceChannelJoin(UserVoiceChannelJoinEvent event) throws InterruptedException {
-		if (DBHelper.getValueFromSettings("options", "voice").equals("0") || event.getUser().isBot()) return;
-		playSound(event);
+		if (event.getUser().isBot()) return;
+		// TODO: 17.02.2018 перенести в соответствующие классы
+		int connectedUsers = 0;
+		for (IUser user : event.getVoiceChannel().getConnectedUsers()) if (!user.isBot()) connectedUsers++;
+		if (connectedUsers == 1) {
+			String tts = "Привет " + event.getUser().getDisplayName(event.getGuild()) + ". " +
+					"Меня зовут Виталина. Я вижу тебе одиноко. Давай хотя бы я с тобой пообщаюсь?";
+			Bot.exec(event.getGuild(), "tts", new String[]{tts});
+			Bot.exec(event.getGuild(), "foreveralone", new String[]{"on", event.getUser().getStringID()});
+		} else if (connectedUsers > 1) {
+			Bot.exec(event.getGuild(), "foreveralone", new String[]{"off", event.getUser().getStringID()});
+		}
+		if (DBHelper.getOption(event.getGuild().getStringID(), "tts", "voice").equals("1") &&
+				connectedUsers > 1) playSound(event);
 	}
 
 	@EventSubscriber
 	public void onUserVoiceChannelMove(UserVoiceChannelMoveEvent event) throws InterruptedException {
-		if (DBHelper.getValueFromSettings("options", "voice").equals("0") || event.getUser().isBot()) return;
-		playSound(event);
+		if (DBHelper.getOption(event.getGuild().getStringID(), "tts", "voice").equals("1") &&
+				!event.getUser().isBot()) playSound(event);
 	}
 
 	@EventSubscriber
 	public void onUserVoiceChannelLeave(UserVoiceChannelLeaveEvent event) throws InterruptedException {
-		if (DBHelper.getValueFromSettings("options", "voice").equals("0") || event.getUser().isBot()) return;
-		playSound(event);
+		if (DBHelper.getOption(event.getGuild().getStringID(), "tts", "voice").equals("1") &&
+				!event.getUser().isBot()) playSound(event);
 	}
 
 	private void playSound(UserVoiceChannelEvent event) throws InterruptedException {
-		String sound = Util.getSound(event.getUser().getStringID(), event + "sound");
-		if (sound != null) Player.queueFile(event.getGuild(), "sounds/" + sound + ".mp3");
-		else playTTS(event);
+		String eventName = event.getClass().getSimpleName();
+		String eventString = eventName.replace("UserVoiceChannel", "");
+		eventString = eventString.replace("Event", "");
+		String sound = Util.getSound(event.getUser().getStringID(), eventString + "sound");
+		if (sound == null) playTTS(event);
+		else Player.queueFile(event.getGuild(), "sounds/" + sound + ".mp3");
 	}
 	private void playTTS(UserVoiceChannelEvent event) throws InterruptedException {
-		String sound = Util.getSound(event.getUser().getStringID(), event + "tts");
-		if (sound != null) Bot.getCommandManager().getCommand("tts").handle(event.getGuild(), null, new String[]{sound});
-		else playUsername(event);
+		String eventName = event.getClass().getSimpleName();
+		String eventString = eventName.replace("UserVoiceChannel", "");
+		eventString = eventString.replace("Event", "");
+		String sound = Util.getSound(event.getUser().getStringID(), eventString + "tts");
+		if (sound == null) playUsername(event);
+		else Bot.getCommandManager().getCommand("tts").handle(event.getGuild(), null, new String[]{sound});
 	}
 	private void playUsername(UserVoiceChannelEvent event) throws InterruptedException {
-		String sound;
-		String discordid = event.getUser().getStringID();
-		if (!discordid.equals("noname")) {
-			sound = Bot.getClient().getUserByID(Long.parseLong(discordid)).getNicknameForGuild(event.getGuild());
-		} else {
-			sound = Util.getSound(discordid, "name");
-		}
+		String sound = event.getUser().getDisplayName(event.getGuild());
 		String text = "это ";
+		//проверка на окончание для баб:
+		String sql = "SELECT sex FROM users WHERE discordid = '" + event.getUser().getStringID() + "'";
+		String sex = DBHelper.executeQuery(sql)[0][0];
+		String ending = "ёл"; //по-умолчанию мужской род
+		//если пол не указан:
+		if (sex == null) sex = "M";
+		//меняю окончание в зависимости от пола:
+		if (sex.equals("W") || sex.equals("F")) ending = "ла";
+		else if (sex.equals("N")) ending = "ло";
 		switch (event.getClass().getSimpleName()) {
-			case "UserVoiceChannelJoinEvent": text = "Пришёл "; break;
-			case "UserVoiceChannelMoveEvent": text = "Перешёл "; break;
-			case "UserVoiceChannelLeaveEvent": text = "Ушёл "; break;
+			case "UserVoiceChannelLeaveEvent": text = "Уш" + ending; break;
+			case "UserVoiceChannelJoinEvent": text = "Приш" + ending; break;
+			case "UserVoiceChannelMoveEvent": text = "Переш" + ending; break;
 		}
-		if (sound != null) Bot.getCommandManager().getCommand("tts").handle(event.getGuild(), null, new String[]{text, sound});
-		else playSound(event);
+		if (sound == null) sound = "незнакомец";
+		Bot.getCommandManager().getCommand("tts").handle(event.getGuild(), null, new String[]{text, sound});
 	}
 
 	//Слушатели аудиоплеера:
 	@EventSubscriber
 	public void onTrackFinish(TrackFinishEvent event) {
-		if (event.getPlayer().getPlaylistSize() == 0) event.getPlayer().getGuild().getConnectedVoiceChannel().leave();
+		if (DBHelper.getOption(event.getPlayer().getGuild().getStringID(), "tts", "autoleave").equals("1") &&
+				event.getPlayer().getPlaylistSize() == 0) event.getPlayer().getGuild().getConnectedVoiceChannel().leave();
 	}
 
 	@EventSubscriber

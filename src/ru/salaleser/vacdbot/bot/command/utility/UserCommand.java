@@ -11,7 +11,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class UserCommand extends Command {
 
 	public UserCommand() {
-		super("user", 1);
+		super("user");
 	}
 
 	@Override
@@ -19,7 +19,8 @@ public class UserCommand extends Command {
 		message.getChannel().sendMessage(buildHelp(
 				"Устанавливает значения в таблицу \"users\".",
 				"`~user <пользователь_Discord> <SteamID64> | <имя>`.",
-				"`~user` — сканирует пользователей гильдии и добавляет новых пользователей в базу данных.",
+				"`~user` — сканирует пользователей гильдии, добавляет новых пользователей в базу данных и" +
+						"выводит в чат информацию по заполнению БД.",
 				"`~user @salaleser 76561198095972970`, `~user @volevju Женя`.",
 				"нет."
 				)
@@ -29,11 +30,12 @@ public class UserCommand extends Command {
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
 		if (args.length == 0) {
-			String discordidCount = DBHelper.executeQuery("SELECT COUNT(discordid) FROM users")[0][0];
-			String steamidCount = DBHelper.executeQuery("SELECT COUNT(steamid) FROM users")[0][0];
+			int discordidCount = Integer.parseInt(DBHelper.executeQuery("SELECT COUNT(discordid) FROM users")[0][0]);
+			int steamidCount = Integer.parseInt(DBHelper.executeQuery("SELECT COUNT(steamid) FROM users")[0][0]);
+			int nonameCount = discordidCount - steamidCount;
 			message.getChannel().sendMessage(Util.i("Добавлено " + Util.b("" + Util.refreshUsers()) +
-					" пользователей, всего в БД " + Util.b(discordidCount) + " пользователей, " +
-					"из них с неизвестными SteamID: " + Util.b(steamidCount) + "."));
+					" пользователей, всего в БД " + Util.b(String.valueOf(discordidCount)) + " пользователей, " +
+					"из них с неизвестными SteamID: " + Util.b(String.valueOf(nonameCount)) + "."));
 			return;
 		}
 		if (args.length != 2) return;
@@ -63,7 +65,7 @@ public class UserCommand extends Command {
 
 	private boolean set(String discordid, String column, String value) {
 		String table = "users";
-		if (DBHelper.isExist(table, "discordid", discordid)) {
+		if (DBHelper.isExists(table, "discordid", discordid)) {
 			String sql = "UPDATE " + table + " SET " + column + " = ? WHERE discordid = ?";
 			return DBHelper.commit(table, sql, new String[]{value, discordid});
 		} else {

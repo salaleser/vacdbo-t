@@ -4,7 +4,6 @@ import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -24,21 +23,21 @@ public class Scheduler {
 
 	public static String[][] getTasks() {
 		timer = new Timer();
-		String sql = "SELECT * FROM schedule";
-		String[][] tasks = DBHelper.executeQuery(sql);
+		String[][] tasks = DBHelper.executeQuery("SELECT * FROM schedule");
+		if (tasks[0][0] == null) return tasks;
 		for (String[] task : tasks) {
 			String commandName = task[0];
 			int hourOfDay = Integer.parseInt(task[1]);
 			int minute = Integer.parseInt(task[2]);
 			int period = Integer.parseInt(task[3]);
 			boolean enabled = Boolean.valueOf(task[4]);
-			if (enabled) createTask(commandName, new String[]{}, hourOfDay, minute, period);
+			String guildid = task[5];
+			if (enabled) createTask(commandName, new String[]{}, hourOfDay, minute, period, guildid);
 		}
 		return tasks;
 	}
 
-	private static void createTask(String commandName, String[] args, int hourOfDay, int minute, int period) {
-		Command command = Bot.getCommandManager().getCommand(commandName);
+	private static void createTask(String commandName, String[] args, int hourOfDay, int minute, int period, String guildid) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
 		calendar.set(Calendar.MINUTE, minute);
@@ -46,15 +45,14 @@ public class Scheduler {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				for (IGuild guild : Bot.getGuilds()) {
-					IMessage message = guild.getDefaultChannel().sendMessage(Util.i("Запланированная задача:"));
-					try {
-						command.handle(guild, message, args);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} finally {
-						message.delete();
-					}
+				IGuild guild = Bot.getClient().getGuildByID(Long.parseLong(guildid));
+				IMessage message = guild.getDefaultChannel().sendMessage(Util.i("Запланированная задача:"));
+				try {
+					Bot.getCommandManager().getCommand(commandName).handle(guild, message, args);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} finally {
+					message.delete();
 				}
 			}
 		}, calendar.getTime(), TimeUnit.MINUTES.toMillis(period));

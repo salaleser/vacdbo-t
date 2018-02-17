@@ -10,12 +10,12 @@ import sx.blah.discord.handle.obj.IMessage;
 public class ScanCommand extends Command {
 
 	public ScanCommand() {
-		super("scan", 1);
+		super("scan");
 	}
 
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
-		int threads = Integer.parseInt(DBHelper.getValueFromSettings(name, "threads"));
+		int threads = Integer.parseInt(DBHelper.getOption(guild.getStringID(), name, "threads"));
 		ScannerPlayerBans[] scanners;
 
 		if (args.length == 0) {

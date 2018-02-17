@@ -24,28 +24,27 @@ public class Util {
 	/**
 	 * Проверяет аргумент на соответствие SteamID64
 	 *
-	 * @param string проверяемая строка
+	 * @param verifiable проверяемая строка
 	 * @return true, если строка успешно прошла проверку, false — если нет
 	 */
-	public static boolean isSteamID64(String string) {
-		return string.length() == 17 && string.matches("\\d+") &&
-				Long.parseLong(string) > FIRST_STEAMID64 &&
-				Long.parseLong(string) < LAST_STEAMID64;
+	public static boolean isSteamID64(String verifiable) {
+		return verifiable.length() == 17 && verifiable.matches("\\d+") &&
+				Long.parseLong(verifiable) > FIRST_STEAMID64 && Long.parseLong(verifiable) < LAST_STEAMID64;
 	}
 
 	/**
 	 * Проверяет аргумент на соответствие Discord ID
-	 * @param string проверяемая строка
+	 * @param verifiable проверяемая строка
 	 * @return true, если строка успешно прошла проверку, false — если нет
 	 */
-	public static boolean isDiscordUser(String string) {
-		return string.length() == 18 && string.matches("\\d+")||
-				string.startsWith("<@") && string.endsWith(">");
+	public static boolean isDiscordUser(String verifiable) {
+		return verifiable.length() == 18 && verifiable.matches("\\d+")||
+				verifiable.startsWith("<@") && verifiable.endsWith(">");
 	}
 
-	public static boolean isRussian(String string) {
+	public static boolean isRussian(String verifiable) {
 		String ruNameRegEx = "[А-ЯЁ][-А-яЁё]+";
-		return string.substring(0, 1).matches(ruNameRegEx);
+		return verifiable.substring(0, 1).matches(ruNameRegEx);
 	}
 
 	/**
@@ -64,22 +63,29 @@ public class Util {
 	}
 
 	/**
-	 * Возвращает SteamID64, если такой Discord User есть в mapSteamidDiscordid
+	 * Возвращает SteamID64, если он присвоен указанному пользователю в таблице "users"
 	 *
-	 * @param discordid Discord String ID
+	 * @param discordid Discord ID
 	 * @return SteamID64
 	 */
 	public static String getSteamidByDiscordid(String discordid) {
 		discordid = discordid.replaceAll("[<@!>]", "");
-		if (!DBHelper.isExist("users", "discordid", discordid)) refreshUsers();
+		//если такого пользователя еще не было в базе данных, то добавить его:
+		if (!DBHelper.isExists("users", "discordid", discordid)) refreshUsers();
 		String sql = "SELECT steamid FROM users WHERE discordid = '" + discordid + "'";
 		String steamid = DBHelper.executeQuery(sql)[0][0];
 		if (steamid == null || !Util.isSteamID64(steamid)) steamid = "noname";
 		return steamid;
 	}
 
+	/**
+	 * Возвращает Discord ID, если такой есть в базе данных
+	 *
+	 * @param steamid SteamID64
+	 * @return Discord ID
+	 */
 	public static String getDiscordidBySteamid(String steamid) {
-		if (!DBHelper.isExist("users", "steamid", steamid)) return "noname";
+		if (!DBHelper.isExists("users", "steamid", steamid)) return "noname";
 		String sql = "SELECT discordid FROM users WHERE steamid = '" + steamid + "'";
 		return DBHelper.executeQuery(sql)[0][0];
 	}
@@ -89,7 +95,7 @@ public class Util {
 		String table = "users";
 		int counter = 0;
 		for (IUser user : users) {
-			if (!DBHelper.isExist(table, "discordid", user.getStringID())) {
+			if (!DBHelper.isExists(table, "discordid", user.getStringID())) {
 				if (DBHelper.insert(table, new String[]{null, user.getStringID()})) {
 					counter++;
 				}
@@ -155,7 +161,7 @@ public class Util {
 	 * @param columnNames названия колонок (fixme я уже сам запутался зачем это надо)
 	 * @return массив названий колонок
 	 */
-	public static String[][] getColNames(String table, String[] columnNames) {
+	static String[][] getColNames(String table, String[] columnNames) {
 		StringBuilder columnNamesBuilder = new StringBuilder();
 		if (!columnNames[0].equals("*")) {
 			columnNamesBuilder.append(" AND column_name = '").append(columnNames[0]).append("'");
@@ -169,6 +175,7 @@ public class Util {
 	}
 
 	public static String makeTable(String table, String[] columnNames, String[][] data) {
+		// TODO: 17.02.2018 добавить заголовок в некоторых случаях
 		//сначала выясню какая колонка самая широкая:
 		//получаю названия колонок в массив:
 		String[][] colNames = getColNames(table, columnNames);
@@ -179,7 +186,7 @@ public class Util {
 					" WHERE " + colNames[i][0] + " IS NOT NULL ORDER BY length DESC";
 			try {
 				lengths[i] = Integer.parseInt(DBHelper.executeQuery(query)[0][0]);
-			} catch (ArrayIndexOutOfBoundsException e) {
+			} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
 				lengths[i] = 4;
 			}
 		}
@@ -259,10 +266,27 @@ public class Util {
 		return qMarks.substring(1);
 	}
 
+	/**
+	 * Возвращает уровень доступа пользователя todo для каждой гильдии должны быть свои настройки
+	 *
+	 * @param discordid Discord ID пользователя, для которого надо узнать ранг
+	 * @return уровень доступа пользователя (ранг)
+	 */
 	public static int getPriority(String discordid) {
 		String steamid = getSteamidByDiscordid(discordid);
 		String sql = "SELECT priority FROM users WHERE steamid = '" + steamid + "'";
 		return Integer.parseInt(DBHelper.executeQuery(sql)[0][0]);
+	}
+
+	/**
+	 * Оболочка для DBHelper.getOption() для быстрого доступа к уровню доступа для команды
+	 *
+	 * @param guildid гильдия
+	 * @param commandName имя команды
+	 * @return минимальный уровень доступа для использования команды
+	 */
+	public static int getPermission(String guildid, String commandName) {
+		return Integer.parseInt(DBHelper.getOption(guildid, commandName, "level"));
 	}
 
 	public static String getSound(String discordid, String column) {

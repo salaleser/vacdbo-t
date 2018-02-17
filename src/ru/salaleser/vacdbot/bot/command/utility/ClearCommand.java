@@ -20,7 +20,7 @@ public class ClearCommand extends Command {
 	private ArrayList<IMessage> dump = new ArrayList<>();
 
 	public ClearCommand() {
-		super("clear", new String[]{"c"}, 2);
+		super("clear", new String[]{"c"});
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class ClearCommand extends Command {
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		IUser user = null;
-		int limit = Integer.parseInt(DBHelper.getValueFromSettings(name, "limit"));
+		int limit = Integer.parseInt(DBHelper.getOption(guild.getStringID(), name, "limit"));
 		String regexp = null;
 		int index = 0;
 		if (args.length != 0) {

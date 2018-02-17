@@ -100,7 +100,7 @@ public class Bot {
 	private static void addCommands() { // TODO: 09.02.2018 скан на новые модули и подключаемые пользовательские модули
 		COMMAND_MANAGER.addCommand(new ConsoleCommand());
 		COMMAND_MANAGER.addCommand(new FindCommand());
-		COMMAND_MANAGER.addCommand(new HelpCommand(COMMAND_MANAGER));
+		COMMAND_MANAGER.addCommand(new HelpCommand());
 		COMMAND_MANAGER.addCommand(new PollCommand());
 		COMMAND_MANAGER.addCommand(new RandomCommand());
 		COMMAND_MANAGER.addCommand(new ReadyCommand());
@@ -134,6 +134,12 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new LeaveCommand());
 		COMMAND_MANAGER.addCommand(new TTSCommand());
 		COMMAND_MANAGER.addCommand(new UserCommand());
+		COMMAND_MANAGER.addCommand(new EventCommand());
+		COMMAND_MANAGER.addCommand(new ForeverAloneCommand());
+	}
+
+	public static void exec(IGuild guild, String commandName, String[] args) throws InterruptedException {
+		getCommandManager().getCommand(commandName).handle(guild, null, args);
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

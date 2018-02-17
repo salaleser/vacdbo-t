@@ -8,18 +8,19 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 public class GetCommand extends Command {
 
 	public GetCommand() {
-		super("get", 2);
+		super("get");
 	}
 
 	@Override
 	public void help(IMessage message) {
 		message.getChannel().sendMessage(buildHelp(
-				"Возвращает значения параметров команд.",
+				"Возвращает значения параметров команд своей гильдии.",
 				"`~get <команда>`.",
 				"нет.",
 				"`~get poll`.",
@@ -34,24 +35,32 @@ public class GetCommand extends Command {
 			StringBuilder stringBuilder = new StringBuilder();
 			ArrayList<Command> commands = new ArrayList<>();
 			for (Map.Entry e : Bot.getCommandManager().commands.entrySet()) commands.add((Command) e.getValue());
-			for (Command c : commands) stringBuilder.append(c.name).append(" — ").append(c.permissions).append("\n");
+			for (Command c : commands) stringBuilder.append(c.name).append(" — ").append(Arrays.toString(c.aliases)).append("\n");
 			message.getChannel().sendMessage(Util.block(stringBuilder.toString()));
 			return;
 		}
 
 		String table = "settings";
-		String name = "%";
+		String command = "%";
 		String key = "%";
-		if (args.length > 0) name = args[0];
+		if (args.length > 0) command = args[0];
 		if (args.length == 2) key = args[1];
 
-		String sql = "SELECT * FROM " + table + " WHERE command LIKE '" + name + "' AND key LIKE '" + key + "'";
+		String sqlDefaults = "SELECT * FROM " + table + " WHERE guildid = 'default' " +
+				"AND command LIKE '" + command + "' AND key LIKE '" + key + "' " +
+				"ORDER BY guildid, command, key, value";
+		String[][] dataDefaults = DBHelper.executeQuery(sqlDefaults);
+		String sql = "SELECT * FROM " + table + " WHERE guildid = '" + guild.getStringID() + "' " +
+				"AND command LIKE '" + command + "' AND key LIKE '" + key + "' " +
+				"ORDER BY guildid, command, key, value";
 		String[][] data = DBHelper.executeQuery(sql);
 
-		if (args.length > 0 && !Bot.getCommandManager().commands.containsKey(name)) {
+
+		if (args.length > 0 && !Bot.getCommandManager().commands.containsKey(command)) {
 			message.reply(" команда не поддерживается!");
-		} else if (data[0][0].isEmpty()) {
+		} else if (dataDefaults[0][0] == null) {
 			message.reply(" у команды нет настроек!");
+			return;
 		}
 		message.getChannel().sendMessage(Util.makeTable(table, new String[] {"*"}, data));
 	}

@@ -8,7 +8,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class PauseCommand extends Command {
 
 	public PauseCommand() {
-		super("pause", 3);
+		super("pause");
 	}
 
 	@Override

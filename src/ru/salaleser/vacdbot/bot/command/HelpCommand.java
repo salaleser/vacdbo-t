@@ -9,11 +9,9 @@ import sx.blah.discord.handle.obj.IMessage;
 import java.util.Map;
 
 public class HelpCommand extends Command {
-	private final CommandManager commandManager;
 
-	public HelpCommand(CommandManager manager) {
+	public HelpCommand() {
 		super("help", new String[]{"?"});
-		commandManager = manager;
 	}
 
 	@Override
@@ -23,7 +21,7 @@ public class HelpCommand extends Command {
 				"`~help [<команда>]`.",
 				"`~help` — покажет все доступные команды.",
 				"`~help vac`, `~help`.",
-				"хелп как хелп, что, хелпа никогда не видели?"
+				"хелп хелпа, хелп как хелп, что, хелпа никогда не видели?"
 				)
 		);
 	}
@@ -31,7 +29,7 @@ public class HelpCommand extends Command {
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
 		if (args.length != 0) {
-			Command command = commandManager.getCommand(args[0]);
+			Command command = Bot.getCommandManager().getCommand(args[0]);
 			if (command == null) {// FIXME: 17.11.2017 такой же блок в менеджере команд
 				message.reply("команда " + Util.code(args[0]) + " не поддерживается");
 				return;
@@ -41,10 +39,10 @@ public class HelpCommand extends Command {
 			int priority = Util.getPriority(message.getAuthor().getStringID());
 			StringBuilder msg = new StringBuilder(Util.b("Ваш уровень доступа " + Util.u(String.valueOf(priority)) +
 					", доступные команды: "));
-			for (Map.Entry<String, Command> entry : commandManager.commands.entrySet()) {
-				if (entry.getValue().permissions == 0 || priority <= entry.getValue().permissions) {
+			for (Map.Entry<String, Command> entry : Bot.getCommandManager().commands.entrySet()) {
+//				if (entry.getValue().permissions == 0 || priority <= entry.getValue().permissions) {
 					msg.append(Util.code(entry.getKey())).append(", ");
-				}
+//				}
 			}
 			//удаляет лишнюю запятую и пробел в конце:
 			msg.delete(msg.length() - 2, msg.length());
