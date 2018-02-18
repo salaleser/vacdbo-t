@@ -10,16 +10,14 @@ import java.util.Random;
 public class RandomCommand extends Command {
 
 	private String[] maps = {// FIXME: 16.11.2017 сделать один вариант, повторение кода!
-			"de_train",
 			"de_nuke",
-			"de_dust2",
+			"de_train",
 			"de_cache",
-			"de_mirage",
 			"de_inferno",
-			"de_cobblestone",
+			"de_dust2",
+			"de_mirage",
 			"de_overpass",
-			"cs_office",
-			"cs_agency"
+			"de_cobblestone"
 	};
 
 	public RandomCommand() {
@@ -34,46 +32,45 @@ public class RandomCommand extends Command {
 				"`~random` - генерация случайного числа от 1 до 6;\n" +
 						"`~random map [<число_карт>]` - выдача случайной карты (можно указать количество карт).",
 				"`~random 20`, `~random map 4`.",
-				"допустимые значения для чисел от 1 до 9999."
+				"допустимые значения для чисел от 2 до 999 999 999."
 				)
 		);
 	}
 
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
-		int range = 6;
-
-		if (args.length != 0) {
-			//если предустановленный вариант:
-			if (args[0].equals("map")) {
-				int numberOfMaps = maps.length;
-				if (args.length > 1 &&
-						Util.isNumeric(args[1]) &&
-						Integer.parseInt(args[1]) <= maps.length &&
-						Integer.parseInt(args[1]) > 0) {
-					numberOfMaps = Integer.parseInt(args[1]);
-				} else {
-					message.reply("\n**ошибка в первом аргументе** (использую значение " + numberOfMaps + ")");
-				}
-				int mapNumber = (int) (Math.random() * numberOfMaps);
-				message.getChannel().sendMessage("Играть будем на карте " + maps[mapNumber]);
-			}
-			//если первый аргумент оказался подходящим числом:
-			if (Util.isNumeric(args[0])) {
-				range = Integer.parseInt(args[0]);
-			} else {
-				message.reply("**неверный аргумент** (использую значение 6)");
-			}
-		} else {
-			message.reply("**не указаны аргументы** (рандомлю от 1 до 6):");
+		switch (args.length) {
+			case 0:
+				message.getChannel().sendMessage(getRandom("6"));
+				break;
+			case 1:
+				if (args[0].equals("map")) message.getChannel().sendMessage(getMap("666"));
+				else message.getChannel().sendMessage(getRandom(args[0]));
+				break;
+			case 2:
+				if (args[0].equals("map")) message.getChannel().sendMessage(getMap(args[1]));
+				break;
 		}
-		int random = (int) (Math.random() * range) + 1;
-		message.getChannel().sendMessage("Случайное число от 1 до " + range + ": `" + random + "`");
 	}
 
-	private String getRandomMap() {
-		int random = new Random().nextInt(maps.length);
-		return maps[random];
+	private String getRandom(String stringRange) {
+		int range;
+		if (Util.isNumeric(stringRange)) range = Integer.parseInt(stringRange);
+		else return Util.b("Неверный аргумент");
+		int random = (int) (Math.random() * range) + 1;
+		return Util.i("Случайное число от 1 до " + range + ": `" + random + "`");
+	}
+
+	private String getMap(String stringRange) {
+		int range;
+		if (Util.isNumeric(stringRange)) {
+			range = Integer.parseInt(stringRange);
+			if (range < 2) range = 2;
+			else if (range > maps.length) range = maps.length;
+		} else {
+			return Util.b("Неверный аргумент");
+		}
+		return Util.i("Играть будем на карте " + Util.b(maps[new Random().nextInt(range)]));
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
