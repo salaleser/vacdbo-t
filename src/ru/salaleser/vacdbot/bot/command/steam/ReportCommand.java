@@ -48,13 +48,14 @@ public class ReportCommand extends Command {
 			return;
 		}
 
-		if (!Util.isSteamID64(args[0])) {
+		String steamid = args[0];
+		if (Util.isUrl(steamid)) steamid = Util.getSteamidByCommunityid(steamid);
+		if (!Util.isSteamID64(steamid)) {
 			Logger.error("Ошибка в SteamID!");
-			message.reply("Ошибка в SteamID!");
+			message.reply("ошибка в SteamID!");
 			return;
 		}
 
-		String steamid = args[0];
 		ParserPlayerSummaries parserPlayerSummaries = new ParserPlayerSummaries();
 		if (parserPlayerSummaries.isExists("suspects", steamid)) {
 			message.reply("этот SteamID уже есть в базе данных!");
