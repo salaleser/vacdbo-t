@@ -34,6 +34,8 @@ public class PollCommand extends Command {
 		);
 	}
 
+	// FIXME: 23.02.2018 на данный момент при равном количестве голосов бот засчитывает победу первому варианту
+
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		message.getClient().changePlayingText("голосование");
@@ -94,7 +96,7 @@ public class PollCommand extends Command {
 		List<IReaction> reactions = qMessage.getReactions();
 
 		// FIXME: 17.11.2017 чёрная магия:
-		//проверка на чёрную магию от дискорда (по невыясненным причинам иногда рекций нет совсем):
+		//проверка на чёрную магию дискорда (по невыясненным причинам иногда реакций нет совсем):
 		if (reactions.isEmpty()) {
 			qMessage.edit(Util.i("Произошла магия, скорее всего чёрная, реакции не посчитались, " +
 					"поэтому голосование объявляется несостоявшимся по техническим причинам. Попробуйте ещё раз."));
