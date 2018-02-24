@@ -1,11 +1,20 @@
 package ru.salaleser.vacdbot;
 
+import com.voicerss.tts.Languages;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
+import org.jsoup.select.Elements;
 import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Util {
 	public static final long FIRST_STEAMID64 = 76561197960265729L;
@@ -28,8 +37,10 @@ public class Util {
 	 * @return true, если строка успешно прошла проверку, false — если нет
 	 */
 	public static boolean isSteamID64(String verifiable) {
-		return verifiable.length() == 17 && verifiable.matches("\\d+") &&
-				Long.parseLong(verifiable) > FIRST_STEAMID64 && Long.parseLong(verifiable) < LAST_STEAMID64;
+		return verifiable.length() == 17 &&
+				verifiable.matches("\\d+") &&
+//				Long.parseLong(verifiable) > FIRST_STEAMID64 &&
+				Long.parseLong(verifiable) < LAST_STEAMID64;
 	}
 
 	/**
@@ -38,13 +49,15 @@ public class Util {
 	 * @return true, если строка успешно прошла проверку, false — если нет
 	 */
 	public static boolean isDiscordUser(String verifiable) {
-		return verifiable.length() == 18 && verifiable.matches("\\d+")||
-				verifiable.startsWith("<@") && verifiable.endsWith(">");
+		return verifiable.matches("^\\d{18}$") || verifiable.matches("^<@!?\\d{18}>$");
 	}
 
-	public static boolean isRussian(String verifiable) {
-		String ruNameRegEx = "[А-ЯЁ][-А-яЁё]+";
-		return verifiable.substring(0, 1).matches(ruNameRegEx);
+	public static boolean isDiscordRole(String verifiable) {
+		return verifiable.matches("^<@&\\d{18}>$");
+	}
+
+	public static boolean isUrl(String verifiable) {
+		return verifiable.matches("^https?//steamcommunity.com/\\S*$");
 	}
 
 	/**
@@ -76,6 +89,22 @@ public class Util {
 		String steamid = DBHelper.executeQuery(sql)[0][0];
 		if (steamid == null || !Util.isSteamID64(steamid)) steamid = "noname";
 		return steamid;
+	}
+
+	public static String getSteamidByCommunityid(String communityid) {
+		Document document;
+		String request = communityid + "?xml=1";
+		try {
+			document = Jsoup.connect(request).get();
+		} catch (IllegalArgumentException e) {
+			Logger.error("Неправильный адрес");
+			return "неправильный адрес";
+		} catch (IOException e) {
+			e.printStackTrace();
+			Logger.error("Пустой ответ от сервера");
+			return "пустой ответ";
+		}
+		return document.select("steamID64").first().text();
 	}
 
 	/**
