@@ -13,7 +13,7 @@ import ru.salaleser.vacdbot.gui.Log;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
-import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.util.DiscordException;
 
 import java.util.ArrayList;
@@ -23,9 +23,6 @@ public class Bot {
 	private static ArrayList<IGuild> guilds = new ArrayList<>();
 	public static ArrayList<IGuild> getGuilds() {
 		return guilds;
-	}
-	public static void setGuilds(ArrayList<IGuild> guilds) {
-		Bot.guilds = guilds;
 	}
 	public static void addGuild(IGuild guild) {
 		Bot.guilds.add(guild);
@@ -98,7 +95,6 @@ public class Bot {
 	}
 
 	private static void addCommands() { // TODO: 09.02.2018 скан на новые модули и подключаемые пользовательские модули
-
 		COMMAND_MANAGER.addCommand(new ConsoleCommand());
 		COMMAND_MANAGER.addCommand(new FindCommand());
 		COMMAND_MANAGER.addCommand(new HelpCommand());
@@ -116,7 +112,6 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new SetCommand());
 		COMMAND_MANAGER.addCommand(new GetCommand());
 		COMMAND_MANAGER.addCommand(new CalcCommand());
-		COMMAND_MANAGER.addCommand(new IdCommand());
 		COMMAND_MANAGER.addCommand(new TransCommand());
 		COMMAND_MANAGER.addCommand(new CostCommand());
 		COMMAND_MANAGER.addCommand(new TimerCommand());
@@ -125,7 +120,6 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new SelectCommand());
 		COMMAND_MANAGER.addCommand(new CheckCommand());
 		COMMAND_MANAGER.addCommand(new InviteCommand());
-		COMMAND_MANAGER.addCommand(new TaskCommand());
 		COMMAND_MANAGER.addCommand(new TestCommand());
 		COMMAND_MANAGER.addCommand(new PlayerCommand());
 		COMMAND_MANAGER.addCommand(new PlayCommand());
@@ -137,6 +131,7 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new UserCommand());
 		COMMAND_MANAGER.addCommand(new EventCommand());
 		COMMAND_MANAGER.addCommand(new ForeverAloneCommand());
+		COMMAND_MANAGER.addCommand(new TrainingCommand());
 	}
 
 	public static void exec(IGuild guild, String commandName, String[] args) throws InterruptedException {
