@@ -8,7 +8,7 @@ import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Map;
 
-public class HelpCommand extends Command {
+public class HelpCommand extends Command {// TODO: 24.02.2018 добавить категории с описанием
 
 	public HelpCommand() {
 		super("help", new String[]{"?"});
