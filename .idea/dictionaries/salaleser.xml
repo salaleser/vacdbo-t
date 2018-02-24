@@ -13,6 +13,7 @@
       <w>colstoupdate</w>
       <w>commandname</w>
       <w>communitybanned</w>
+      <w>communityid</w>
       <w>coplay</w>
       <w>coplayer</w>
       <w>coplayers</w>
@@ -26,6 +27,7 @@
       <w>guildid</w>
       <w>hashmap</w>
       <w>hegrenade</w>
+      <w>hong</w>
       <w>incgrenade</w>
       <w>joinsound</w>
       <w>jointts</w>

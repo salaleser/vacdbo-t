@@ -18,10 +18,10 @@ public class DBHelper {
 	 * @return значение
 	 */
 	public static String getOption(String guildid, String commandname, String key) {
-		String sqlFirstPart = "SELECT value FROM settings WHERE guildid = '";
-		String sqlSecondPart = "' AND command = '" + commandname + "' AND key LIKE '" + key + "'";
-		String value = executeQuery(sqlFirstPart + guildid + sqlSecondPart)[0][0];
-		if (value == null) value = executeQuery(sqlFirstPart + "default" + sqlSecondPart)[0][0];
+		String guildQuery = "SELECT value FROM settings WHERE guildid = '" + guildid + "' AND command = '" + commandname + "' AND key LIKE '" + key + "'";
+		String nullQuery = "SELECT value FROM settings WHERE guildid is NULL AND command = '" + commandname + "' AND key LIKE '" + key + "'";
+		String value = executeQuery(guildQuery)[0][0];
+		if (value == null) value = executeQuery(nullQuery)[0][0];
 		return value;
 	}
 
@@ -58,6 +58,15 @@ public class DBHelper {
 		return executeQuery(sql)[0][0] != null;
 	}
 
+	/**
+	 * Этот метод всего лишь частный случай метода DBHelper.isExists специально для команды "ready"
+	 *
+	 * @param table таблица, ваш К.О.
+	 * @param column колонка, он же
+	 * @param value ну вы понели
+	 * @param date тоже
+	 * @return ага
+	 */
 	public static boolean isAlreadyExistToday(String table, String column, String value, String date) {
 		String sql = "SELECT " + column + " FROM " + table + " " +
 				"WHERE " + column + " = '" + value + "' AND date = '" + date + "'";

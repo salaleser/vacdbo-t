@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
  * Рассылает сообщения во все каналы с именем "log" всех гильдий,
  * а также в GUI и консоль
  */
-public class Logger {
+public class Logger { // FIXME: 23.02.2018 сообщения идут во все логи всех гильдий
 
 	private static Gui gui = Bot.gui;
 	private final static String LOG_CHANNEL_NAME = "log";
