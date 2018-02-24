@@ -1,17 +1,15 @@
 package ru.salaleser.vacdbot.bot.command;
 
-import com.vdurmont.emoji.Emoji;
 import com.voicerss.tts.*;
 import ru.salaleser.vacdbot.*;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.IShard;
-import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class TTSCommand extends Command {
 
@@ -23,7 +21,7 @@ public class TTSCommand extends Command {
 	private static final String PATH = "cache_tts/";
 	private static final String EXTENSION = ".mp3";
 
-	public void handle(IGuild guild, IMessage message, String[] args) {
+	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
 		if (args.length == 0) {
 			File folder = new File(PATH);
 			long folderSize = 0;
@@ -36,33 +34,54 @@ public class TTSCommand extends Command {
 			return;
 		}
 
-		//определяю язык, инглиш по умолчанию:
-		// TODO: 23.02.2018 научить бота определять составные фразы из разных языков, сейчас фраза должна состоять из слов одного языка
+		//определяю язык, по умолчанию на основании региона гильдии:
 		String language = Languages.English_UnitedStates;
-		if (args[0].matches("^[\\u4E00-\\u9FA5]+$")) language = Languages.Chinese_China;
-		if (args[0].matches("^[А-Яа-яЁё]+$")) language = Languages.Russian;
-		if (args[0].matches("^\\W+$")) language = Languages.Russian; //для символов только русский для смеху
-		if (args[0].matches("^\\d+$")) language = Languages.Russian; //для чисел тоже русский
+		switch (guild.getRegion().getName()) {
+			case "Brazil": language = Languages.Portuguese_Brazil; break;
+			case "Western Europe":
+			case "Central Europe": language = Languages.English_GreatBritain; break;
+			case "Hong Kong": language = Languages.Chinese_HongKong; break;
+			case "Japan": language = Languages.Japanese; break;
+			case "Russia": language = Languages.Russian; break;
+			case "Sydney": language = Languages.English_Australia; break;
+			case "Singapore":
+			case "US Central":
+			case "US East":
+			case "US South":
+			case "US West": language = Languages.English_UnitedStates; break;
+		}
+		// TODO: 23.02.2018 научить бота определять составные фразы из разных языков, сейчас фраза должна состоять из слов одного языка
+		//определяю язык по первой букве фразы:
+		if (args[0].substring(0, 1).matches("^[\\u4E00-\\u9FA5]+$")) language = Languages.Chinese_China;
+		else if (args[0].substring(0, 1).matches("^[А-ЯЁа-яё]+$")) language = Languages.Russian;
+		else if (args[0].substring(0, 1).matches("^[A-Za-z]+$")) language = Languages.English_UnitedStates;
 
-		//добавлю эмоции с флагами по фану:
-		switch (language) {
-			case "ru-ru": message.addReaction("\uD83C\uDDF7\uD83C\uDDFA"); break;
-			case "en-us": message.addReaction("\uD83C\uDDFA\uD83C\uDDF8"); break;
-			case "zh-cn": message.addReaction("\uD83C\uDDE8\uD83C\uDDF3"); break;
+		//добавлю эмоции с флагами по фану (если сообщения нет, то и добавлять не к чему):
+		if (message != null) {
+			switch (language) {
+				case "en-gb": message.addReaction("\uD83C\uDDEC\uD83C\uDDE7"); break;
+				case "en-us": message.addReaction("\uD83C\uDDFA\uD83C\uDDF8"); break;
+				case "pt-br": message.addReaction("\uD83C\uDDE7\uD83C\uDDF7"); break;
+				case "zh-hk": message.addReaction("\uD83C\uDDED\uD83C\uDDF0"); break;
+				case "ja-jp": message.addReaction("\uD83C\uDDEF\uD83C\uDDF5"); break;
+				case "ru-ru": message.addReaction("\uD83C\uDDF7\uD83C\uDDFA"); break;
+				case "en-au": message.addReaction("\uD83C\uDDE6\uD83C\uDDFA"); break;
+				case "zh-cn": message.addReaction("\uD83C\uDDE8\uD83C\uDDF3"); break;
+			}
 		}
 
 		String text = String.join(" ", args);
 		String filename;
+		boolean cached = false;
 		//если запись уже существует, то не стоит тревожить лишний раз синтезатор, тем более, что он платный:
-		if (DBHelper.isExists(TABLE, "text", text)) {
-			filename = DBHelper.executeQuery("SELECT filename FROM " + TABLE + " WHERE text = '" + text + "'")[0][0];
-			//вытаскиваю количество проигрываний этого звука:
-			String sqlCounter = "SELECT counter FROM " + TABLE + " WHERE text = '" + text + "'";
-			int counter = Integer.parseInt(DBHelper.executeQuery(sqlCounter)[0][0]);
-			//вытаскиваю всю строку для модификации:
-			String query = "SELECT * FROM " + TABLE + " WHERE text = '" + text + "'";
-			String[] row = DBHelper.executeQuery(query)[0];
-			//модифицирую:
+		String sql = "SELECT * FROM " + TABLE + " WHERE text = '" + text + "' AND language = '" + language + "'";
+		if (DBHelper.executeQuery(sql)[0][0] != null) {
+			cached = true;
+			//вытаскиваю всю строку:
+			String[] row = DBHelper.executeQuery(sql)[0];
+			filename = row[1];
+			//увеличиваю счетчик проигрываний:
+			int counter = Integer.parseInt(row[2]);
 			row[2] = String.valueOf(++counter);
 			//пихаю обратно:
 			DBHelper.update(TABLE, row);
@@ -104,7 +123,7 @@ public class TTSCommand extends Command {
 			FileOutputStream fileOutputStream = null;
 			try {
 				fileOutputStream = new FileOutputStream(PATH + filename + EXTENSION);
-				DBHelper.insert(TABLE, new String[]{text, filename, "1"});
+				DBHelper.insert(TABLE, new String[]{text, filename, "1", language});
 			} catch (FileNotFoundException e) {
 				Logger.error("Ошибка чтения файла!");
 				e.printStackTrace();
@@ -119,6 +138,10 @@ public class TTSCommand extends Command {
 		}
 
 		Player.queueFile(guild, PATH + filename + EXTENSION);
+
+		//значок кэшированной записи для красоты:
+		TimeUnit.MILLISECONDS.sleep(100);
+		if (cached && message != null) message.addReaction("\uD83D\uDCBE");
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
