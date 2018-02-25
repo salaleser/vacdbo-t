@@ -22,16 +22,15 @@ public class ReportCommand extends Command {
 	private StringBuilder resultBuilder;
 
 	public ReportCommand() {
-		super("report");
+		super("report", STEAM, "Добавляет подозрительный профиль в базу данных и позволяет отслеживать получение банов.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Добавляет подозрительный профиль в базу данных и позволяет отслеживать получение банов.",
-				"`~report [<SteamID64> [<описание>]]`.",
-				"`~report` — проверяет наличие банов у подозреваемых.",
-				"`~report 76561198446059611 nuke подрубил на счёте 13-8 играли впятером`.",
+		message.getChannel().sendMessage(buildHelp(description,
+				"`~" + name + " [<SteamID64> [<описание>]]`.",
+				"`~" + name + "` — проверяет наличие банов у подозреваемых.",
+				"`~" + name + " 76561198446059611 nuke подрубил на счёте 13-8 играли впятером`.",
 				"можно установить количество дней."
 				)
 		);

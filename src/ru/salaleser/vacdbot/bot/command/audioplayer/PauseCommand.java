@@ -8,11 +8,11 @@ import sx.blah.discord.handle.obj.IMessage;
 public class PauseCommand extends Command {
 
 	public PauseCommand() {
-		super("pause");
+		super("pause", PLAYER, "Ставит паузу текущему треку бота или снимает с паузы.");
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		Player.pause(guild);
 	}
 }

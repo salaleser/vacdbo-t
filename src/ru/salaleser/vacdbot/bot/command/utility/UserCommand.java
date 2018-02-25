@@ -12,13 +12,12 @@ import java.util.ArrayList;
 public class UserCommand extends Command {
 
 	public UserCommand() {
-		super("user");
+		super("user", UTILITY, "Устанавливает SteamID64 или имя пользователю.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Устанавливает SteamID64 или имя пользователю.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~user <пользователь_Discord> [<SteamID64> | <имя>]`.",
 				"`~user` — сканирует пользователей гильдии, добавляет новых пользователей в базу данных и" +
 						"выводит в чат информацию по заполнению БД.",

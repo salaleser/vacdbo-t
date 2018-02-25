@@ -13,13 +13,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StatusCommand extends Command {
 
 	public StatusCommand() {
-		super("status");
+		super("status", MISC, "Устанавливает гениальный статус.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Устанавливает боту статус.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~status [<ваш_остроумный_статус>]`.",
 				"`~status` — гениальный статус для бота и в чат с сайта statusi.com.ru;\n" +
 						"`~status bot` — немного информации о боте;\n" +

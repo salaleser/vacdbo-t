@@ -10,11 +10,11 @@ public class TestCommand extends Command {
 	private IPrivateChannel privateChannel;
 
 	public TestCommand() {
-		super("test", new String[]{"тест"});
+		super("test", MISC, "Запускает тестирование.", new String[]{"тест"});
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		privateChannel = message.getAuthor().getOrCreatePMChannel();
 		privateChannel.sendMessage("" +
 				"Вы готовы потратить 10 минут времени на то, чтобы ответить на все вопросы теста?");

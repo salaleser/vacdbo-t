@@ -17,13 +17,12 @@ public class VacCommand extends Command {
 	private final HttpClient httpClient = new HttpClient();
 
 	public VacCommand() {
-		super("vac", new String[]{"вак"});
+		super("vac", STEAM, "Показывает забаненных друзей пользователя за указанный период времени.", new String[]{"вак"});
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Показывает забаненных друзей пользователя за указанный период времени.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~vac [<количество_дней> [<SteamID64> | <пользователь_Discord>]]`.",
 				"`~vac` — ваши друзья, получившие бан за прошедший день;\n" +
 						"`~vac <количество_дней>` — ваши друзья, получившие бан за указанное количество дней.",

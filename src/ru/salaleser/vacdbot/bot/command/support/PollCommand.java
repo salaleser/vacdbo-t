@@ -12,18 +12,16 @@ import sx.blah.discord.handle.obj.IUser;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class PollCommand extends Command {
 
 	public PollCommand() {
-		super("poll");
+		super("poll", SUPPORT, "Создаёт голосование.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Создаёт голосование.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~poll [<вопрос>?[<вариант_ответа>/[<вариант_ответа>]]]`.",
 				"`~poll` — голосование с рандомным вопросом;\n" +
 						"`~poll map` — голосование за карту в ксго.",
@@ -37,7 +35,7 @@ public class PollCommand extends Command {
 	// FIXME: 23.02.2018 на данный момент при равном количестве голосов бот засчитывает победу первому варианту
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		message.getClient().changePlayingText("голосование");
 
 		int countdown = 20;
@@ -58,16 +56,16 @@ public class PollCommand extends Command {
 		//добавляю кнопки для голосования в виде реакций:
 		// FIXME: 30.11.2017 Лёха из будущего, ну научись уже пользоваться новыми молодёжными эмодзи, а?
 		if (answers.length == 0 || answers.length == 1) {
-			TimeUnit.MILLISECONDS.sleep(100);
+			Util.delay(100);
 			qMessage.addReaction("👍");
-			TimeUnit.MILLISECONDS.sleep(100);
+			Util.delay(100);
 			qMessage.addReaction("👎");
 		} else if (answers.length <= 10) {
 			for (int i = 0; i < answers.length; i++) {
 				answersEnum.append(getNumberEmoji(i)).append(" — ").append(Util.code(answers[i])).append("\n");
 			}
 			for (int i = 0; i < answers.length; i++) {
-				TimeUnit.MILLISECONDS.sleep(100);
+				Util.delay(100);
 				qMessage.addReaction(getNumberEmoji(i));
 			}
 		} else {
@@ -82,17 +80,17 @@ public class PollCommand extends Command {
 		}
 		String pollWrapper = "\n" + question + "\n" + answersEnum;
 		for (int i = countdown; i > 0; i--) {
-			TimeUnit.SECONDS.sleep(1);
+			Util.delay(1000);
 			progressBar = fillProgressBar(barchar, i);
 			qMessage.edit(Util.i("Голосование завершится через " + i + " с") +
 					Util.block(progressBar.toString()) + pollWrapper);
 		}
-		TimeUnit.SECONDS.sleep(1);
+		Util.delay(1000);
 		qMessage.edit(Util.i("Ставки сделаны! Ставок больше нет. Идёт подсчёт голосов...") +
 				Util.block(" ") + pollWrapper);
 
 		//получаю реакции-голоса пользователей в отдельный лист:
-		TimeUnit.SECONDS.sleep(2);
+		Util.delay(2000);
 		List<IReaction> reactions = qMessage.getReactions();
 
 		// FIXME: 17.11.2017 чёрная магия:

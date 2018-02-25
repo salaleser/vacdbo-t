@@ -5,7 +5,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.salaleser.vacdbot.Logger;
-import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
@@ -16,7 +15,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class RepCommand extends Command {
 	private static final String BASE_URL = "http://steamcommunity.com/profiles/";
@@ -37,23 +35,22 @@ public class RepCommand extends Command {
 	private static Document document;
 
 	public RepCommand() {
-		super("rep");
+		super("rep", STEAM, "Считает репутацию по странной формуле.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Считает репутацию по странной формуле.",
-				"`~rep [<SteamID64>]`.",
-				"`~rep` — считает репутацию salaleser.",
-				"`~rep 76561198095972970`.",
+		message.getChannel().sendMessage(buildHelp(description,
+				"`~" + name + " [<SteamID64>]`.",
+				"`~" + name + "` — считает репутацию salaleser.",
+				"`~" + name + " 76561198095972970`.",
 				"в разработке."
 				)
 		);
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		String steamid = Util
 				.getSteamidByDiscordid(message.getAuthor().getStringID());
 		if (args.length > 0 && Util.isSteamID64(args[0])) steamid = args[0];
@@ -138,7 +135,7 @@ public class RepCommand extends Command {
 			message.getChannel().sendMessage("Все *(почти, не получается больше сотни вывести пока)* комментарии:");
 			for (StringBuilder comment : commentsAll) {
 				message.getChannel().sendMessage(comment.toString());
-				TimeUnit.SECONDS.sleep(1);
+				Util.delay(1000);
 			}
 		}
 	}

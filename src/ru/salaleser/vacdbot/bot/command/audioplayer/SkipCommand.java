@@ -8,11 +8,11 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SkipCommand extends Command {
 
 	public SkipCommand() {
-		super("skip");
+		super("skip", PLAYER, "Пропускает текущий трек.");
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		Player.skip(guild);
 	}
 }

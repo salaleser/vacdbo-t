@@ -7,13 +7,12 @@ import sx.blah.discord.handle.obj.IMessage;
 public class QuitCommand extends Command {
 
 	public QuitCommand() {
-		super("quit", new String[]{"exit"});
+		super("quit", UTILITY, "Выключает бота.", new String[]{"exit"});
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Выключает бота.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~quit`.",
 				"нет.",
 				"`~quit`.",

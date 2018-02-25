@@ -21,13 +21,12 @@ public class RandomCommand extends Command {
 	};
 
 	public RandomCommand() {
-		super("random");
+		super("random", SUPPORT, "Генерирует случайное число.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Генерирует случайное число.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~random [<диапазон>]`.",
 				"`~random` - генерация случайного числа от 1 до 6;\n" +
 						"`~random map [<число_карт>]` - выдача случайной карты (можно указать количество карт).",

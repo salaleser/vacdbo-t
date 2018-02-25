@@ -21,13 +21,12 @@ import java.util.ArrayList;
 public class TransCommand extends Command {
 
 	public TransCommand() {
-		super("trans");
+		super("trans", SUPPORT, "Перевод слова с сайта http://wooordhunt.ru.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Перевод слова с сайта http://wooordhunt.ru.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~trans <русское_слово | английское_слово>`.",
 				"нет.",
 				"`~trans constellation`, `~trans кисломолочный`.",

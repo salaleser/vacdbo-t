@@ -1,20 +1,20 @@
 package ru.salaleser.vacdbot.bot.command;
 
+import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
 
 public class InviteCommand extends Command {
 
 	public InviteCommand() {
-		super("invite");
+		super("invite", MISC, "Приглашает пользователей в голосовой канал.");
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		final IChannel channel = message.getChannel();
 		final IVoiceChannel voice = Bot.getGuilds().get(0).getVoiceChannelsByName("General").get(0); //fixme hardcode
 		final IRole officer = Bot.getGuilds().get(0).getRolesByName("Офицеры").get(0); //fixme hardcode
@@ -25,9 +25,9 @@ public class InviteCommand extends Command {
 				IMessage inviteMessage = channel.sendMessage(userHere +
 						", для вас последнее китайское приглашение в голосовой чат №" +
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("SSS")));
-				TimeUnit.SECONDS.sleep(3);
+				Util.delay(3000);
 				inviteMessage.delete();
-				TimeUnit.SECONDS.sleep(2);
+				Util.delay(2000);
 			}
 		}
 	}

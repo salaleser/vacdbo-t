@@ -18,13 +18,12 @@ public class EventCommand extends Command {
 	private static final String EVENTS_CHANNEL_NAME = "events";
 
 	public EventCommand() {
-		super("event");
+		super("event", UTILITY, "Управляет событиями.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Управляет событиями.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~event <метод> <час> <минута> <задержка_(дней)> <команда> [<аргументы>]`.",
 				"`~event` — показывает все события этой гильдии.",
 				"`~event add training 17.02.18 14:00 Треня Повторяем кэш, разучиваем сплит А`.",
@@ -36,7 +35,7 @@ public class EventCommand extends Command {
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		String table = "events";
 		if (args.length == 0) {
 			String sql = "SELECT * FROM " + table + " WHERE guildid = '" + guild.getStringID() + "' " + "ORDER BY guildid, date, hour, minute";

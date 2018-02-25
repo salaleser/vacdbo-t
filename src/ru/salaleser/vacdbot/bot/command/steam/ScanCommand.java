@@ -10,7 +10,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class ScanCommand extends Command {
 
 	public ScanCommand() {
-		super("scan");
+		super("scan", STEAM);
 	}
 
 	@Override

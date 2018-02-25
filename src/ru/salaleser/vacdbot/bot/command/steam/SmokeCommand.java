@@ -7,13 +7,12 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SmokeCommand extends Command {
 
 	public SmokeCommand() {
-		super("smoke");
+		super("smoke", STEAM, "Показывает смоки на карте.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Показывает смоки на карте.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~smoke [<название_карты>]`.",
 				"`~smoke nuke` - смоки на ньюке.",
 				"`~smoke nuke`.",

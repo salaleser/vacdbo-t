@@ -8,11 +8,11 @@ import sx.blah.discord.handle.obj.IMessage;
 public class PlayCommand extends Command {
 
 	public PlayCommand() {
-		super("play", new String[]{"p"});
+		super("play", PLAYER, "Воспроизводит аудиофайл.", new String[]{"p"});
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		if (args.length == 0) return;
 		Player.join(guild);
 		switch (args[0].toLowerCase()) {

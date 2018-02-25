@@ -16,13 +16,12 @@ import java.util.Set;
 public class FindCommand extends Command {
 
 	public FindCommand() {
-		super("find");
+		super("find", SUPPORT, "Возвращает четыре первые ссылки по запросу в гугл.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.reply(buildHelp(
-				"Возвращает четыре первые ссылки по запросу.",
+		message.reply(buildHelp(description,
 				"`~find <поисковый_запрос>`.",
 				"нет.",
 				"`~find как похудеть`.",

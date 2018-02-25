@@ -14,10 +14,10 @@ import java.util.ArrayList;
 public class TrainingCommand extends Command {
 
 	public TrainingCommand() {
-		super("training");
+		super("training", MISC, "Оповещает указанные роли и пользователей.");
 	}
 
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		ArrayList<IRole> roleList = new ArrayList<>();
 		ArrayList<IUser> userList = new ArrayList<>();
 

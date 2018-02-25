@@ -12,7 +12,7 @@ public class TipCommand extends Command {
 			"Не покупай петуха"};
 
 	public TipCommand() {
-		super("tip");
+		super("tip", MISC, "Выдает гениальный совет по игре в ксго.");
 	}
 
 	@Override

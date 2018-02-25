@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class TimerCommand extends Command {
 
 	public TimerCommand() {
-		super("timer", new String[]{"t"});
+		super("timer", SUPPORT, "Устанавливает таймер.", new String[]{"t"});
 	}
 
 	@Override

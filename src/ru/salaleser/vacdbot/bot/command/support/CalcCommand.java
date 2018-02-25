@@ -6,7 +6,6 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class CalcCommand extends Command {
 
@@ -14,13 +13,12 @@ public class CalcCommand extends Command {
 	private ArrayList<Character> operators = new ArrayList<>();
 
 	public CalcCommand() {
-		super("calc");
+		super("calc", SUPPORT, "Производит нехитрые манипуляции с числами.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Производит нехитрые манипуляции с числами.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~calc <операнд1><оператор><операнд2>`.",
 				"пока нет.",
 				"`=103*23`.",
@@ -32,7 +30,7 @@ public class CalcCommand extends Command {
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		operands.clear();
 		operators.clear();
 		if (args.length == 0) return;
@@ -60,7 +58,7 @@ public class CalcCommand extends Command {
 		String expression = operand1 + "" + operators.get(0) + "" + operand2 + "=" +
 				Util.b(calculate(operand1, operand2).get(0).toString());
 
-		TimeUnit.MILLISECONDS.sleep(500);
+		Util.delay(500);
 
 		rMessage.edit(removeZerosAndDots(expression));
 	}

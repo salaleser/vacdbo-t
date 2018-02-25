@@ -8,7 +8,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class ServerCommand extends Command {
 
 	public ServerCommand() {
-		super("server", new String[]{"сервер"});
+		super("server", STEAM, "Показывает ссылки на тренировочный сервер.", new String[]{"сервер"});
 	}
 
 	@Override

@@ -16,7 +16,6 @@ import sx.blah.discord.handle.obj.IMessage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class CostCommand extends Command {
 
@@ -24,11 +23,11 @@ public class CostCommand extends Command {
 	private ParserInventory parserInventory = new ParserInventory();
 
 	public CostCommand() {
-		super("cost");
+		super("cost", STEAM, "Считает стоимость инвентаря.");
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		String steamid = Util.getSteamidByDiscordid(message.getAuthor().getStringID());
 		if (args.length > 0) {
 			if (Util.isSteamID64(args[0])) {
@@ -64,7 +63,7 @@ public class CostCommand extends Command {
 		for (Map.Entry<String, String> item : items.entrySet()) {
 			totalCost += getPriceByMarketCsgoCom(item);
 			//по правилам сайта https://market.csgo.com/docs/ не более пяти запросов в секунду:
-			TimeUnit.MILLISECONDS.sleep(200);
+			Util.delay(200);
 		}
 
 		//целочисленная сумма в рублях и копейках:

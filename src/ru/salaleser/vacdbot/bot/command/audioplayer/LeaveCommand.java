@@ -9,11 +9,11 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 public class LeaveCommand extends Command {
 
 	public LeaveCommand() {
-		super("leave");
+		super("leave", PLAYER, "Отключает бота из голосового канала.");
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		guild.getConnectedVoiceChannel().leave();
 	}
 }

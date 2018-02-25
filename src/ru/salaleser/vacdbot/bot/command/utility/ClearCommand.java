@@ -11,7 +11,6 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageHistory;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,13 +19,12 @@ public class ClearCommand extends Command {
 	private ArrayList<IMessage> dump = new ArrayList<>();
 
 	public ClearCommand() {
-		super("clear", new String[]{"c"});
+		super("clear", UTILITY, "Удаляет сообщения.", new String[]{"c"});
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Удаляет сообщения.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~clear [<Discord_ID>] [<количество_соощений>] [<условие>]`.",
 				"нет.",
 				"`~clear @salaleser 10 \\u007e.*`.",
@@ -36,7 +34,7 @@ public class ClearCommand extends Command {
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		IUser user = null;
 		int limit = Integer.parseInt(DBHelper.getOption(guild.getStringID(), name, "limit"));
 		String regexp = null;
@@ -49,7 +47,7 @@ public class ClearCommand extends Command {
 				message.delete();
 				for (IMessage msg : dump) {
 					msg.delete();
-					TimeUnit.MILLISECONDS.sleep(500);
+					Util.delay(500);
 				}
 				message.getClient().changePlayingText(Bot.STATUS);
 				return;

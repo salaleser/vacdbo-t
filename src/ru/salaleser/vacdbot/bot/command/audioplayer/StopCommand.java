@@ -8,11 +8,11 @@ import sx.blah.discord.handle.obj.IMessage;
 public class StopCommand extends Command {
 
 	public StopCommand() {
-		super("stop");
+		super("stop", PLAYER, "Останавливает трек и очищает очередь воспроизведения.");
 	}
 
 	@Override
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		Player.stop(guild);
 	}
 }

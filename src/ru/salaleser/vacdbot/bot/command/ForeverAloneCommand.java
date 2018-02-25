@@ -1,17 +1,16 @@
 package ru.salaleser.vacdbot.bot.command;
 
-import ru.salaleser.vacdbot.*;
+import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 public class ForeverAloneCommand extends Command {
 
 	public ForeverAloneCommand() {
-		super("foreveralone");
+		super("foreveralone", MISC, "Активирует высокоинтеллектуальный диалог с ботом.");
 	}
 
 	private long started;
@@ -23,7 +22,7 @@ public class ForeverAloneCommand extends Command {
 			"я с тобой согласна", "продолжай", "я слушаю", "верно", "согласна", "вот это да?!", "не уверена",
 			"дело говоришь", "ни хуя себе!", "ух ты!", "не может быть!", "вот это ты меня рассмешил"};
 
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		if (args.length != 2 && !Util.isDiscordUser(args[1])) return;
 		switch (args[0]) {
 			case "started":

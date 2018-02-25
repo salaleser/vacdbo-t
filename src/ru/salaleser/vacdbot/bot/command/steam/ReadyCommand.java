@@ -18,24 +18,23 @@ public class ReadyCommand extends Command { // TODO: 17.02.2018 добавить
 	private IUser author;
 	private String table = "ready";
 	private String id;
-	private StringBuilder description;
+	private StringBuilder descr;
 	private String date;
 	private String time;
 	private StringBuilder readyBuilder;
 	private StringBuilder notReadyBuilder;
 
 	public ReadyCommand() {
-		super("ready", new String[]{"r"});
+		super("ready", STEAM, "Оповещает тиммейтов о готовности к игре или занятости.", new String[]{"r"});
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Оповещает тиммейтов о готовности к игре или занятости.",
-				"`~ready [<примечание>]`.",
-				"`~ready` — оповещает обладателей указанной роли о готовности к игре;\n" +
-						"`~ready remove` — удаляет из базы данных на сегодня;\n" +
-						"`~ready not` — заносит в список занятых.",
+		message.getChannel().sendMessage(buildHelp(description,
+				"`~" + name + " [<примечание>]`.",
+				"`~" + name + "` — оповещает обладателей указанной роли о готовности к игре;\n" +
+						"`~" + name + " remove` — удаляет из базы данных на сегодня;\n" +
+						"`~" + name + " not` — заносит в список занятых.",
 				"`~ready сегодня играю до трех ночи`, `~ready две катки на трейне заверните`.",
 				"нет."
 				)
@@ -47,7 +46,7 @@ public class ReadyCommand extends Command { // TODO: 17.02.2018 добавить
 		channel = message.getChannel();
 		author = message.getAuthor();
 		id = author.getStringID();
-		description = new StringBuilder();
+		descr = new StringBuilder();
 		date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.YY"));
 		time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
 
@@ -102,14 +101,14 @@ public class ReadyCommand extends Command { // TODO: 17.02.2018 добавить
 						break;
 					}
 					String[] args2 = Arrays.copyOfRange(args, 1, args.length);
-					for (String arg : args2) description.append(" ").append(arg);
-					String[] notReadyCols = new String[] {id, date, time, description.toString(), "false"};
+					for (String arg : args2) descr.append(" ").append(arg);
+					String[] notReadyCols = new String[] {id, date, time, descr.toString(), "false"};
 					DBHelper.insert(table, notReadyCols);
 					message.getChannel().sendMessage("<@&286563715157852180>, " +
 							message.getAuthor() + " сегодня занят.");
 					break;
 				default:
-					for (String arg : args) description.append(" ").append(arg);
+					for (String arg : args) descr.append(" ").append(arg);
 					add();
 			}
 		}
@@ -126,7 +125,7 @@ public class ReadyCommand extends Command { // TODO: 17.02.2018 добавить
 			alreadyExist();
 			return;
 		}
-		String[] readyCols = new String[] {id, date, time, description.toString(), "true"};
+		String[] readyCols = new String[] {id, date, time, descr.toString(), "true"};
 		DBHelper.insert(table, readyCols);
 		//<@&286563715157852180> = @Офицеры fixme hardcode
 		channel.sendMessage("<@&286563715157852180>, " +

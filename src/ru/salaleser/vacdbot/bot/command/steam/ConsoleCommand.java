@@ -7,13 +7,12 @@ import sx.blah.discord.handle.obj.IMessage;
 public class ConsoleCommand extends Command {
 
 	public ConsoleCommand() {
-		super("console");
+		super("console", STEAM, "Показывает полезные консольные команды.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Показывает полезные консольные команды.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~console`.",
 				"нет.",
 				"`~console`.",

@@ -6,8 +6,16 @@ import sx.blah.discord.handle.obj.IMessage;
 
 public abstract class Command {
 
+	public final static String MISC = "Разное";
+	public final static String STEAM = "Steam";
+	public final static String SUPPORT = "Полезные";
+	public final static String UTILITY = "Служебные";
+	public final static String PLAYER = "Аудиоплеер";
+
 	public static int count = 0;
 	public final String name;
+	public final String category;
+	public final String description;
 	public final String[] aliases;
 
 	// TODO: 10.12.2017 создать универсальный способ для всех команд для определения возможных значений переменных
@@ -15,22 +23,42 @@ public abstract class Command {
 	protected Command(String name) {
 		count++;
 		this.name = name;
+		this.category = MISC;
+		this.description = "(нет описания)";
 		this.aliases = new String[0];
 	}
 
-	protected Command(String name, String[] aliases) {
+	protected Command(String name, String category) {
 		count++;
 		this.name = name;
+		this.category = category;
+		this.description = "(нет описания)";
+		this.aliases = new String[0];
+	}
+
+	protected Command(String name, String category, String description) {
+		count++;
+		this.name = name;
+		this.category = category;
+		this.description = description;
+		this.aliases = new String[0];
+	}
+
+	protected Command(String name, String category, String description, String[] aliases) {
+		count++;
+		this.name = name;
+		this.category = category;
+		this.description = description;
 		this.aliases = aliases;
 	}
 
-	protected void help(IMessage message) {
+	public void help(IMessage message) {
 		message.getChannel().sendMessage(Util.ub("Помощь к команде \"" + name + "\":") + "\n" +
 				Util.i("Помощи «нигде нет». Просто слов нет. Найдем слова – сделаем помощь." +
 				" Вы держитесь здесь, вам всего доброго, хорошего настроения и здоровья."));
 	}
 
-	public abstract void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException;
+	public abstract void handle(IGuild guild, IMessage message, String[] args);
 
 	protected String buildHelp(String description, String usage, String presets, String example, String note) {
 		StringBuilder aliasesBuilder = new StringBuilder();

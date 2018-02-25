@@ -1,7 +1,8 @@
-package ru.salaleser.vacdbot.bot.command;
+package ru.salaleser.vacdbot.bot.command.support;
 
 import com.voicerss.tts.*;
 import ru.salaleser.vacdbot.*;
+import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -9,19 +10,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 public class TTSCommand extends Command {
 
 	public TTSCommand() {
-		super("tts");
+		super("tts", SUPPORT, "Озвучивает текст.");
 	}
 
 	private static final String TABLE = "tts";
 	private static final String PATH = "cache_tts/";
 	private static final String EXTENSION = ".mp3";
 
-	public void handle(IGuild guild, IMessage message, String[] args) throws InterruptedException {
+	public void handle(IGuild guild, IMessage message, String[] args) {
 		if (args.length == 0) {
 			File folder = new File(PATH);
 			long folderSize = 0;
@@ -140,7 +140,7 @@ public class TTSCommand extends Command {
 		Player.queueFile(guild, PATH + filename + EXTENSION);
 
 		//значок кэшированной записи для красоты:
-		TimeUnit.MILLISECONDS.sleep(100);
+		Util.delay(100);
 		if (cached && message != null) message.addReaction("\uD83D\uDCBE");
 	}
 }

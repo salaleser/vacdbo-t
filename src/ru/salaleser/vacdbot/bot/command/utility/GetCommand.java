@@ -14,13 +14,12 @@ import java.util.Map;
 public class GetCommand extends Command {
 
 	public GetCommand() {
-		super("get");
+		super("get", UTILITY, "Возвращает значения параметров команд своей гильдии.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"Возвращает значения параметров команд своей гильдии.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"`~get <команда>`.",
 				"нет.",
 				"`~get poll`.",

@@ -13,7 +13,7 @@ import java.io.IOException;
 public class CheckCommand extends Command {
 
 	public CheckCommand() {
-		super("check");
+		super("check", MISC, "Возвращает количество игроков на сервере сервере 7DTD.ZONE=RU#2");
 	}
 
 	@Override

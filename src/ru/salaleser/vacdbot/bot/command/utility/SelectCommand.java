@@ -9,13 +9,12 @@ import sx.blah.discord.handle.obj.IMessage;
 public class SelectCommand extends Command {
 
 	public SelectCommand() {
-		super("select");
+		super("select", UTILITY, "SELECT в БД бота.");
 	}
 
 	@Override
 	public void help(IMessage message) {
-		message.getChannel().sendMessage(buildHelp(
-				"SELECT в БД бота.",
+		message.getChannel().sendMessage(buildHelp(description,
 				"не надо ее использовать.",
 				"не скажу.",
 				"не покажу.",
