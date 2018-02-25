@@ -9,6 +9,7 @@ import sx.blah.discord.handle.obj.IUser;
 import java.io.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Util {
 	public static final long FIRST_STEAMID64 = 76561197960265729L;
@@ -325,6 +326,17 @@ public class Util {
 		String steamid = getSteamidByDiscordid(discordid);
 		String sql = "SELECT " + column + " FROM users WHERE steamid = '" + steamid + "'";
 		return DBHelper.executeQuery(sql)[0][0];
+	}
+
+	/**
+	 * Метод для короткой записи задержки для избежания RateLimitException
+	 */
+	public static void delay(long timeout) {
+		try {
+			TimeUnit.MILLISECONDS.sleep(timeout);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Методы для упрощения форматирования текста в дискорде:
