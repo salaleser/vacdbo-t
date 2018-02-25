@@ -2,6 +2,7 @@ package ru.salaleser.vacdbot.bot.command.support;
 
 import com.voicerss.tts.*;
 import ru.salaleser.vacdbot.*;
+import ru.salaleser.vacdbot.bot.TTSColumns;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -72,20 +73,23 @@ public class TTSCommand extends Command {
 
 		String text = String.join(" ", args);
 		String filename;
+		String timeupdated = String.valueOf(System.currentTimeMillis() / 1000L);
 		boolean cached = false;
-		//если запись уже существует, то не стоит тревожить лишний раз синтезатор, тем более, что он платный:
 		String sql = "SELECT * FROM " + TABLE + " WHERE text = '" + text + "' AND language = '" + language + "'";
+		//если запись уже существует, то не стоит тревожить лишний раз синтезатор, тем более, что он платный:
 		if (DBHelper.executeQuery(sql)[0][0] != null) {
 			cached = true;
 			//вытаскиваю всю строку:
 			String[] row = DBHelper.executeQuery(sql)[0];
-			filename = row[1];
+			filename = row[TTSColumns.Filename];
 			//увеличиваю счетчик проигрываний:
-			int counter = Integer.parseInt(row[2]);
-			row[2] = String.valueOf(++counter);
+			int counter = Integer.parseInt(row[TTSColumns.Counter]);
+			row[TTSColumns.Counter] = String.valueOf(++counter);
+			row[TTSColumns.Updated] = timeupdated;
 			//пихаю обратно:
 			DBHelper.update(TABLE, row);
-		} else { //если же этот набор символов впервые запущен, то сгенерирую имя файла:
+		} else {
+			//если же этот набор символов впервые запущен, то сгенерирую имя файла:
 			String id = DBHelper.getNewId(TABLE, "filename");
 			String zeroes;
 			switch (String.valueOf(id).length()) {
@@ -123,7 +127,7 @@ public class TTSCommand extends Command {
 			FileOutputStream fileOutputStream = null;
 			try {
 				fileOutputStream = new FileOutputStream(PATH + filename + EXTENSION);
-				DBHelper.insert(TABLE, new String[]{text, filename, "1", language});
+				DBHelper.insert(TABLE, new String[]{text, filename, "1", language, timeupdated});
 			} catch (FileNotFoundException e) {
 				Logger.error("Ошибка чтения файла!");
 				e.printStackTrace();
