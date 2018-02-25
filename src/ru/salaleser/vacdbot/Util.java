@@ -1,20 +1,14 @@
 package ru.salaleser.vacdbot;
 
-import com.voicerss.tts.Languages;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
-import org.jsoup.select.Elements;
 import ru.salaleser.vacdbot.bot.Bot;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Util {
 	public static final long FIRST_STEAMID64 = 76561197960265729L;
@@ -27,7 +21,7 @@ public class Util {
 	 * @return true, если строка успешно прошла проверку, false — если нет
 	 */
 	public static boolean isNumeric(String string) {
-		return string.matches("\\d+") && string.length() < 10 && Integer.parseInt(string) > 0;
+		return string.matches("^\\d{1,9}$");
 	}
 
 	/**
@@ -37,27 +31,38 @@ public class Util {
 	 * @return true, если строка успешно прошла проверку, false — если нет
 	 */
 	public static boolean isSteamID64(String verifiable) {
-		return verifiable.length() == 17 &&
-				verifiable.matches("\\d+") &&
-//				Long.parseLong(verifiable) > FIRST_STEAMID64 &&
+		return verifiable.matches("^\\d{17}$") &&
+//				Long.parseLong(verifiable) > FIRST_STEAMID64 && //почему-то попадаются стимайди меньше этого числа О_о
 				Long.parseLong(verifiable) < LAST_STEAMID64;
 	}
 
 	/**
 	 * Проверяет аргумент на соответствие Discord ID
+	 *
 	 * @param verifiable проверяемая строка
 	 * @return true, если строка успешно прошла проверку, false — если нет
 	 */
 	public static boolean isDiscordUser(String verifiable) {
-		return verifiable.matches("^\\d{18}$") || verifiable.matches("^<@!?\\d{18}>$");
+		if (!verifiable.matches("^<?@?!?\\d{18}>?$")) return false;
+		String userId = verifiable.replaceAll("[<@!>]", "");
+		return Bot.getClient().getUserByID(Long.parseLong(userId)) != null;
 	}
 
-	public static boolean isDiscordRole(String verifiable) {
-		return verifiable.matches("^<@&\\d{18}>$");
+	/**
+	 * Проверяет аргумент на соответствие Discord ID
+	 *
+	 * @param verifiable проверяемая строка
+	 * @param guild гильдия
+	 * @return true, если строка успешно прошла проверку, false — если нет
+	 */
+	public static boolean isDiscordRole(String verifiable, IGuild guild) {
+		if (!verifiable.matches("^<?@?&?\\d{18}>?$")) return false;
+		String roleId = verifiable.replaceAll("[<@&>]", "");
+		return guild.getRoleByID(Long.parseLong(roleId)) != null;
 	}
 
-	public static boolean isUrl(String verifiable) {
-		return verifiable.matches("^https?//steamcommunity.com/\\S*$");
+	public static boolean isCommunityID(String verifiable) {
+		return verifiable.matches("^https?://steamcommunity.com/\\S+$");
 	}
 
 	/**
@@ -68,9 +73,7 @@ public class Util {
 	 */
 	public static String ending(int days) {
 		if (String.valueOf(days).endsWith("1") && !String.valueOf(days).endsWith("11")) return "ень";
-		if (String.valueOf(days).endsWith("2") ||
-				String.valueOf(days).endsWith("3") ||
-				String.valueOf(days).endsWith("4"))
+		if (String.valueOf(days).endsWith("2") || String.valueOf(days).endsWith("3") || String.valueOf(days).endsWith("4"))
 			return "ня";
 		return "ней";
 	}
@@ -97,11 +100,9 @@ public class Util {
 		try {
 			document = Jsoup.connect(request).get();
 		} catch (IllegalArgumentException e) {
-			Logger.error("Неправильный адрес");
 			return "неправильный адрес";
 		} catch (IOException e) {
 			e.printStackTrace();
-			Logger.error("Пустой ответ от сервера");
 			return "пустой ответ";
 		}
 		return document.select("steamID64").first().text();
@@ -315,7 +316,9 @@ public class Util {
 	 * @return минимальный уровень доступа для использования команды
 	 */
 	public static int getPermission(String guildid, String commandName) {
-		return Integer.parseInt(DBHelper.getOption(guildid, commandName, "level"));
+		String permission = DBHelper.getOption(guildid, commandName, "level");
+		if (permission == null) permission = "1";
+		return Integer.parseInt(permission);
 	}
 
 	public static String getSound(String discordid, String column) {
