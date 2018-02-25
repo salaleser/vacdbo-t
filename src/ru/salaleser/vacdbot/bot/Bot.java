@@ -134,7 +134,7 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new TrainingCommand());
 	}
 
-	public static void exec(IGuild guild, String commandName, String[] args) throws InterruptedException {
+	public static void exec(IGuild guild, String commandName, String[] args) {
 		getCommandManager().getCommand(commandName).handle(guild, null, args);
 	}
 }

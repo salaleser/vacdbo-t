@@ -30,6 +30,7 @@ public class CommandManager {
 
 	public void handle(IGuild guild, IMessage message) {
 		String content = message.getContent();
+		if (content.equals(Bot.PREFIX)) content = "~help";
 		//проверю на особые алиасы:
 		switch (content.substring(0, 1)) {
 			case "=":
@@ -65,8 +66,6 @@ public class CommandManager {
 			Logger.error(e.getMessage());
 		} catch (RateLimitException e) {
 			Logger.error("RateLimitException!");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 }
