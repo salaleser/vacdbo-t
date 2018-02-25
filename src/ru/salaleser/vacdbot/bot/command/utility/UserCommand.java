@@ -5,9 +5,9 @@ import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.*;
+
+import java.util.ArrayList;
 
 public class UserCommand extends Command {
 
@@ -35,32 +35,53 @@ public class UserCommand extends Command {
 			return;
 		}
 
-		String discordid = args[0].replaceAll("[<@!>]", "");
-		String username = Bot.getClient().getUserByID(Long.parseLong(discordid)).getName();
+		String arg1 = args[0];
+		IUser user = message.getAuthor();
+		String discordid = user.getStringID();
 		String steamid = Util.getSteamidByDiscordid(discordid);
+		if (Util.isCommunityID(arg1)) arg1 = Util.getSteamidByCommunityid(arg1);
+		if (Util.isSteamID64(arg1)) {
+			steamid = arg1;
+			discordid = Util.getDiscordidBySteamid(steamid);
+		} else if (Util.isDiscordUser(arg1)) {
+			discordid = arg1.replaceAll("[<@!>]", "");
+			steamid = Util.getSteamidByDiscordid(discordid);
+		}
+		user = Bot.getClient().getUserByID(Long.parseLong(discordid));
 
 		if (args.length == 1) {
-			message.getChannel().sendMessage("" +
-					"SteamID64 " + username + ": " + steamid + "\n" +
-					"Discord ID " + username + ": " + discordid);
+			ArrayList<IRole> roles = new ArrayList<>(user.getRolesForGuild(guild));
+			StringBuilder rolesBuilder = new StringBuilder();
+			for (IRole role : roles) {
+				if (role.getPosition() == 0) continue; //пропустить роль @everyone
+				rolesBuilder.append(", ").append(role.getName());
+			}
+			rolesBuilder = rolesBuilder.delete(0, 2);
+			message.getChannel().sendMessage(
+					Util.ub(user.getName()) + " " + Util.i("(" + user.getDisplayName(guild) + ")") + "\n" +
+							"Discord ID: " + Util.code(discordid) + "\n" +
+							"SteamID64: " + Util.code(steamid) + "\n" +
+							"Роли: " + rolesBuilder + "\n" +
+							"Ранг: " + Util.b(Util.getPriority(discordid) + "") + "\n"
+			);
 			return;
 		}
 
-		String newSteamid = "@";
-		if (Util.isUrl(args[1])) newSteamid = Util.getSteamidByCommunityid(args[1]);
+		String newSteamid = "";
+		if (Util.isCommunityID(args[1])) newSteamid = Util.getSteamidByCommunityid(args[1]);
 		if (Util.isSteamID64(newSteamid)) {
 			if (set(discordid, "steamid", newSteamid)) {
 				message.getChannel().sendMessage("SteamID " + Util.b(newSteamid) +
-						" успешно ассоциирован с пользователем " + Util.b(username) + ".");
+						" успешно ассоциирован с пользователем " + Util.b(user.getName()) + ".");
 			}
 		} else if (Util.isNumeric(args[1])) {
 			if (set(discordid, "priority", args[1])) {
 				message.getChannel().sendMessage("Приоритет " + Util.b(args[1]) +
-						" успешно установлен пользователю " + Util.b(username) + ".");
+						" успешно установлен пользователю " + Util.b(user.getName()) + ".");
 			}
 		} else if (set(discordid, "name", args[1])) {
 			message.getChannel().sendMessage("Имя " + Util.b(args[1]) +
-					" успешно добавлено пользователю " + Util.b(username) + ".");
+					" успешно добавлено пользователю " + Util.b(user.getName()) + ".");
 		}
 	}
 
