@@ -49,7 +49,7 @@ public class ReportCommand extends Command {
 		}
 
 		String steamid = args[0];
-		if (Util.isUrl(steamid)) steamid = Util.getSteamidByCommunityid(steamid);
+		if (Util.isCommunityID(steamid)) steamid = Util.getSteamidByCommunityid(steamid);
 		if (!Util.isSteamID64(steamid)) {
 			Logger.error("Ошибка в SteamID!");
 			message.reply("ошибка в SteamID!");
