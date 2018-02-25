@@ -7,6 +7,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -95,6 +96,13 @@ public class Util {
 		return steamid;
 	}
 
+	/**
+	 * Возвращает SteamID64 пользователя на основании его ссылки на профиль.
+	 * Парсит xml-версию страницы профиля Steam с адресом вида "http://steamcommunity.com/id/salaleser/".
+	 *
+	 * @param communityid URL профиля пользователя Steam
+	 * @return SteamID64
+	 */
 	public static String getSteamidByCommunityid(String communityid) {
 		Document document;
 		String request = communityid + "?xml=1";
@@ -121,6 +129,12 @@ public class Util {
 		return DBHelper.executeQuery(sql)[0][0];
 	}
 
+	/**
+	 * Перебирает всех пользователей и проверяет на наличие их ID в таблице "users" базы данных.
+	 * Если пользователя нет, то добавляет его Discord ID в таблицу.
+	 *
+	 * @return количество добавленных пользователей в базу данных
+	 */
 	public static int refreshUsers() {
 		List<IUser> users = Bot.getClient().getUsers();
 		String table = "users";
@@ -177,6 +191,20 @@ public class Util {
 		return unicoded;
 	}
 
+	/**
+	 * Возвращает приветствие на основании текущего времени суток
+	 *
+	 * @return приветствие
+	 */
+	public static String getTimeOfDay() {
+		String timeOfDay = "Доброй ночи!";
+		int currentHour = LocalDateTime.now().getHour();
+		if (currentHour >= 6 && currentHour < 12) timeOfDay = "Доброе утро!";
+		else if (currentHour >= 12 && currentHour < 18) timeOfDay = "Добрый день!";
+		else if (currentHour >= 18 && currentHour < 23) timeOfDay = "Добрый вечер!";
+		return timeOfDay;
+	}
+
 	public static String toRubKop(String rubkop) {
 		if (rubkop.length() == 1) rubkop = "00" + rubkop;
 		if (rubkop.length() == 2) rubkop = "0" + rubkop;
@@ -205,6 +233,14 @@ public class Util {
 		return DBHelper.executeQuery(sql);
 	}
 
+	/**
+	 * Формирует строку-таблицу псевдографикой на основе таблицы из базы данных
+	 *
+	 * @param table таблица в БД из которой брать данные для формирования таблицы
+	 * @param columnNames имена столбцов (* — все столбцы таблицы) fixme если указать свои столбцы таблица сбивается
+	 * @param data двумерный массив строк со рядами (rows) из БД для заполнения таблицы
+	 * @return сформированная таблица в виде строки
+	 */
 	public static String makeTable(String table, String[] columnNames, String[][] data) {
 		// TODO: 17.02.2018 добавить заголовок в некоторых случаях
 		//сначала выясню какая колонка самая широкая:
