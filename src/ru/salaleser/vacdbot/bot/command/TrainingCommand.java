@@ -3,7 +3,6 @@ package ru.salaleser.vacdbot.bot.command;
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
-import ru.salaleser.vacdbot.bot.Bot;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
@@ -27,7 +26,7 @@ public class TrainingCommand extends Command {
 			roleList.add(guild.getEveryoneRole());
 		} else {
 			for (String arg : args) {
-				if (Util.isDiscordRole(arg)) {
+				if (Util.isDiscordRole(arg, guild)) {
 					long roleId = Long.parseLong(arg.replaceAll("[<@&>]", ""));
 					roleList.add(guild.getRoleByID(roleId));
 				} else if (Util.isDiscordUser(arg)) {
