@@ -37,7 +37,7 @@ public class FindCommand extends Command {
 		query.replace(query.length() - 1, query.length(), "");
 		Set<String> result = getDataFromGoogle(query.toString());
 
-		StringBuilder results = new StringBuilder(Util.i("Вот что я нашёл вашему запросу:\n"));
+		StringBuilder results = new StringBuilder(Util.i("Вот что я нашёл вашему запросу:") + "\n");
 		int c = 0;
 		for (String line : result) {
 			if (c < 4) results.append(line).append("\n");
