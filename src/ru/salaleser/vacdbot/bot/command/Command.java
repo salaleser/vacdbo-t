@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot.command;
 
+import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -69,13 +70,7 @@ public abstract class Command {
 		} else {
 			aliasesString = "нет.";
 		}
-		return Util.ub("Помощь к команде \"" + name + "\":") + "\n" +
-				Util.b("Описание: ") + description + "\n" +
-				Util.b("Использование: ") + usage + "\n" +
-				Util.b("Предустановки: ") + presets + "\n" +
-				Util.b("Псевдонимы: ") + aliasesString + "\n" +
-				Util.b("Пример: ") + example + "\n" +
-				Util.b("Примечание: ") + note;
+		return Util.ub("Помощь к команде \"" + name + "\":") + "\n" + Util.b("Описание: ") + description + "\n" + Util.b("Использование: ") + usage + "\n" + Util.b("Предустановки: ") + presets + "\n" + Util.b("Псевдонимы: ") + aliasesString + "\n" + Util.b("Пример: ") + example + "\n" + Util.b("Примечание: ") + note;
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
