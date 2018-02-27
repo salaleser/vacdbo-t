@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class TTSCommand extends Command {
+	// TODO: 26.02.2018 добавить автоочистку кэша (самые давно обновленные и редкоиспользуемые файлы)
 
 	public TTSCommand() {
 		super("tts", SUPPORT, "Озвучивает текст.");
@@ -27,6 +28,7 @@ public class TTSCommand extends Command {
 			File folder = new File(PATH);
 			long folderSize = 0;
 			File[] files = folder.listFiles();
+			if (files == null) return;
 			for (File file : files) folderSize += file.length();
 			message.getChannel().sendMessage(Util.i("База данных содержит " +
 					Util.b(DBHelper.executeQuery("SELECT COUNT(*) FROM " + TABLE)[0][0] + " ссылок") + ". " +
@@ -57,8 +59,8 @@ public class TTSCommand extends Command {
 		else if (args[0].substring(0, 1).matches("^[А-ЯЁа-яё]+$")) language = Languages.Russian;
 		else if (args[0].substring(0, 1).matches("^[A-Za-z]+$")) language = Languages.English_UnitedStates;
 
-		//добавлю эмоции с флагами по фану (если сообщения нет, то и добавлять не к чему):
-		if (message != null) {
+		//добавлю эмоции с флагами по фану:
+		if (message != null) { //если сообщения нет, то и добавлять не к чему
 			switch (language) {
 				case "en-gb": message.addReaction("\uD83C\uDDEC\uD83C\uDDE7"); break;
 				case "en-us": message.addReaction("\uD83C\uDDFA\uD83C\uDDF8"); break;

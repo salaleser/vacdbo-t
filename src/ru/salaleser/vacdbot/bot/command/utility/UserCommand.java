@@ -53,7 +53,7 @@ public class UserCommand extends Command {
 			StringBuilder rolesBuilder = new StringBuilder();
 			for (IRole role : roles) {
 				if (role.getPosition() == 0) continue; //пропустить роль @everyone
-				rolesBuilder.append(", ").append(role.getName());
+				rolesBuilder.append(", ").append(role.getName()).append(" (").append(role.getStringID()).append(")");
 			}
 			rolesBuilder = rolesBuilder.delete(0, 2);
 			message.getChannel().sendMessage(

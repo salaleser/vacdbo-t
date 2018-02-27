@@ -41,6 +41,7 @@ public class EventCommand extends Command {
 			String sql = "SELECT * FROM " + table + " WHERE guildid = '" + guild.getStringID() + "' " + "ORDER BY guildid, date, hour, minute";
 			String[][] data = DBHelper.executeQuery(sql);
 			message.getChannel().sendMessage(Util.makeTable(table, new String[]{"*"}, data));
+			Scheduler.refreshTasks();
 			return;
 		}
 

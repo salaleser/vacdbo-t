@@ -45,7 +45,7 @@ public class SelectCommand extends Command {
 						return;
 					}
 				}
-			}
+			} // FIXME: 26.02.2018 не работает нормально с таблицей users
 		}
 	}
 }

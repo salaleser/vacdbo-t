@@ -1,6 +1,7 @@
 package ru.salaleser.vacdbot.bot.command.utility;
 
 import ru.salaleser.vacdbot.DBHelper;
+import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
@@ -51,19 +52,27 @@ public class HelpCommand extends Command {
 			StringBuilder helpBuilder = new StringBuilder("Ваш уровень доступа " +
 					Util.ub(String.valueOf(priority)) + ", доступные команды:" + "\n");
 			int i = 0;
+			String strike = "";
 			for (String cat : categories) {
 				i++;
 				StringBuilder categoryBuilder = new StringBuilder(Util.ub(cat) + ":\n");
 				for (Map.Entry<String, Command> entry : Bot.getCommandManager().commands.entrySet()) {
 					if (!cat.equals(entry.getValue().category)) continue;
+					boolean accessible = Util.isAccessible(guild.getStringID(), entry.getValue().name);
 					String level = DBHelper.getOption(guild.getStringID(), entry.getKey(), "level");
 					if (level == null) continue; //если в БД нет такой команды, значит это алиас, он в списке не нужен
+					if (accessible) strike = "";
+					else strike = "~~";
 					categoryBuilder
+							.append(strike)
 							.append(Util.code(entry.getKey()))
 							.append(" — ")
 							.append(Util.i(entry.getValue().description))
-							.append(" (").append(Util.b(level))
-							.append(")\n");
+							.append(" (")
+							.append(Util.b(level))
+							.append(")")
+							.append(strike)
+							.append("\n");
 				}
 				helpBuilder.append(categoryBuilder);
 				//у сообщений лимит 2000 символов, три категории наверняка уложатся в это число,
@@ -76,7 +85,27 @@ public class HelpCommand extends Command {
 					helpBuilder = new StringBuilder();
 				}
 			}
-			helpBuilder.append("\nПрефикс бота — ").append(Util.code(Bot.PREFIX)).append(". Пример использования: ").append(Util.code("~help."));
+			helpBuilder
+					.append("\n")
+					.append(Util.u("Легенда:"))
+					.append(" ")
+					.append(Util.code("~команда"))
+					.append(" — ")
+					.append(Util.i("Описание"))
+					.append(" (")
+					.append(Util.b("необходимый уровень доступа для использования"))
+					.append(")")
+					.append("\nЗачеркнутые команды запрещены по разным причинам " +
+							"(нестабильные, в разработке, личные и т.д.) " +
+							"Чтобы разблокировать их свяжитесь со мной (Лёха <@!223559816239513601>)")
+					.append("\n")
+					.append("Префикс бота — ")
+					.append(Util.code(Bot.PREFIX))
+					.append(". Пример использования: ")
+					.append(Util.code("~help"))
+					.append(", ")
+					.append(Util.code("~tts"))
+					.append(".");
 			message.getChannel().sendMessage(helpBuilder.toString());
 		}
 	}

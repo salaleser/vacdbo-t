@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 class Snitch {
 
-	void snitch(IMessage message) throws InterruptedException {
+	void snitch(IMessage message) {
 		String content = message.getContent().toLowerCase();
 		IChannel channel = message.getChannel();
 

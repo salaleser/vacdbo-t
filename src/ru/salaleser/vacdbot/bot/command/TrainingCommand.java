@@ -20,6 +20,7 @@ public class TrainingCommand extends Command {
 	public void handle(IGuild guild, IMessage message, String[] args) {
 		ArrayList<IRole> roleList = new ArrayList<>();
 		ArrayList<IUser> userList = new ArrayList<>();
+		StringBuilder contentBuilder = new StringBuilder();
 
 		//распихиваю роли из аргументов в лист:
 		if (args.length == 0) {
@@ -32,6 +33,8 @@ public class TrainingCommand extends Command {
 				} else if (Util.isDiscordUser(arg)) {
 					long userId = Long.parseLong(arg.replaceAll("[<@!>]", ""));
 					userList.add(guild.getUserByID(userId));
+				} else { //в остальных случаях это слово для описания
+					contentBuilder.append(" ").append(arg);
 				}
 			}
 		}
@@ -43,11 +46,10 @@ public class TrainingCommand extends Command {
 		int counter = 0;
 		for (IUser user : userList) {
 			try {
-				user.getOrCreatePMChannel().sendMessage(Util.b("Добрый день, " + message.getAuthor() +
-						" приглашает Вас на тренировку.") + "\n\nТренировочный сервер: steam://" +
-						DBHelper.getOption(guild.getStringID(), "server", "ip") + "//\n" +
-						"```connect " + DBHelper.getOption(guild.getStringID(), "server", "ip") +
-						"; password 2002```");
+				String ip = DBHelper.getOption(guild.getStringID(), "server", "ip");
+				user.getOrCreatePMChannel().sendMessage(Util.b(Util.getTimeOfDay() + " " +
+						message.getAuthor() + " приглашает Вас на тренировку.") + "\nОписание:" + contentBuilder +
+						"\n\nТренировочный сервер: steam://" + ip + "//\n```connect " + ip + "; password 2002```");
 				counter++;
 			} catch (DiscordException e) {
 				Logger.error(e.getErrorMessage());

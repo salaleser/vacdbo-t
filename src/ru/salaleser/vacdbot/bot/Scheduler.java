@@ -8,7 +8,6 @@ import sx.blah.discord.handle.obj.IMessage;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,8 +47,8 @@ public class Scheduler {
 			if (!task[EventColumns.Args].isEmpty()) args = task[EventColumns.Args].split(" ");
 			int period = 1; //пока не использую todo
 
-			boolean enabled = false; //fixme какие-то проблемы с кастом стринга в бул
-			if (task[EventColumns.Enabled].startsWith("t")) enabled = true; //Boolean.valueOf считает "t" как false
+			boolean enabled = false;
+			if (task[EventColumns.Enabled].startsWith("t")) enabled = true;
 
 			if (enabled &&
 					Integer.parseInt(date[2]) >= nowYear &&
@@ -76,8 +75,6 @@ public class Scheduler {
 				try {
 					Bot.getCommandManager().getCommand(command).handle(guild, message, args);
 					Bot.getCommandManager().getCommand("event").handle(guild, message, new String[]{"toggle", id});
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				} finally {
 					message.delete();
 				}
