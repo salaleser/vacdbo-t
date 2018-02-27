@@ -18,10 +18,10 @@ public class DBHelper {
 	 * @return значение
 	 */
 	public static String getOption(String guildid, String commandname, String key) {
-		String guildQuery = "SELECT value FROM settings WHERE guildid = '" + guildid + "' AND command = '" + commandname + "' AND key LIKE '" + key + "'";
-		String nullQuery = "SELECT value FROM settings WHERE guildid is NULL AND command = '" + commandname + "' AND key LIKE '" + key + "'";
-		String value = executeQuery(guildQuery)[0][0];
-		if (value == null) value = executeQuery(nullQuery)[0][0];
+		String getGuildValueQuery = "SELECT value FROM settings WHERE guildid = '" + guildid + "' AND command = '" + commandname + "' AND key LIKE '" + key + "'";
+		String getDefaultValueQuery = "SELECT value FROM settings WHERE guildid is NULL AND command = '" + commandname + "' AND key LIKE '" + key + "'";
+		String value = executeQuery(getGuildValueQuery)[0][0];
+		if (value == null) value = executeQuery(getDefaultValueQuery)[0][0];
 		return value;
 	}
 
