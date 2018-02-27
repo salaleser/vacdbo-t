@@ -26,6 +26,12 @@ public class Util {
 		return string.matches("^\\d{1,9}$");
 	}
 
+	public static boolean isTimestamp(String verifiable) {
+		return verifiable.matches("^\\d{9,10}$") &&
+				Long.parseLong(verifiable) >= 946684800L &&//с 01.01.2001
+				Long.parseLong(verifiable) < 2147483647L; //по 19.01.2038
+	}
+
 	/**
 	 * Проверяет аргумент на соответствие SteamID64
 	 *
@@ -331,6 +337,12 @@ public class Util {
 		StringBuilder qMarks = new StringBuilder();
 		for (int i = 0; i < number; i++) qMarks.append(",?");
 		return qMarks.substring(1);
+	}
+
+	public static boolean isAccessible(String guildid, String commandName) {
+		String accessible = DBHelper.getOption(guildid, commandName, "accessible");
+		if (accessible == null) accessible = "0";
+		return accessible.equals("1");
 	}
 
 	/**
