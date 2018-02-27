@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot;
 
+import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
@@ -36,20 +37,31 @@ public class CommandManager {
 			case "=":
 				content = "calc " + content.substring(1);
 				break;
+			case "$":
+				content = "convert " + content.substring(1);
+				break;
 			case "\"":
 				content = "tts " + content.substring(1);
 				break;
 			default:
 				content = content.substring(1);
 		}
+
 		//распихать аргументы по ячейкам массива:
 		String[] args = content.split(" ");
-		Command command = getCommand(args[0].toLowerCase());
+ 		Command command = getCommand(args[0].toLowerCase());
 		if (command == null) { // FIXME: 17.11.2017 сделать исключение так как код повторяется. такой же блок в хелпе
 			message.reply("команда " + Util.code(args[0]) + " не поддерживается");
 			return;
 		}
 		Logger.info("Получил команду " + command.name + ".");
+
+		//проверка на лицуху:
+		if (!Util.isAccessible(guild.getStringID(), command.name)) {
+			Logger.info("Команда " + command.name + " запрещена для гильдии " + guild.getName() + ".");
+			message.addReaction("\uD83D\uDEAB");
+			return;
+		}
 
 		//Проверка на право использования команды:
 		int priority = Util.getPriority(message.getAuthor().getStringID());
@@ -59,6 +71,7 @@ public class CommandManager {
 					"для использования команды " + Util.code(command.name) + "!");
 			return;
 		}
+
 		//передаю управление дальше по команде:
 		try {
 			command.handle(guild, message, Arrays.copyOfRange(args, 1, args.length));

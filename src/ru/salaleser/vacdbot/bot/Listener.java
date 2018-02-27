@@ -41,7 +41,7 @@ public class Listener {
 	}
 
 	@EventSubscriber
-	public void onMessage(MessageReceivedEvent event) throws InterruptedException {
+	public void onMessage(MessageReceivedEvent event) {
 		if (event.getAuthor().isBot()) return;
 		String guild = "PM"; //чтобы избежать npe надо проверить личное ли сообщение боту пишут:
 		if (!event.getChannel().isPrivate()) guild = event.getGuild().getName();
@@ -54,6 +54,7 @@ public class Listener {
 		switch (event.getMessage().getContent().substring(0, 1)) {
 			case PREFIX:
 			case "=":
+			case "$":
 			case "\"":
 				Bot.getCommandManager().handle(event.getGuild(), event.getMessage());
 				break;
@@ -63,7 +64,7 @@ public class Listener {
 	}
 
 	@EventSubscriber
-	public void onUserSpeaking(UserSpeakingEvent event) throws InterruptedException {
+	public void onUserSpeaking(UserSpeakingEvent event) {
 		if (event.getUser().isBot()) return;
 		String id = event.getUser().getStringID();
 		if (event.isSpeaking()) Bot.exec(event.getGuild(), "foreveralone", new String[]{"started", id});
@@ -71,7 +72,7 @@ public class Listener {
 	}
 
 	@EventSubscriber
-	public void onUserVoiceChannelJoin(UserVoiceChannelJoinEvent event) throws InterruptedException {
+	public void onUserVoiceChannelJoin(UserVoiceChannelJoinEvent event) {
 		if (event.getUser().isBot()) return;
 		// TODO: 17.02.2018 перенести в соответствующие классы
 		int connectedUsers = 0;
@@ -84,23 +85,20 @@ public class Listener {
 		} else if (connectedUsers > 1) {
 			Bot.exec(event.getGuild(), "foreveralone", new String[]{"off", event.getUser().getStringID()});
 		}
-		if (DBHelper.getOption(event.getGuild().getStringID(), "tts", "voice").equals("1") &&
-				connectedUsers > 1) playSound(event);
+		if (connectedUsers > 1) playSound(event);
 	}
 
 	@EventSubscriber
-	public void onUserVoiceChannelMove(UserVoiceChannelMoveEvent event) throws InterruptedException {
-		if (DBHelper.getOption(event.getGuild().getStringID(), "tts", "voice").equals("1") &&
-				!event.getUser().isBot()) playSound(event);
+	public void onUserVoiceChannelMove(UserVoiceChannelMoveEvent event) {
+		if (!event.getUser().isBot()) playSound(event);
 	}
 
 	@EventSubscriber
-	public void onUserVoiceChannelLeave(UserVoiceChannelLeaveEvent event) throws InterruptedException {
-		if (DBHelper.getOption(event.getGuild().getStringID(), "tts", "voice").equals("1") &&
-				!event.getUser().isBot()) playSound(event);
+	public void onUserVoiceChannelLeave(UserVoiceChannelLeaveEvent event) {
+		if (!event.getUser().isBot()) playSound(event);
 	}
 
-	private void playSound(UserVoiceChannelEvent event) throws InterruptedException {
+	private void playSound(UserVoiceChannelEvent event) {
 		String eventName = event.getClass().getSimpleName();
 		String eventString = eventName.replace("UserVoiceChannel", "");
 		eventString = eventString.replace("Event", "");
@@ -108,7 +106,7 @@ public class Listener {
 		if (sound == null) playTTS(event);
 		else Player.queueFile(event.getGuild(), "sounds/" + sound + ".mp3");
 	}
-	private void playTTS(UserVoiceChannelEvent event) throws InterruptedException {
+	private void playTTS(UserVoiceChannelEvent event) {
 		String eventName = event.getClass().getSimpleName();
 		String eventString = eventName.replace("UserVoiceChannel", "");
 		eventString = eventString.replace("Event", "");
@@ -116,7 +114,7 @@ public class Listener {
 		if (sound == null) playUsername(event);
 		else Bot.getCommandManager().getCommand("tts").handle(event.getGuild(), null, new String[]{sound});
 	}
-	private void playUsername(UserVoiceChannelEvent event) throws InterruptedException {
+	private void playUsername(UserVoiceChannelEvent event) {
 		String sound = event.getUser().getDisplayName(event.getGuild());
 		String text = "это ";
 		//проверка на окончание для баб:

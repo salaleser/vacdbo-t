@@ -132,6 +132,7 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new EventCommand());
 		COMMAND_MANAGER.addCommand(new ForeverAloneCommand());
 		COMMAND_MANAGER.addCommand(new TrainingCommand());
+		COMMAND_MANAGER.addCommand(new ConvertCommand());
 	}
 
 	public static void exec(IGuild guild, String commandName, String[] args) {
