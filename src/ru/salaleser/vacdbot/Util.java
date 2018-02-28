@@ -3,14 +3,18 @@ package ru.salaleser.vacdbot;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import ru.salaleser.vacdbot.bot.Bot;
+import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static ru.salaleser.vacdbot.bot.Bot.DEFAULT_RANK;
+import static ru.salaleser.vacdbot.bot.Bot.getGuilds;
 
 public class Util {
 	public static final long FIRST_STEAMID64 = 76561197960265729L;
@@ -348,13 +352,25 @@ public class Util {
 	/**
 	 * Возвращает уровень доступа пользователя todo для каждой гильдии должны быть свои настройки
 	 *
-	 * @param discordid Discord ID пользователя, для которого надо узнать ранг
+	 * @param user пользователь, для которого надо узнать ранг
 	 * @return уровень доступа пользователя (ранг)
 	 */
-	public static int getPriority(String discordid) {
-		String steamid = getSteamidByDiscordid(discordid);
-		String sql = "SELECT priority FROM users WHERE steamid = '" + steamid + "'";
-		return Integer.parseInt(DBHelper.executeQuery(sql)[0][0]);
+	public static int getRank(IGuild guild, IUser user) {
+		updateRoles(null);
+		int rank = Integer.parseInt(DEFAULT_RANK);
+		for (IRole role : guild.getRolesForUser(user)) {
+			String result = getRoleRank(role.getStringID());
+			int newRank = Integer.parseInt(result);
+			if (newRank < rank) rank = newRank;
+		}
+		return rank;
+	}
+
+	public static String getRoleRank(String roleid) {
+		String query = "SELECT rank FROM roles WHERE roleid = '" + roleid + "'";
+		String roleRank = DBHelper.executeQuery(query)[0][0];
+		if (roleRank == null) roleRank = DEFAULT_RANK;
+		return roleRank;
 	}
 
 	/**
@@ -366,7 +382,7 @@ public class Util {
 	 */
 	public static int getPermission(String guildid, String commandName) {
 		String permission = DBHelper.getOption(guildid, commandName, "level");
-		if (permission == null) permission = "1";
+		if (permission == null) permission = "9";
 		return Integer.parseInt(permission);
 	}
 
@@ -374,6 +390,40 @@ public class Util {
 		String steamid = getSteamidByDiscordid(discordid);
 		String sql = "SELECT " + column + " FROM users WHERE steamid = '" + steamid + "'";
 		return DBHelper.executeQuery(sql)[0][0];
+	}
+
+	/**
+	 * Обновляет таблицу ролей ("roles")
+	 *
+	 * @param aGuild гильдия, если передан null, то перебираются все гильдии
+	 * @return разницу удаленных и добавленных ролей
+	 */
+	public static int updateRoles(IGuild aGuild) { // TODO: 28.02.2018 добавить вывод в лог добавленные и удаленные роли
+		ArrayList<IGuild> guilds = new ArrayList<>();
+		if (aGuild == null) guilds = Bot.getGuilds();
+		else guilds.add(aGuild);
+		int count = 0;
+		for (IGuild guild : guilds) {
+			for (IRole role : guild.getRoles()) {
+				String query = "SELECT roleid FROM roles WHERE guildid = '" + guild.getStringID() + "' AND roleid = '" + role.getStringID() + "'";
+				if (DBHelper.executeQuery(query)[0][0] != null) continue;
+				if (DBHelper.insert("roles", new String[]{guild.getStringID(), role.getStringID(), DEFAULT_RANK, role.getName()})) count++;
+			}
+		}
+		//получаю все роли в массив:
+		String getRolesQuery = "SELECT roleid FROM roles";
+		String[][] roles = DBHelper.executeQuery(getRolesQuery);
+		//переворачиваю массив:
+		String[] rolesRow = new String[roles.length];
+		for (int i = 0; i < roles.length; i++) rolesRow[i] = roles[i][0];
+		//удаляю из таблицы несуществующие роли:
+		for (String roleid : rolesRow) {
+			if (Bot.getClient().getRoleByID(Long.parseLong(roleid)) == null) {
+				String deleteQuery = "DELETE FROM roles WHERE roleid = '" + roleid + "'";
+				if (DBHelper.commit("roles", deleteQuery, null)) count--;
+			}
+		}
+		return count;
 	}
 
 	/**
