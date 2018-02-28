@@ -53,7 +53,8 @@ public class UserCommand extends Command {
 			StringBuilder rolesBuilder = new StringBuilder();
 			for (IRole role : roles) {
 				if (role.getPosition() == 0) continue; //пропустить роль @everyone
-				rolesBuilder.append(", ").append(role.getName()).append(" (").append(role.getStringID()).append(")");
+				rolesBuilder.append(", ").append(role.getName()).append(" (").append(role.getStringID())
+						.append(" — ").append(Util.getRoleRank(role.getStringID())).append(")");
 			}
 			rolesBuilder = rolesBuilder.delete(0, 2);
 			message.getChannel().sendMessage(
@@ -61,7 +62,7 @@ public class UserCommand extends Command {
 							"Discord ID: " + Util.code(discordid) + "\n" +
 							"SteamID64: " + Util.code(steamid) + "\n" +
 							"Роли: " + rolesBuilder + "\n" +
-							"Ранг: " + Util.b(Util.getPriority(discordid) + "") + "\n"
+							"Ранг: " + Util.b(Util.getRank(guild, user) + "") + "\n"
 			);
 			return;
 		}
