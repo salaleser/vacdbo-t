@@ -1,6 +1,5 @@
 package ru.salaleser.vacdbot.bot;
 
-import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
@@ -64,9 +63,9 @@ public class CommandManager {
 		}
 
 		//Проверка на право использования команды:
-		int priority = Util.getPriority(message.getAuthor().getStringID());
+		int rank = Util.getRank(guild, message.getAuthor());
 		int permissions = Util.getPermission(guild.getStringID(), command.name);
-		if (priority > permissions) {
+		if (rank > permissions) {
 			message.reply("Вы не обладаете достаточными правами " +
 					"для использования команды " + Util.code(command.name) + "!");
 			return;
