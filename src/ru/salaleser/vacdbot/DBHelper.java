@@ -1,5 +1,10 @@
 package ru.salaleser.vacdbot;
 
+import ru.salaleser.vacdbot.bot.Bot;
+import ru.salaleser.vacdbot.bot.command.Command;
+import sun.util.resources.bg.CalendarData_bg;
+import sx.blah.discord.handle.obj.IGuild;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
