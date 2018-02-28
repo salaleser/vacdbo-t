@@ -8,7 +8,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class PlayCommand extends Command {
 
 	public PlayCommand() {
-		super("play", PLAYER, "Воспроизводит аудиофайл.", new String[]{"p"});
+		super("play", PLAYER, "Воспроизводит аудиофайл (файл должен быть на сервере).", new String[]{"p"});
 	}
 
 	@Override
