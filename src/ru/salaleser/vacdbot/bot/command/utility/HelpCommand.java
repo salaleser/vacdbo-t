@@ -1,7 +1,6 @@
 package ru.salaleser.vacdbot.bot.command.utility;
 
 import ru.salaleser.vacdbot.DBHelper;
-import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
@@ -9,7 +8,6 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.HashSet;
-import java.util.Map;
 
 public class HelpCommand extends Command {
 
@@ -38,36 +36,34 @@ public class HelpCommand extends Command {
 			}
 			command.help(message);
 		} else {
-			int priority = Util.getPriority(message.getAuthor().getStringID());
+			int priority = Util.getRank(guild, message.getAuthor());
 			/*
 			Здесь будет мой топорный код. Леха из будущего, исправь его, пожалуйста, когда научишься программировать.
 			*/
 			//узнаю количество категорий команд:
 			HashSet<String> categories = new HashSet<>();
-			for (Map.Entry<String, Command> entry : Bot.getCommandManager().commands.entrySet()) {
-				categories.add(entry.getValue().category);
-			}
+			for (Command command : Bot.getCommandManager().commands.values()) categories.add(command.category);
 			//остальное вроде ничо, оптимизировать бы только
 			//разбиваю по категориям команды и отправляю разными сообщениями, чтобы избежать лимит в 2000 символов:
 			StringBuilder helpBuilder = new StringBuilder("Ваш уровень доступа " +
 					Util.ub(String.valueOf(priority)) + ", доступные команды:" + "\n");
 			int i = 0;
-			String strike = "";
+			String strike;
 			for (String cat : categories) {
 				i++;
 				StringBuilder categoryBuilder = new StringBuilder(Util.ub(cat) + ":\n");
-				for (Map.Entry<String, Command> entry : Bot.getCommandManager().commands.entrySet()) {
-					if (!cat.equals(entry.getValue().category)) continue;
-					boolean accessible = Util.isAccessible(guild.getStringID(), entry.getValue().name);
-					String level = DBHelper.getOption(guild.getStringID(), entry.getKey(), "level");
+				for (Command command : Bot.getCommandManager().commands.values()) {
+					if (!cat.equals(command.category)) continue;
+					boolean accessible = Util.isAccessible(guild.getStringID(), command.name);
+					String level = DBHelper.getOption(guild.getStringID(), command.name, "level");
 					if (level == null) continue; //если в БД нет такой команды, значит это алиас, он в списке не нужен
 					if (accessible) strike = "";
 					else strike = "~~";
 					categoryBuilder
 							.append(strike)
-							.append(Util.code(entry.getKey()))
+							.append(Util.code(command.name))
 							.append(" — ")
-							.append(Util.i(entry.getValue().description))
+							.append(Util.i(command.description))
 							.append(" (")
 							.append(Util.b(level))
 							.append(")")
