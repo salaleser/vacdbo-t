@@ -3,6 +3,17 @@ package ru.salaleser.vacdbot;
 import java.util.HashMap;
 
 public class Config {
+
+	public static final int MIN_LEVEL = 0;
+	public static final int MAX_LEVEL = 5;
+	public static final String DEFAULT_RANK = "5";
+	public static final long FIRST_STEAMID64 = 76561197960265729L;
+	public static final long LAST_STEAMID64 = 76561202255233023L;
+
+	public static String Accessible = "accessible";
+	public static String Level = "level";
+
+
 	private static HashMap<String, String> config = new HashMap<>();
 	public static final String BASE_URL = "https://api.steampowered.com";
 	public static int totalScanned, totalAdded, totalUpdated;
