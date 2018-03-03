@@ -3,6 +3,7 @@ package ru.salaleser.vacdbot.bot;
 import ru.salaleser.vacdbot.Config;
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
+import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.*;
 import ru.salaleser.vacdbot.bot.command.audioplayer.*;
 import ru.salaleser.vacdbot.bot.command.steam.*;
@@ -14,6 +15,7 @@ import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class Bot {
 		return client;
 	}
 
-	public static final String DEFAULT_RANK = "5";
+	public static final String SALALESER = "223559816239513601";
 	public static final String STATUS = "твои нервы!";
 	public static final String PREFIX = "~";
 
@@ -48,9 +50,7 @@ public class Bot {
 	private static final CommandManager COMMAND_MANAGER = new CommandManager();
 
 	public static void main(String[] args) {
-		System.out.println("Загружаю модули...");
 		addCommands();
-		System.out.println("Всего модулей загружено — " + Command.count);
 
 		System.out.println("Загружаю графическую оболочку...");
 		gui = new Gui();
@@ -95,7 +95,11 @@ public class Bot {
 		return COMMAND_MANAGER;
 	}
 
+	/**
+	 * Регистрация команд
+	 */
 	private static void addCommands() { // TODO: 09.02.2018 скан на новые модули и подключаемые пользовательские модули
+		System.out.println("Загружаю модули...");
 		COMMAND_MANAGER.addCommand(new ConsoleCommand());
 		COMMAND_MANAGER.addCommand(new FindCommand());
 		COMMAND_MANAGER.addCommand(new HelpCommand());
@@ -134,9 +138,17 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new ForeverAloneCommand());
 		COMMAND_MANAGER.addCommand(new TrainingCommand());
 		COMMAND_MANAGER.addCommand(new ConvertCommand());
-		COMMAND_MANAGER.addCommand(new RolesCommand());
+		COMMAND_MANAGER.addCommand(new RoleCommand());
+		System.out.println("Всего модулей загружено — " + Command.count);
 	}
 
+	/**
+	 * Обертка для метода handle() команды
+	 *
+	 * @param guild гильдия
+	 * @param commandName имя команды
+	 * @param args аргументы
+	 */
 	public static void exec(IGuild guild, String commandName, String[] args) {
 		getCommandManager().getCommand(commandName).handle(guild, null, args);
 	}
