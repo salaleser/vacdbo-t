@@ -36,7 +36,11 @@ public class HelpCommand extends Command {
 			}
 			command.help(message);
 		} else {
-			int priority = Util.getRank(guild, message.getAuthor());
+			int rank = Util.getRank(guild, message.getAuthor());
+
+			//для быстрой помощи в общий чат:
+			StringBuilder shortHelpBuilder = new StringBuilder();
+
 			/*
 			Здесь будет мой топорный код. Леха из будущего, исправь его, пожалуйста, когда научишься программировать.
 			*/
@@ -46,9 +50,10 @@ public class HelpCommand extends Command {
 			//остальное вроде ничо, оптимизировать бы только
 			//разбиваю по категориям команды и отправляю разными сообщениями, чтобы избежать лимит в 2000 символов:
 			StringBuilder helpBuilder = new StringBuilder("Ваш уровень доступа " +
-					Util.ub(String.valueOf(priority)) + ", доступные команды:" + "\n");
+					Util.ub(String.valueOf(rank)) + ", доступные команды:" + "\n");
 			int i = 0;
 			String strike;
+			String bold;
 			for (String cat : categories) {
 				i++;
 				StringBuilder categoryBuilder = new StringBuilder(Util.ub(cat) + ":\n");
@@ -59,9 +64,13 @@ public class HelpCommand extends Command {
 					if (level == null) continue; //если в БД нет такой команды, значит это алиас, он в списке не нужен
 					if (accessible) strike = "";
 					else strike = "~~";
+					if (rank <= Integer.parseInt(level)) bold = "**";
+					else bold = "";
 					categoryBuilder
 							.append(strike)
+							.append(bold)
 							.append(Util.code(command.name))
+							.append(bold)
 							.append(" — ")
 							.append(Util.i(command.description))
 							.append(" (")
@@ -69,6 +78,7 @@ public class HelpCommand extends Command {
 							.append(")")
 							.append(strike)
 							.append("\n");
+					shortHelpBuilder.append(", ").append(strike).append(bold).append(Util.code(command.name)).append(bold).append(strike);
 				}
 				helpBuilder.append(categoryBuilder);
 				//у сообщений лимит 2000 символов, три категории наверняка уложатся в это число,
@@ -77,7 +87,7 @@ public class HelpCommand extends Command {
 				if (i % 3 == 0) {
 					 //не стоит слишком часто посылать сообщения (RateLimitException)
 					Util.delay(100);
-					message.getChannel().sendMessage(helpBuilder.toString());
+					message.getAuthor().getOrCreatePMChannel().sendMessage(helpBuilder.toString());
 					helpBuilder = new StringBuilder();
 				}
 			}
@@ -92,8 +102,8 @@ public class HelpCommand extends Command {
 					.append(Util.b("необходимый уровень доступа для использования"))
 					.append(")")
 					.append("\nЗачеркнутые команды запрещены по разным причинам " +
-							"(нестабильные, в разработке, личные и т.д.) " +
-							"Чтобы разблокировать их свяжитесь со мной (Лёха <@!223559816239513601>)")
+							"(нестабильные, в разработке, личные и т.д.) Чтобы разблокировать их или предложить идею " +
+							"для новой команды свяжитесь со мной (Лёха <@!" + Bot.SALALESER + ">)")
 					.append("\n")
 					.append("Префикс бота — ")
 					.append(Util.code(Bot.PREFIX))
@@ -102,7 +112,9 @@ public class HelpCommand extends Command {
 					.append(", ")
 					.append(Util.code("~tts"))
 					.append(".");
-			message.getChannel().sendMessage(helpBuilder.toString());
+			message.getChannel().sendMessage(Util.i("Основной перечень выслан личным сообщением. " +
+					"Вот короткий список:") + shortHelpBuilder.delete(0, 1).toString());
+			message.getAuthor().getOrCreatePMChannel().sendMessage(helpBuilder.toString());
 		}
 	}
 }
