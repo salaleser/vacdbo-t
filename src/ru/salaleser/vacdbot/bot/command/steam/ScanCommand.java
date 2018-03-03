@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot.command.steam;
 
+import ru.salaleser.vacdbot.Config;
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
@@ -19,8 +20,8 @@ public class ScanCommand extends Command {
 		ScannerPlayerBans[] scanners;
 
 		if (args.length == 0) {
-			long starts = Util.FIRST_STEAMID64;
-			long ends = Util.LAST_STEAMID64;
+			long starts = Config.FIRST_STEAMID64;
+			long ends = Config.LAST_STEAMID64;
 			long part = (ends - starts) / threads;
 			//создаю массив сканеров, где для каждого сканера свой диапазон айдишек
 			scanners = new ScannerPlayerBans[threads];

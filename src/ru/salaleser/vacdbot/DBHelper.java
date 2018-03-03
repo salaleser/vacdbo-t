@@ -42,8 +42,8 @@ public class DBHelper {
 	 * @return следующий номер строки
 	 */
 	public static String getNewId(String table, String column) {
-		String sql = "SELECT " + column + " FROM " + table + " ORDER BY " + column + " DESC";
-		String lastNumber = DBHelper.executeQuery(sql)[0][0];
+		String query = "SELECT " + column + " FROM " + table + " ORDER BY " + column + " DESC";
+		String lastNumber = DBHelper.executeQuery(query)[0][0];
 		//если таблица пуста, то назначаю имя вручную:
 		if (lastNumber == null) lastNumber = "0";
 		int filesCount = Integer.parseInt(lastNumber);
@@ -51,16 +51,15 @@ public class DBHelper {
 	}
 
 	/**
-	 * Проверяет строку value на существование в колонке column таблицы table
+	 * Проверяет строку value на существование в колонке column таблицы "users"
 	 *
-	 * @param table таблица, в которой надо проверить значение
 	 * @param column колонка в таблице, в которой содержится значение
 	 * @param value значение, которое надо проверить на существование
 	 * @return true если существует, false -- наоборот
 	 */
-	public static boolean isExists(String table, String column, String value) {
-		String sql = "SELECT " + column + " FROM " + table + " WHERE " + column + " = '" + value + "'";
-		return executeQuery(sql)[0][0] != null;
+	public static boolean isUserExists(String column, String value) {
+		String query = "SELECT " + column + " FROM users WHERE " + column + " = '" + value + "'";
+		return executeQuery(query)[0][0] != null;
 	}
 
 	/**
@@ -73,19 +72,19 @@ public class DBHelper {
 	 * @return ага
 	 */
 	public static boolean isAlreadyExistToday(String table, String column, String value, String date) {
-		String sql = "SELECT " + column + " FROM " + table + " " +
+		String query = "SELECT " + column + " FROM " + table + " " +
 				"WHERE " + column + " = '" + value + "' AND date = '" + date + "'";
-		return executeQuery(sql)[0][0] != null;
+		return executeQuery(query)[0][0] != null;
 	}
 
-//	todo запилить обертку может быть... а может быть и нет
-//	public static String getValue(String table, String column, String conditionColumn, String condition) {
-//		String sql = "SELECT " + column + " FROM " + table + " " +
+////todo запилить обертку может быть... а может быть и нет
+///	public static String getValue(String table, String column, String conditionColumn, String condition) {
+// 		String sql = "SELECT " + column + " FROM " + table + " " +
 //				"WHERE " + conditionColumn + " = '" + condition + "'";
-//		return executeQuery(sql)[0][0];
-//	}
+///		return executeQuery(sql)[0][0];
+////}
 
-	public static String[][] executeQuery(String sql) {
+	public static String[][] executeQuery(String query) {
 		Connection connection = null;
 		Statement statement = null;
 		ArrayList<String[]> resultSets = new ArrayList<>();
@@ -94,7 +93,7 @@ public class DBHelper {
 			connection = DriverManager.getConnection(url, login, password);
 			//TODO: 30.11.2017 почему бы не заменить на preparedstatement как в Parser.isExists?
 			statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
+			ResultSet resultSet = statement.executeQuery(query);
 			while (resultSet.next()) {
 				int columnCount = resultSet.getMetaData().getColumnCount();
 				String[] row = new String[columnCount];
@@ -130,8 +129,8 @@ public class DBHelper {
 	 * @return true если операция завершена успешно
 	 */
 	public static boolean insert(String table, String[] args) {
-		String sql = "INSERT INTO " + table + " VALUES (" + Util.getQMarks(args.length) + ")";
-		return commit(table, sql, args);
+		String query = "INSERT INTO " + table + " VALUES (" + Util.getQMarks(args.length) + ")";
+		return commit(table, query, args);
 	}
 
 	/**
@@ -158,14 +157,14 @@ public class DBHelper {
 		return commit(table, sqlBuilder.toString(), newArgs);
 	}
 
-	public static boolean commit(String table, String sql, String[] args) {
+	public static boolean commit(String table, String query, String[] args) {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		try {
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, login, password);
 			connection.setAutoCommit(false);
-			statement = connection.prepareStatement(sql);
+			statement = connection.prepareStatement(query);
 			//если args[]=null значит операция DELETE, иначе — INSERT или UPDATE:
 			if (args != null) {
 				//выясняю тип данных в таблице:
@@ -174,7 +173,7 @@ public class DBHelper {
 				String[][] dataTypes = DBHelper.executeQuery(getDataTypesQuery);
 				ArrayList<String> dataTypesList = new ArrayList<>();
 				for (String[] dataType : dataTypes) dataTypesList.add(dataType[0]);
-				if (sql.startsWith("UPDATE")) {
+				if (query.startsWith("UPDATE")) {
 					dataTypesList.add(dataTypesList.get(0));
 					dataTypesList.remove(0);
 				}
