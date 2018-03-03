@@ -74,11 +74,6 @@ public class UserCommand extends Command {
 				message.getChannel().sendMessage("SteamID " + Util.b(newSteamid) +
 						" успешно ассоциирован с пользователем " + Util.b(user.getName()) + ".");
 			}
-		} else if (Util.isNumeric(args[1])) {
-			if (set(discordid, "priority", args[1])) {
-				message.getChannel().sendMessage("Приоритет " + Util.b(args[1]) +
-						" успешно установлен пользователю " + Util.b(user.getName()) + ".");
-			}
 		} else if (set(discordid, "name", args[1])) {
 			message.getChannel().sendMessage("Имя " + Util.b(args[1]) +
 					" успешно добавлено пользователю " + Util.b(user.getName()) + ".");
@@ -87,7 +82,7 @@ public class UserCommand extends Command {
 
 	private boolean set(String discordid, String column, String value) {
 		String table = "users";
-		if (DBHelper.isExists(table, "discordid", discordid)) {
+		if (DBHelper.isUserExists("discordid", discordid)) {
 			String sql = "UPDATE " + table + " SET " + column + " = ? WHERE discordid = ?";
 			return DBHelper.commit(table, sql, new String[]{value, discordid});
 		} else {
