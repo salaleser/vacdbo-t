@@ -23,6 +23,11 @@ public class Listener {
 		event.getClient().changePlayingText(Bot.STATUS);
 		Bot.setClient(event.getClient());
 
+		Logger.info("Изменения в разрешениях команд: " + Util.fillCommandsAccessible());
+		Logger.info("Изменения в уровнях доступа команд: " + Util.fillCommandsLevel());
+
+		new Scheduler();
+
 		StringBuilder guildsBuilder = new StringBuilder();
 		for (IGuild guild : Bot.getClient().getGuilds()) {
 			Bot.addGuild(guild);
@@ -32,7 +37,6 @@ public class Listener {
 		guilds = guilds.substring(2);
 		Bot.gui.setConnected(Bot.getClient(), guilds);
 		Logger.info("Успешно подключен. Всего серверов — " + Bot.getClient().getGuilds().size() + ": " + guilds);
-		new Scheduler();
 	}
 
 	@EventSubscriber
