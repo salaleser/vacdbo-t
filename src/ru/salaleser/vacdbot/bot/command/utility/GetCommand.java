@@ -7,10 +7,6 @@ import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-
 public class GetCommand extends Command {
 
 	public GetCommand() {
@@ -30,38 +26,27 @@ public class GetCommand extends Command {
 
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
-		if (args.length == 1 && args[0].equals("permissions")) {
-			StringBuilder stringBuilder = new StringBuilder();
-			ArrayList<Command> commands = new ArrayList<>();
-			for (Map.Entry e : Bot.getCommandManager().commands.entrySet()) commands.add((Command) e.getValue());
-			for (Command c : commands) stringBuilder.append(c.name).append(" — ").append(Arrays.toString(c.aliases)).append("\n");
-			message.getChannel().sendMessage(Util.block(stringBuilder.toString()));
+		if (args.length == 0) {
+			message.reply("мало аргументов.");
 			return;
 		}
-
 		String table = "settings";
-		String command = "%";
+		String command = args[0];
 		String key = "%";
-		if (args.length > 0) command = args[0];
 		if (args.length == 2) key = args[1];
 
-		String sqlDefaults = "SELECT * FROM " + table + " WHERE guildid = 'default' " +
-				"AND command LIKE '" + command + "' AND key LIKE '" + key + "' " +
-				"ORDER BY guildid, command, key, value";
-		String[][] dataDefaults = DBHelper.executeQuery(sqlDefaults);
-		String sql = "SELECT * FROM " + table + " WHERE guildid = '" + guild.getStringID() + "' " +
-				"AND command LIKE '" + command + "' AND key LIKE '" + key + "' " +
-				"ORDER BY guildid, command, key, value";
-		String[][] data = DBHelper.executeQuery(sql);
-
-
-		if (args.length > 0 && !Bot.getCommandManager().commands.containsKey(command)) {
-			message.reply(" команда не поддерживается!");
-		} else if (dataDefaults[0][0] == null) {
-			message.reply(" у команды нет настроек!");
+		if (!Bot.getCommandManager().commands.containsKey(command)) {
+			message.reply("команда не поддерживается!");
 			return;
 		}
-		message.getChannel().sendMessage(Util.makeTable(table, new String[] {"*"}, data));
+
+		String query = "SELECT * FROM " + table + " WHERE guildid = '" + guild.getStringID() + "' " +
+				"AND command LIKE '" + command + "' AND key LIKE '" + key + "' " +
+				"UNION SELECT * FROM " + table + " WHERE guildid IS NULL " +
+				"AND command LIKE '" + command + "' AND key LIKE '" + key + "'";
+		String[][] data = DBHelper.executeQuery(query);
+		if (data[0] == null) message.reply("у команды нет настроек!");
+		else message.getChannel().sendMessage(Util.makeTable(table, new String[] {"*"}, data));
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
