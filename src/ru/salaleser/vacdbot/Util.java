@@ -10,16 +10,12 @@ import sx.blah.discord.handle.obj.IUser;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static ru.salaleser.vacdbot.bot.Bot.DEFAULT_RANK;
-import static ru.salaleser.vacdbot.bot.Bot.getGuilds;
-
 public class Util {
-	public static final long FIRST_STEAMID64 = 76561197960265729L;
-	public static final long LAST_STEAMID64 = 76561202255233023L;
-
 	/**
 	 * Проверяет аргумент на соответствие числу
 	 *
@@ -37,6 +33,16 @@ public class Util {
 	}
 
 	/**
+	 * Проверяет аргумент на соответствие имени команды
+	 *
+	 * @param verifiable оно самое
+	 * @return ага
+	 */
+	public static boolean isCommand(String verifiable) {
+		return Bot.getCommandManager().commands.containsKey(verifiable);
+	}
+
+	/**
 	 * Проверяет аргумент на соответствие SteamID64
 	 *
 	 * @param verifiable проверяемая строка
@@ -44,8 +50,8 @@ public class Util {
 	 */
 	public static boolean isSteamID64(String verifiable) {
 		return verifiable.matches("^\\d{17}$") &&
-//				Long.parseLong(verifiable) > FIRST_STEAMID64 && //почему-то попадаются стимайди меньше этого числа О_о
-				Long.parseLong(verifiable) < LAST_STEAMID64;
+//				Long.parseLong(verifiable) > Config.FIRST_STEAMID64 && //почему-то попадаются стимайди меньше этого числа О_о
+				Long.parseLong(verifiable) < Config.LAST_STEAMID64;
 	}
 
 	/**
@@ -99,7 +105,7 @@ public class Util {
 	public static String getSteamidByDiscordid(String discordid) {
 		discordid = discordid.replaceAll("[<@!>]", "");
 		//если такого пользователя еще не было в базе данных, то добавить его:
-		if (!DBHelper.isExists("users", "discordid", discordid)) refreshUsers();
+		if (!DBHelper.isUserExists("discordid", discordid)) refreshUsers();
 		String sql = "SELECT steamid FROM users WHERE discordid = '" + discordid + "'";
 		String steamid = DBHelper.executeQuery(sql)[0][0];
 		if (steamid == null || !Util.isSteamID64(steamid)) steamid = "noname";
@@ -134,7 +140,7 @@ public class Util {
 	 * @return Discord ID
 	 */
 	public static String getDiscordidBySteamid(String steamid) {
-		if (!DBHelper.isExists("users", "steamid", steamid)) return "noname";
+		if (!DBHelper.isUserExists("steamid", steamid)) return "noname";
 		String sql = "SELECT discordid FROM users WHERE steamid = '" + steamid + "'";
 		return DBHelper.executeQuery(sql)[0][0];
 	}
@@ -147,11 +153,34 @@ public class Util {
 	 */
 	public static int refreshUsers() {
 		List<IUser> users = Bot.getClient().getUsers();
-		String table = "users";
 		int counter = 0;
 		for (IUser user : users) {
-			if (!DBHelper.isExists(table, "discordid", user.getStringID())) {
-				if (DBHelper.insert(table, new String[]{null, user.getStringID()})) {
+			if (!DBHelper.isUserExists("discordid", user.getStringID())) {
+				if (DBHelper.insert("users", new String[]{null, user.getStringID()})) {
+					counter++;
+				}
+			}
+		}
+		return counter;
+	}
+
+	public static int fillCommandsAccessible() {// TODO: 02.03.2018 добавить удаление лишних
+		int counter = 0;
+		for (Command command : Bot.getCommandManager().commands.values()) {
+			if (DBHelper.getOption("trick", command.name, "accessible") == null) {
+				if (DBHelper.insert("settings", new String[]{null, command.name, "accessible", "0"})) {
+					counter++;
+				}
+			}
+		}
+		return counter;
+	}
+
+	public static int fillCommandsLevel() {// TODO: 02.03.2018 добавить удаление лишних
+		int counter = 0;
+		for (Command command : Bot.getCommandManager().commands.values()) {
+			if (DBHelper.getOption("trick", command.name, "level") == null) {
+				if (DBHelper.insert("settings", new String[]{null, command.name, "level", Config.DEFAULT_RANK})) {
 					counter++;
 				}
 			}
@@ -314,6 +343,12 @@ public class Util {
 		}
 		rowBuilder.append("┘\n");
 
+		if (rowBuilder.length() > 1600) {
+			String rowReduced = rowBuilder.toString();
+			rowReduced = rowReduced.replaceAll("[└┴┘├┼┤┌┬┐─ ]", "");
+			rowReduced = rowReduced.replaceAll("│", " ");
+			rowBuilder = new StringBuilder(rowReduced);
+		}
 		return block(rowBuilder.toString());
 	}
 
@@ -357,7 +392,8 @@ public class Util {
 	 */
 	public static int getRank(IGuild guild, IUser user) {
 		updateRoles(null);
-		int rank = Integer.parseInt(DEFAULT_RANK);
+		if (user == guild.getOwner()) return 1;
+		int rank = Integer.parseInt(Config.DEFAULT_RANK);
 		for (IRole role : guild.getRolesForUser(user)) {
 			String result = getRoleRank(role.getStringID());
 			int newRank = Integer.parseInt(result);
@@ -369,7 +405,7 @@ public class Util {
 	public static String getRoleRank(String roleid) {
 		String query = "SELECT rank FROM roles WHERE roleid = '" + roleid + "'";
 		String roleRank = DBHelper.executeQuery(query)[0][0];
-		if (roleRank == null) roleRank = DEFAULT_RANK;
+		if (roleRank == null) roleRank = Config.DEFAULT_RANK;
 		return roleRank;
 	}
 
@@ -407,7 +443,7 @@ public class Util {
 			for (IRole role : guild.getRoles()) {
 				String query = "SELECT roleid FROM roles WHERE guildid = '" + guild.getStringID() + "' AND roleid = '" + role.getStringID() + "'";
 				if (DBHelper.executeQuery(query)[0][0] != null) continue;
-				if (DBHelper.insert("roles", new String[]{guild.getStringID(), role.getStringID(), DEFAULT_RANK, role.getName()})) count++;
+				if (DBHelper.insert("roles", new String[]{guild.getStringID(), role.getStringID(), Config.DEFAULT_RANK, role.getName()})) count++;
 			}
 		}
 		//получаю все роли в массив:
