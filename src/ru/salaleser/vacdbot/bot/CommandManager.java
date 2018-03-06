@@ -55,6 +55,12 @@ public class CommandManager {
 		}
 		Logger.info("Получил команду " + command.name + ".");
 
+		//fixme пока вот так как-то
+		if (guild == null) {
+			message.reply("не могу выяснить гильдию.");
+			return;
+		}
+
 		//проверка на лицуху:
 		if (!Util.isAccessible(guild.getStringID(), command.name)) {
 			Logger.info("Команда " + command.name + " запрещена для гильдии " + guild.getName() + ".");
@@ -64,7 +70,7 @@ public class CommandManager {
 
 		//Проверка на право использования команды:
 		int rank = Util.getRank(guild, message.getAuthor());
-		int permissions = Util.getPermission(guild.getStringID(), command.name);
+		int permissions = Util.getLevel(guild.getStringID(), command.name);
 		if (rank > permissions) {
 			message.reply("Вы не обладаете достаточными правами " +
 					"для использования команды " + Util.code(command.name) + "!");
