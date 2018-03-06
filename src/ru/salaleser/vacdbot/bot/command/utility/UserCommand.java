@@ -27,10 +27,50 @@ public class UserCommand extends Command {
 		);
 	}
 
+	private String table = "users";
+
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
+		String[][] discordids = DBHelper.executeQuery("SELECT discordid FROM " + table);
+		String[][] steamids = DBHelper.executeQuery("SELECT steamid FROM " + table);
+		Logger.info("Добавлено " + Util.refreshUsers() + " пользователей, всего в БД " + discordids.length +
+				" пользователей, из них с неизвестными SteamID: " + (discordids.length - steamids.length) + ".");
+
+		int usersCounter = 0;
+		int unknownSteamidsCounter = 0;
 		if (args.length == 0) {
-			replyNonameCount(message.getChannel());
+			StringBuilder userBuilder = new StringBuilder(Util.ub("Пользователи гильдии " + guild.getName() + ":"));
+			for (String[] row : discordids) {
+				IUser user = guild.getUserByID(Long.parseLong(row[0]));
+				if (user == null) continue; //если пользователя нет в гильдии, то не показывать его
+				if (user.isBot()) continue; //если бот, то тоже не показывать
+				usersCounter++;
+				String steamid = Util.getSteamidByDiscordid(row[0]);
+				if (steamid == null) unknownSteamidsCounter++;
+				userBuilder
+						.append("\n")
+						.append(Util.b(user.getName()))
+						.append(" (")
+						.append(user.getNicknameForGuild(guild))
+						.append(") ")
+						.append(Util.code(row[0]))
+						.append("|")
+						.append(Util.code(steamid))
+						.append(" — ")
+						.append(Util.b("" + Util.getRank(guild, user)));
+				if (usersCounter % 20 == 0) {
+					message.getChannel().sendMessage(userBuilder.toString());
+					userBuilder = new StringBuilder();
+				}
+			}
+			userBuilder
+					.append("\n\n")
+					.append("Всего пользователей Вашей гильдии: ")
+					.append(Util.b(usersCounter + ""))
+					.append(". Из них с неизвестными SteamID: ")
+					.append(Util.b(unknownSteamidsCounter + ""))
+					.append(".");
+			message.getChannel().sendMessage(userBuilder.toString());
 			return;
 		}
 
@@ -53,7 +93,7 @@ public class UserCommand extends Command {
 			StringBuilder rolesBuilder = new StringBuilder();
 			for (IRole role : roles) {
 				if (role.getPosition() == 0) continue; //пропустить роль @everyone
-				rolesBuilder.append(", ").append(role.getName()).append(" (").append(role.getStringID())
+				rolesBuilder.append(", ").append(Util.b(role.getName())).append(" (").append(Util.code(role.getStringID()))
 						.append(" — ").append(Util.getRoleRank(role.getStringID())).append(")");
 			}
 			rolesBuilder = rolesBuilder.delete(0, 2);
@@ -81,22 +121,13 @@ public class UserCommand extends Command {
 	}
 
 	private boolean set(String discordid, String column, String value) {
-		String table = "users";
 		if (DBHelper.isUserExists("discordid", discordid)) {
-			String sql = "UPDATE " + table + " SET " + column + " = ? WHERE discordid = ?";
-			return DBHelper.commit(table, sql, new String[]{value, discordid});
+			String query = "UPDATE " + table + " SET " + column + " = ? WHERE discordid = ?";
+			return DBHelper.commit(table, query, new String[]{value, discordid});
 		} else {
 			Logger.error("Пользователя нет в БД.");
 			return false;
 		}
-	}
-
-	private void replyNonameCount(IChannel channel) {
-		int discordidCount = Integer.parseInt(DBHelper.executeQuery("SELECT COUNT(discordid) FROM users")[0][0]);
-		int steamidCount = Integer.parseInt(DBHelper.executeQuery("SELECT COUNT(steamid) FROM users")[0][0]);
-		channel.sendMessage(Util.i("Добавлено " + Util.b("" + Util.refreshUsers()) +
-				" пользователей, всего в БД " + Util.b(String.valueOf(discordidCount)) + " пользователей, " +
-				"из них с неизвестными SteamID: " + Util.b(String.valueOf(discordidCount - steamidCount)) + "."));
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР
