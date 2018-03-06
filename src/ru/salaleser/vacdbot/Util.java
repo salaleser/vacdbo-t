@@ -106,10 +106,8 @@ public class Util {
 		discordid = discordid.replaceAll("[<@!>]", "");
 		//если такого пользователя еще не было в базе данных, то добавить его:
 		if (!DBHelper.isUserExists("discordid", discordid)) refreshUsers();
-		String sql = "SELECT steamid FROM users WHERE discordid = '" + discordid + "'";
-		String steamid = DBHelper.executeQuery(sql)[0][0];
-		if (steamid == null || !Util.isSteamID64(steamid)) steamid = "noname";
-		return steamid;
+		String query = "SELECT steamid FROM users WHERE discordid = '" + discordid + "'";
+		return DBHelper.executeQuery(query)[0][0];
 	}
 
 	/**
@@ -416,16 +414,16 @@ public class Util {
 	 * @param commandName имя команды
 	 * @return минимальный уровень доступа для использования команды
 	 */
-	public static int getPermission(String guildid, String commandName) {
-		String permission = DBHelper.getOption(guildid, commandName, "level");
-		if (permission == null) permission = "9";
-		return Integer.parseInt(permission);
+	public static int getLevel(String guildid, String commandName) {
+		String level = DBHelper.getOption(guildid, commandName, "level");
+		if (level == null) level = String.valueOf(Config.MAX_LEVEL);
+		return Integer.parseInt(level);
 	}
 
 	public static String getSound(String discordid, String column) {
 		String steamid = getSteamidByDiscordid(discordid);
-		String sql = "SELECT " + column + " FROM users WHERE steamid = '" + steamid + "'";
-		return DBHelper.executeQuery(sql)[0][0];
+		String query = "SELECT " + column + " FROM users WHERE steamid = '" + steamid + "'";
+		return DBHelper.executeQuery(query)[0][0];
 	}
 
 	/**
@@ -441,9 +439,9 @@ public class Util {
 		int count = 0;
 		for (IGuild guild : guilds) {
 			for (IRole role : guild.getRoles()) {
-				String query = "SELECT roleid FROM roles WHERE guildid = '" + guild.getStringID() + "' AND roleid = '" + role.getStringID() + "'";
+				String query = "SELECT roleid FROM roles WHERE roleid = '" + role.getStringID() + "'";
 				if (DBHelper.executeQuery(query)[0][0] != null) continue;
-				if (DBHelper.insert("roles", new String[]{guild.getStringID(), role.getStringID(), Config.DEFAULT_RANK, role.getName()})) count++;
+				if (DBHelper.insert("roles", new String[]{role.getStringID(), Config.DEFAULT_RANK})) count++;
 			}
 		}
 		//получаю все роли в массив:
