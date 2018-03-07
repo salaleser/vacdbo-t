@@ -21,7 +21,7 @@ public class PlayCommand extends Command {
 				Player.queueFile(guild, "music/spyat_ustalye_igrushki.mp3");
 				break;
 			default:
-				Player.queueFile(guild, args[0]);
+				Player.queueFile(guild, "music/" + args[0] + ".mp3");
 //				Player.queueUrl(guild, args[0]);
 		}
 	}
