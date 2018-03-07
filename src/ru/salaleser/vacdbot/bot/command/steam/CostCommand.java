@@ -182,7 +182,8 @@ public class CostCommand extends Command {
 			e.printStackTrace();
 		}
 
-		Logger.debug("Минимальная стоимость " + item.getValue() + " — " + Util.toRubKop(String.valueOf(price)));
+//		Logger.debug("Минимальная стоимость " + item.getValue() + " — " + Util.toRubKop(String.valueOf(price)));
+		System.out.println("Минимальная стоимость " + item.getValue() + " — " + Util.toRubKop(String.valueOf(price)));
 		return price;
 	}
 
