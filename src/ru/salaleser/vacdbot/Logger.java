@@ -29,30 +29,54 @@ public class Logger { // FIXME: 23.02.2018 сообщения идут во вс
 	public static void info(String message) {
 		System.out.println(LocalDateTime.now().format(formatter) + " [INFO] " + message);
 		gui.addText(LocalDateTime.now().format(formatter) + " [INFO] " + message, Color.BLACK);
-		for (IGuild guild : Bot.getGuilds()) {
-			for (IChannel channel : guild.getChannelsByName(LOG_CHANNEL_NAME)) {
+		for (IGuild aGuild : Bot.getGuilds()) {
+			for (IChannel channel : aGuild.getChannelsByName(LOG_CHANNEL_NAME)) {
 				channel.sendMessage(Util.block(LocalDateTime.now().format(formatter) + " [INFO] " + message));
 			}
+		}
+	}
+
+	public static void info(String message, IGuild guild) {
+		System.out.println(LocalDateTime.now().format(formatter) + " [INFO] " + message);
+		gui.addText(LocalDateTime.now().format(formatter) + " [INFO] " + message, Color.BLACK);
+		for (IChannel channel : guild.getChannelsByName(LOG_CHANNEL_NAME)) {
+			channel.sendMessage(Util.block(LocalDateTime.now().format(formatter) + " [INFO] " + message));
 		}
 	}
 
 	public static void debug(String message) {
 		System.out.println(LocalDateTime.now().format(formatter) + " [DEBUG] " + message);
 		gui.addText(LocalDateTime.now().format(formatter) + " [DEBUG] " + message, Color.ORANGE);
-		for (IGuild guild : Bot.getGuilds()) {
-			for (IChannel channel : guild.getChannelsByName(LOG_CHANNEL_NAME)) {
+		for (IGuild aGuild : Bot.getGuilds()) {
+			for (IChannel channel : aGuild.getChannelsByName(LOG_CHANNEL_NAME)) {
 				channel.sendMessage(Util.block(LocalDateTime.now().format(formatter) + " [DEBUG] " + message));
 			}
+		}
+	}
+
+	public static void debug(String message, IGuild guild) {
+		System.out.println(LocalDateTime.now().format(formatter) + " [DEBUG] " + message);
+		gui.addText(LocalDateTime.now().format(formatter) + " [DEBUG] " + message, Color.ORANGE);
+		for (IChannel channel : guild.getChannelsByName(LOG_CHANNEL_NAME)) {
+			channel.sendMessage(Util.block(LocalDateTime.now().format(formatter) + " [DEBUG] " + message));
 		}
 	}
 
 	public static void error(String message) {
 		System.out.println(LocalDateTime.now().format(formatter) + " [ERROR] " + message);
 		gui.addText(LocalDateTime.now().format(formatter) + " [ERROR] " + message, Color.RED);
-		for (IGuild guild : Bot.getGuilds()) {
-			for (IChannel channel : guild.getChannelsByName(LOG_CHANNEL_NAME)) {
+		for (IGuild aGuild : Bot.getGuilds()) {
+			for (IChannel channel : aGuild.getChannelsByName(LOG_CHANNEL_NAME)) {
 				channel.sendMessage(Util.block(LocalDateTime.now().format(formatter) + " [ERROR] " + message));
 			}
+		}
+	}
+
+	public static void error(String message, IGuild guild) {
+		System.out.println(LocalDateTime.now().format(formatter) + " [ERROR] " + message);
+		gui.addText(LocalDateTime.now().format(formatter) + " [ERROR] " + message, Color.RED);
+		for (IChannel channel : guild.getChannelsByName(LOG_CHANNEL_NAME)) {
+			channel.sendMessage(Util.block(LocalDateTime.now().format(formatter) + " [ERROR] " + message));
 		}
 	}
 }
