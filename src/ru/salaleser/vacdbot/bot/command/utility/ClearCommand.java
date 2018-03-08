@@ -4,6 +4,8 @@ import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -17,6 +19,11 @@ import java.util.regex.Pattern;
 public class ClearCommand extends Command {
 
 	private ArrayList<IMessage> dump = new ArrayList<>();
+	private IMessage replyMessage;
+	private IMessage errorMessage;
+	private IMessage finalMessage;
+	private IMessage message;
+	private IUser author;
 
 	public ClearCommand() {
 		super("clear", UTILITY, "Удаляет сообщения.", new String[]{"c"});
@@ -26,8 +33,8 @@ public class ClearCommand extends Command {
 	public void help(IMessage message) {
 		message.getChannel().sendMessage(buildHelp(description,
 				"`~clear [<Discord_ID>] [<количество_соощений>] [<условие>]`.",
-				"нет.",
-				"`~clear @salaleser 10 \\u007e.*`.",
+				"`~clear` — удаляет 10 сообщений всех пользоваетлей.",
+				"`~clear @salaleser 10 ^\\u007e.*`.",
 				"условие задаётся регулярным выражением."
 				)
 		);
@@ -36,20 +43,14 @@ public class ClearCommand extends Command {
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
 		IUser user = null;
+		this.message = message;
+		this.author = message.getAuthor();
 		int limit = Integer.parseInt(DBHelper.getOption(guild.getStringID(), name, "limit"));
 		String regexp = null;
 		int index = 0;
 		if (args.length != 0) {
 			if (args[0].equals("yes") || args[0].equals("y")) {
-				message.getClient().changePlayingText("удаляю сообщения");
-				IMessage m = message.getChannel().sendMessage(Util.i("Удаляю " + (dump.size() - 2) + " сообщений..."));
-				dump.add(m);
-				message.delete();
-				for (IMessage msg : dump) {
-					msg.delete();
-					Util.delay(500);
-				}
-				message.getClient().changePlayingText(Bot.STATUS);
+				clear();
 				return;
 			}
 			if (Util.isDiscordUser(args[index])) {
@@ -87,16 +88,55 @@ public class ClearCommand extends Command {
 			return;
 		}
 		try {
-			IMessage replyMessage = message.getChannel().sendMessage(Util.i(builder.toString()));
+			replyMessage = message.getChannel().sendMessage(Util.i(builder.toString()));
 			dump.add(0, replyMessage);
 		} catch (DiscordException e) {
-			IMessage errorMessage = message.getChannel().sendMessage(Util.i("Ошибка! Количество символов в сообщении превышает " +
+			errorMessage = message.getChannel().sendMessage(Util.i("Ошибка! Количество символов в сообщении превышает " +
 					"максимально допустимое (2000 символов)"));
 			dump.add(0, errorMessage);
 		} finally {
-			IMessage finalMessage = message.getChannel().sendMessage("Хотите удалить все " + (dump.size() - 1) +
-					" сообщений? Для подтверждения наберите `~clear yes`");
+			finalMessage = message.getChannel().sendMessage(Util.i("Хотите удалить все " + (dump.size() - 1) +
+					" сообщений? Для подтверждения наберите `~clear yes` (или `~c y`)"));
+			Util.delay(100);
+			finalMessage.addReaction("✅");
+			Util.delay(100);
+			finalMessage.addReaction("❌");
 			dump.add(0, finalMessage);
+		}
+	}
+
+	private void clear() {
+		message.getClient().changePlayingText("удаляю сообщения");
+		IMessage m = message.getChannel().sendMessage(Util.i("Удаляю " + (dump.size() - 2) + " сообщений..."));
+		dump.add(m);
+		message.delete();
+		for (IMessage msg : dump) {
+			msg.delete();
+			Util.delay(500);
+		}
+		message.getClient().changePlayingText(Bot.STATUS);
+	}
+
+	@EventSubscriber
+	public void onReactionAdd(ReactionAddEvent event) {
+		String emoji = event.getReaction().getUnicodeEmoji().getUnicode();
+		if (emoji.equals("✅") && event.getMessage() == finalMessage && event.getUser() == author) {
+			clear();
+		}
+		if (emoji.equals("❌") && event.getMessage() == finalMessage && event.getUser() == author) {
+			if (replyMessage != null) {
+				replyMessage.delete();
+				Util.delay(500);
+			}
+			if (errorMessage != null) {
+				errorMessage.delete();
+				Util.delay(500);
+			}
+			if (finalMessage != null) {
+				finalMessage.delete();
+				Util.delay(500);
+			}
+			message.delete();
 		}
 	}
 }
