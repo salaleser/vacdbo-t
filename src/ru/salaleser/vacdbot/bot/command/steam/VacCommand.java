@@ -23,7 +23,7 @@ public class VacCommand extends Command {
 	@Override
 	public void help(IMessage message) {
 		message.getChannel().sendMessage(buildHelp(description,
-				"`~vac [<количество_дней> [<SteamID64> | <пользователь_Discord>]]`.",
+				"`~vac [<количество_дней> [<SteamID64> | <пользователь_Discord> | <ссылка_на_профиль_Steam>]]`.",
 				"`~vac` — ваши друзья, получившие бан за прошедший день;\n" +
 						"`~vac <количество_дней>` — ваши друзья, получившие бан за указанное количество дней.",
 				"`~vac 3 76561198095972970`, `~vac 30 @salaleser`.",
@@ -37,51 +37,44 @@ public class VacCommand extends Command {
 		//defaults:
 		IChannel channel = message.getChannel();
 		IUser user = message.getAuthor();
+		String discordid = user.getStringID();
 		String steamid = Util.getSteamidByDiscordid(user.getStringID());
 		int days = 1;
 
-		if (args.length > 0) {
-			if (Util.isNumeric(args[0])) {
-				days = Integer.parseInt(args[0]);
-				if (args.length > 1) {
-					if (Util.isSteamID64(args[1])) {
-						steamid = args[1];
-						String discordid = Util.getDiscordidBySteamid(steamid);
-						if (!discordid.equals("noname")) {
-							user = Bot.getClient().getUserByID(Long.parseLong(discordid));
-						}
-					} else if (Util.isDiscordUser(args[1])) {
-						String discordid = args[1].replaceAll("[<@!>]", "");
-						user = Bot.getClient().getUserByID(Long.parseLong(discordid));
-						steamid = Util.getSteamidByDiscordid(discordid);
-					} else {
-						message.reply(Util.b("ошибка в SteamID") + " (установлен SteamID: " + steamid + ")");
-					}
-				} else {
-					message.reply(Util.b("профиль не задан") + " (установлен SteamID: " + steamid + ")");
-				}
-			} else {
-				message.reply(Util.b("ошибка в количестве дней") +
-						" (проверяю баны " + user.getName() + " за " + days + " д" + Util.ending(days));
+		String daysString = DBHelper.getOption(guild.getStringID(), "vac", "days");
+		if (Util.isNumeric(daysString)) days = Integer.parseInt(daysString);
+
+		for (String arg : args) {
+			if (Util.isNumeric(arg)) {
+				days = Integer.parseInt(arg);
+				continue;
 			}
-		} else {
-			message.reply(Util.b("аргументы не заданы") + " (установлены значения: пользователь " +
-					user.getName() + ", период времени: " + days + " д" + Util.ending(days));
+			if (Util.isCommunityID(arg)) arg = Util.getSteamidByCommunityid(arg);
+			if (Util.isSteamID64(arg)) {
+				steamid = arg;
+				discordid = Util.getDiscordidBySteamid(steamid);
+			} else if (Util.isDiscordUser(arg)) {
+				discordid = arg.replaceAll("[<@!>]", "");
+				steamid = Util.getSteamidByDiscordid(discordid);
+			}
+			user = guild.getUserByID(Long.parseLong(discordid));
 		}
 
 		channel.sendMessage("Проверяю друзей " + user.getName() + "…");
-		if (steamid.equals("noname") || !DBHelper.isUserExists("steamid", steamid)) {
+
+		if (Util.getSteamidByDiscordid(discordid) == null) {
 			channel.sendMessage(Util.i("С пользователем " + user.getName() +
 					" не ассоциирован SteamID, взаимодействие со Steam API невозможно."));
 			return;
 		}
-		StringBuilder jsonFriends = httpClient.connect("http://api.steampowered.com/" +
-				"ISteamUser/GetFriendList/v0001/" + "?key=" + Config.getSteamWebApiKey() + "&steamid=" +
-				steamid + "&relationship=friend");
+
+		StringBuilder jsonFriends = httpClient.connect("http://api.steampowered.com/ISteamUser/GetFriendList/" +
+				"v0001/?key=" + Config.getSteamWebApiKey() + "&steamid=" + steamid + "&relationship=friend");
 		if (jsonFriends == null) {
-			channel.sendMessage(Util.i("Время ожидания вышло! Повторите запрос..."));
+			Logger.error("Время ожидания вышло! Повторите запрос...", guild);
 			return;
 		}
+
 		ParserFriends parserFriends = new ParserFriends();
 		ArrayList<StringBuilder> hundredsOfSteamIDs = parserFriends.parse(jsonFriends);
 
