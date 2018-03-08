@@ -1,10 +1,5 @@
 package ru.salaleser.vacdbot;
 
-import ru.salaleser.vacdbot.bot.Bot;
-import ru.salaleser.vacdbot.bot.command.Command;
-import sun.util.resources.bg.CalendarData_bg;
-import sx.blah.discord.handle.obj.IGuild;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,8 +18,10 @@ public class DBHelper {
 	 * @return значение
 	 */
 	public static String getOption(String guildid, String commandname, String key) {
-		String getGuildValueQuery = "SELECT value FROM settings WHERE guildid = '" + guildid + "' AND command = '" + commandname + "' AND key LIKE '" + key + "'";
-		String getDefaultValueQuery = "SELECT value FROM settings WHERE guildid is NULL AND command = '" + commandname + "' AND key LIKE '" + key + "'";
+		String getGuildValueQuery = "SELECT value FROM settings " +
+				"WHERE guildid = '" + guildid + "' AND command = '" + commandname + "' AND key LIKE '" + key + "'";
+		String getDefaultValueQuery = "SELECT value FROM settings " +
+				"WHERE guildid is NULL AND command = '" + commandname + "' AND key LIKE '" + key + "'";
 		String value = executeQuery(getGuildValueQuery)[0][0];
 		if (value == null) value = executeQuery(getDefaultValueQuery)[0][0];
 		return value;
@@ -77,13 +74,6 @@ public class DBHelper {
 		return executeQuery(query)[0][0] != null;
 	}
 
-////todo запилить обертку может быть... а может быть и нет
-///	public static String getValue(String table, String column, String conditionColumn, String condition) {
-// 		String sql = "SELECT " + column + " FROM " + table + " " +
-//				"WHERE " + conditionColumn + " = '" + condition + "'";
-///		return executeQuery(sql)[0][0];
-////}
-
 	public static String[][] executeQuery(String query) {
 		Connection connection = null;
 		Statement statement = null;
@@ -102,6 +92,7 @@ public class DBHelper {
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			Logger.error("Ошибка чтения из базы данных: " + e.getMessage());
+			e.printStackTrace();
 		} finally {
 			try {
 				if (statement != null) statement.close();
