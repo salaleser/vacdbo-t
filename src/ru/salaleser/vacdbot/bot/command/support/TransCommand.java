@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class TransCommand extends Command {
 
 	public TransCommand() {
-		super("trans", SUPPORT, "Перевод слова с сайта http://wooordhunt.ru.");
+		super("trans", SUPPORT, "RU<=>EN перевод с сайта http://wooordhunt.ru.");
 	}
 
 	@Override
@@ -37,14 +37,10 @@ public class TransCommand extends Command {
 
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
-		StringBuilder argsSB = new StringBuilder();
-		//перегоняю все аргументы в одну строку
-		for (String arg : args) argsSB.append(arg).append("%20");
-		argsSB.replace(argsSB.length() - 3, argsSB.length(), "");
-		ArrayList<String> result = getDataFromYandexTranslator(argsSB.toString());
-
+		String content = String.join("%20", args);
+		ArrayList<String> result = getDataFromYandexTranslator(content);
 		StringBuilder translation = new StringBuilder(Util.b("Перевод слова " +
-				Util.u(argsSB.toString()) + ":\n"));
+				Util.u(content) + ":\n"));
 		for (String line : result) translation.append(line).append(" ");
 		message.getChannel().sendMessage(translation.toString());
 	}
