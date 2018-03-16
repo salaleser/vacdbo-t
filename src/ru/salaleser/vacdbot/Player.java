@@ -26,12 +26,12 @@ public class Player {
 		}
 		if (mainVoiceChannel.isConnected()) return;
 		if (!mainVoiceChannel.getModifiedPermissions(mainVoiceChannel.getClient().getOurUser()).contains(Permissions.VOICE_CONNECT))
-			Logger.error("I can't join that voice channel!");
+			Logger.error("I can't join that voice channel!", guild);
 		else if (mainVoiceChannel.getUserLimit() != 0 && mainVoiceChannel.getConnectedUsers().size() >= mainVoiceChannel.getUserLimit())
-			Logger.error("That room is full!");
+			Logger.error("That room is full!", guild);
 		else {
 			mainVoiceChannel.join();
-			Logger.info("Connected to " + mainVoiceChannel.getGuild().getName() + ":" + mainVoiceChannel.getName() + ".");
+			Logger.info("Connected to " + mainVoiceChannel.getGuild().getName() + ":" + mainVoiceChannel.getName() + ".", guild);
 		}
 	}
 
@@ -41,28 +41,28 @@ public class Player {
 			join(guild);
 			setTrackTitle(getPlayer(guild).queue(u), u.getFile());
 		} catch (MalformedURLException e) {
-			Logger.error("That URL is invalid!");
+			Logger.error("That URL is invalid!", guild);
 		} catch (IOException e) {
-			Logger.error("An IO exception occured: " + e.getMessage());
+			Logger.error("An IO exception occured: " + e.getMessage(), guild);
 		} catch (UnsupportedAudioFileException e) {
-			Logger.error("That type of file is not supported!");
+			Logger.error("That type of file is not supported!", guild);
 		}
 	}
 
 	public static void queueFile(IGuild guild, String pathname) throws RateLimitException, DiscordException, MissingPermissionsException {
 		File file = new File(pathname);
 		if (!file.exists())
-			Logger.error("That file doesn't exist!");
+			Logger.error("That file doesn't exist!", guild);
 		else if (!file.canRead())
-			Logger.error("I don't have access to that file!");
+			Logger.error("I don't have access to that file!", guild);
 		else {
 			try {
 				join(guild);
 				setTrackTitle(getPlayer(guild).queue(file), file.toString());
 			} catch (IOException e) {
-				Logger.error("An IO exception occured: " + e.getMessage());
+				Logger.error("An IO exception occured: " + e.getMessage(), guild);
 			} catch (UnsupportedAudioFileException e) {
-				Logger.error("That type of file is not supported!");
+				Logger.error("That type of file is not supported!", guild);
 			}
 		}
 	}
@@ -81,7 +81,7 @@ public class Player {
 
 	public static int volume(IGuild guild) throws RateLimitException, DiscordException, MissingPermissionsException {
 		int volume = (int) (getPlayer(guild).getVolume() * 100);
-		Logger.info("Volume is " + (volume * 100) + "%.");
+		Logger.info("Volume is " + (volume * 100) + "%.", guild);
 		return volume;
 	}
 
@@ -90,7 +90,7 @@ public class Player {
 		if (volume > 1.5) volume = 1.5f;
 		if (volume < 0) volume = 0f;
 		getPlayer(guild).setVolume(volume);
-		Logger.info("Set volume to " + (int) (volume * 100) + "%.");
+		Logger.info("Set volume to " + (int) (volume * 100) + "%.", guild);
 	}
 
 	private static AudioPlayer getPlayer(IGuild guild) {

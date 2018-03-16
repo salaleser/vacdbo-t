@@ -2,7 +2,8 @@ package ru.salaleser.vacdbot.bot.command.support;
 
 import com.voicerss.tts.*;
 import ru.salaleser.vacdbot.*;
-import ru.salaleser.vacdbot.bot.TTSColumns;
+import ru.salaleser.vacdbot.bot.Bot;
+import ru.salaleser.vacdbot.bot.columns.TTSColumns;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -11,12 +12,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static ru.salaleser.vacdbot.Util.i;
 
 public class TTSCommand extends Command {
 	// TODO: 26.02.2018 добавить автоочистку кэша (самые давно обновленные и редкоиспользуемые файлы)
 
 	public TTSCommand() {
-		super("tts", SUPPORT, "Озвучивает текст.");
+		super("tts", SUPPORT, "Озвучивает текст.", new String[]{"\""});
 	}
 
 	private static final String TABLE = "tts";
@@ -30,11 +34,26 @@ public class TTSCommand extends Command {
 			File[] files = folder.listFiles();
 			if (files == null) return;
 			for (File file : files) folderSize += file.length();
-			message.getChannel().sendMessage(Util.i("База данных содержит " +
+			message.getChannel().sendMessage(i("База данных содержит " +
 					Util.b(DBHelper.executeQuery("SELECT COUNT(*) FROM " + TABLE)[0][0] + " ссылок") + ". " +
 					"Всего в кэше " + Util.b(files.length + " файлов") + ", а их суммарный размер составляет " +
 					Util.b((folderSize / 1024 / 1024) + " Мбайт")));
 			return;
+		}
+
+		String text = String.join(" ", args);
+		if (message != null) {
+			String botname = Bot.getClient().getOurUser().getDisplayName(guild);
+			message = message.getChannel().sendMessage(i("«" + text + "», — сказала " + botname + "."));
+		}
+		if (!isProper(text)) {
+			String[] phrases = new String[]{
+					"Я отказываюсь это произносить",
+					"Я в этой хуйне не участвую",
+					"Сам попробуй такое произнести",
+					"Я на такое не подписывалась"
+			};
+			text = phrases[ThreadLocalRandom.current().nextInt(phrases.length)];
 		}
 
 		//определяю язык, по умолчанию на основании региона гильдии:
@@ -53,27 +72,13 @@ public class TTSCommand extends Command {
 			case "US South":
 			case "US West": language = Languages.English_UnitedStates; break;
 		}
+
 		// TODO: 23.02.2018 научить бота определять составные фразы из разных языков, сейчас фраза должна состоять из слов одного языка
 		//определяю язык по первой букве фразы:
-		if (args[0].substring(0, 1).matches("^[\\u4E00-\\u9FA5]+$")) language = Languages.Chinese_China;
-		else if (args[0].substring(0, 1).matches("^[А-ЯЁа-яё]+$")) language = Languages.Russian;
-		else if (args[0].substring(0, 1).matches("^[A-Za-z]+$")) language = Languages.English_UnitedStates;
+		if (text.substring(0, 1).matches("^[\\u4E00-\\u9FA5]+$")) language = Languages.Chinese_China;
+		else if (text.substring(0, 1).matches("^[А-ЯЁа-яё]+$")) language = Languages.Russian;
+		else if (text.substring(0, 1).matches("^[A-Za-z]+$")) language = Languages.English_UnitedStates;
 
-		//добавлю эмоции с флагами по фану:
-		if (message != null) { //если сообщения нет, то и добавлять не к чему
-			switch (language) {
-				case "en-gb": message.addReaction("\uD83C\uDDEC\uD83C\uDDE7"); break;
-				case "en-us": message.addReaction("\uD83C\uDDFA\uD83C\uDDF8"); break;
-				case "pt-br": message.addReaction("\uD83C\uDDE7\uD83C\uDDF7"); break;
-				case "zh-hk": message.addReaction("\uD83C\uDDED\uD83C\uDDF0"); break;
-				case "ja-jp": message.addReaction("\uD83C\uDDEF\uD83C\uDDF5"); break;
-				case "ru-ru": message.addReaction("\uD83C\uDDF7\uD83C\uDDFA"); break;
-				case "en-au": message.addReaction("\uD83C\uDDE6\uD83C\uDDFA"); break;
-				case "zh-cn": message.addReaction("\uD83C\uDDE8\uD83C\uDDF3"); break;
-			}
-		}
-
-		String text = String.join(" ", args);
 		String filename;
 		String timeupdated = String.valueOf(System.currentTimeMillis() / 1000L);
 		boolean cached = false;
@@ -131,10 +136,12 @@ public class TTSCommand extends Command {
 				fileOutputStream = new FileOutputStream(PATH + filename + EXTENSION);
 				DBHelper.insert(TABLE, new String[]{text, filename, "1", language, timeupdated});
 			} catch (FileNotFoundException e) {
-				Logger.error("Ошибка чтения файла!");
+				Logger.error("Ошибка чтения файла!", guild);
 				e.printStackTrace();
 			}
+
 			try {
+				if (fileOutputStream == null) return;
 				fileOutputStream.write(voice, 0, voice.length);
 				fileOutputStream.flush();
 				fileOutputStream.close();
@@ -145,9 +152,30 @@ public class TTSCommand extends Command {
 
 		Player.queueFile(guild, PATH + filename + EXTENSION);
 
-		//значок кэшированной записи для красоты:
-		Util.delay(100);
-		if (cached && message != null) message.addReaction("\uD83D\uDCBE");
+		//добавлю эмоции для красоты:
+		if (message != null) { //если сообщения нет, то и добавлять не к чему
+			switch (language) {
+				case "en-gb": message.addReaction("\uD83C\uDDEC\uD83C\uDDE7"); break;
+				case "en-us": message.addReaction("\uD83C\uDDFA\uD83C\uDDF8"); break;
+				case "pt-br": message.addReaction("\uD83C\uDDE7\uD83C\uDDF7"); break;
+				case "zh-hk": message.addReaction("\uD83C\uDDED\uD83C\uDDF0"); break;
+				case "ja-jp": message.addReaction("\uD83C\uDDEF\uD83C\uDDF5"); break;
+				case "ru-ru": message.addReaction("\uD83C\uDDF7\uD83C\uDDFA"); break;
+				case "en-au": message.addReaction("\uD83C\uDDE6\uD83C\uDDFA"); break;
+				case "zh-cn": message.addReaction("\uD83C\uDDE8\uD83C\uDDF3"); break;
+			}
+			Util.delay(100);
+			if (cached) message.addReaction("\uD83D\uDCBE");
+		}
+	}
+
+	private boolean isProper(String text) {
+		return
+				!text.matches("\\d{8,}") &&
+//						!text.matches("(.)\1{6,}") && fixme
+						!text.matches("[а-яёА-ЯЁa-zA-Z0-9]{16,}") &&
+						!text.matches("[^а-яёА-ЯЁa-zA-Z0-9]{3,}")
+				;
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

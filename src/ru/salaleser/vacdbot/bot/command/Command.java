@@ -11,12 +11,15 @@ public abstract class Command {
 	public final static String SUPPORT = "Полезные";
 	public final static String UTILITY = "Служебные";
 	public final static String PLAYER = "Аудиоплеер";
+	public final static String ADMIN = "Одменские";
 
 	public static int count = 0;
 	public final String name;
 	public final String category;
 	public final String description;
 	public final String[] aliases;
+
+	protected IGuild guild;
 
 	// TODO: 10.12.2017 создать универсальный способ для всех команд для определения возможных значений переменных
 

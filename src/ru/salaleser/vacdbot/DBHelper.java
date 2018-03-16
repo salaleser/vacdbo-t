@@ -54,8 +54,8 @@ public class DBHelper {
 	 * @param value значение, которое надо проверить на существование
 	 * @return true если существует, false -- наоборот
 	 */
-	public static boolean isUserExists(String column, String value) {
-		String query = "SELECT " + column + " FROM users WHERE " + column + " = '" + value + "'";
+	public static boolean isUserExists(String guildid, String column, String value) {
+		String query = "SELECT " + column + " FROM users WHERE guildid = '" + guildid + "' AND " + column + " = '" + value + "'";
 		return executeQuery(query)[0][0] != null;
 	}
 
@@ -91,7 +91,7 @@ public class DBHelper {
 				if (!resultSet.wasNull()) resultSets.add(row);
 			}
 		} catch (SQLException | ClassNotFoundException e) {
-			Logger.error("Ошибка чтения из базы данных: " + e.getMessage());
+			Logger.error("Ошибка чтения из базы данных: " + e.getMessage() + ".\nЗапрос: " + query);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -190,7 +190,7 @@ public class DBHelper {
 			return true;
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-			Logger.error("Ошибка операции с базой данных: " + e.getMessage());
+			Logger.error("Ошибка операции с базой данных: " + e.getMessage() + ".\nЗапрос: " + query);
 			return false;
 		} finally {
 			try {

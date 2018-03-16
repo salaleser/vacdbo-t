@@ -1,4 +1,4 @@
-package ru.salaleser.vacdbot.bot.command.steam;
+package ru.salaleser.vacdbot.bot.command.admin;
 
 import ru.salaleser.vacdbot.Config;
 import ru.salaleser.vacdbot.DBHelper;
@@ -11,7 +11,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class ScanCommand extends Command {
 
 	public ScanCommand() {
-		super("scan", STEAM);
+		super("scan", ADMIN);
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class StatusCommand extends Command {
 				"`~status` — гениальный статус для бота и в чат с сайта statusi.com.ru;\n" +
 						"`~status bot` — немного информации о боте;\n" +
 						"`~status КТО` — пасхалочка.",
-				"`~status Понедельник - это не день недели, а состояние души....`.",
+				"нет.",
 				"нет."
 				)
 		);

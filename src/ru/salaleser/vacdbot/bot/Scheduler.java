@@ -3,6 +3,7 @@ package ru.salaleser.vacdbot.bot;
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
+import ru.salaleser.vacdbot.bot.columns.EventColumns;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 

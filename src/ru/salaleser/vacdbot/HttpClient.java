@@ -40,10 +40,11 @@ public class HttpClient {
 				String line;
 				while ((line = in.readLine()) != null) response.append(line).append("\n");
 			} else {
-				Logger.error("HttpClient: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
+				Logger.error("HttpClient: " + connection.getResponseCode() + ", " +
+						connection.getResponseMessage() + "(" + query + ")");
 			}
 		} catch (SocketTimeoutException e) {
-			Logger.error("HttpClient: " + e.getMessage());
+			Logger.error("HttpClient: " + e.getMessage() + "(" + query + ")");
 			return null;
 		} catch (IOException e) {
 			e.printStackTrace();

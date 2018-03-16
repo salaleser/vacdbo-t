@@ -13,6 +13,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
+import static ru.salaleser.vacdbot.Util.*;
+import static ru.salaleser.vacdbot.Util.getName;
+
 public class PollCommand extends Command {
 
 	public PollCommand() {
@@ -37,10 +40,11 @@ public class PollCommand extends Command {
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
 		message.getClient().changePlayingText("голосование");
+		this.guild = guild;
 
 		int countdown = 20;
 		String countdownValue = DBHelper.getOption(guild.getStringID(), name, "countdown");
-		if (Util.isNumeric(countdownValue) &&
+		if (isNumeric(countdownValue) &&
 				Integer.parseInt(countdownValue) >= 5 &&
 				Integer.parseInt(countdownValue) <= 60) {
 			countdown = Integer.parseInt(countdownValue);
@@ -50,26 +54,26 @@ public class PollCommand extends Command {
 
 		StringBuilder answersEnum = new StringBuilder("\n");
 		String questionAndAnswers[] = splitQuestionAndAnswers(args);
-		String question = Util.b(questionAndAnswers[0] + "?");
+		String question = b(questionAndAnswers[0] + "?");
 		String answers[] = questionAndAnswers[1].split("/");
 
 		//добавляю кнопки для голосования в виде реакций:
 		// FIXME: 30.11.2017 Лёха из будущего, ну научись уже пользоваться новыми молодёжными эмодзи, а?
 		if (answers.length == 0 || answers.length == 1) {
-			Util.delay(100);
+			delay(100);
 			qMessage.addReaction("👍");
-			Util.delay(100);
+			delay(100);
 			qMessage.addReaction("👎");
 		} else if (answers.length <= 10) {
 			for (int i = 0; i < answers.length; i++) {
-				answersEnum.append(getNumberEmoji(i)).append(" — ").append(Util.code(answers[i])).append("\n");
+				answersEnum.append(getNumberEmoji(i)).append(" — ").append(code(answers[i])).append("\n");
 			}
 			for (int i = 0; i < answers.length; i++) {
-				Util.delay(100);
+				delay(100);
 				qMessage.addReaction(getNumberEmoji(i));
 			}
 		} else {
-			message.reply(Util.i("неправильное количество вариантов ответов"));
+			message.reply(i("неправильное количество вариантов ответов"));
 		}
 
 		//перерисовываю сообщение:
@@ -80,24 +84,23 @@ public class PollCommand extends Command {
 		}
 		String pollWrapper = "\n" + question + "\n" + answersEnum;
 		for (int i = countdown; i > 0; i--) {
-			Util.delay(1000);
+			delay(1000);
 			progressBar = fillProgressBar(barchar, i);
-			qMessage.edit(Util.i("Голосование завершится через " + i + " с") +
-					Util.block(progressBar.toString()) + pollWrapper);
+			qMessage.edit(i("Голосование завершится через " + i + " с") + block(progressBar.toString()) + pollWrapper);
 		}
-		Util.delay(1000);
-		qMessage.edit(Util.i("Ставки сделаны! Ставок больше нет. Идёт подсчёт голосов...") +
-				Util.block(" ") + pollWrapper);
+		delay(1000);
+		qMessage.edit(i("Ставки сделаны! Ставок больше нет. Идёт подсчёт голосов...") + block(" ") + pollWrapper);
 
 		//получаю реакции-голоса пользователей в отдельный лист:
-		Util.delay(2000);
+		delay(2000);
 		List<IReaction> reactions = qMessage.getReactions();
 
 		// FIXME: 17.11.2017 чёрная магия:
 		//проверка на чёрную магию дискорда (по невыясненным причинам иногда реакций нет совсем):
 		if (reactions.isEmpty()) {
-			qMessage.edit(Util.i("Произошла магия, скорее всего чёрная, реакции не посчитались, " +
-					"поэтому голосование объявляется несостоявшимся по техническим причинам. Попробуйте ещё раз."));
+			qMessage.edit(i("Произошла магия, скорее всего чёрная, реакции не посчитались, скорее всего " +
+					"это проблема в дискорде, но может быть и в моих кривых руках, в любом случае я постараюсь это " +
+					"починить. Голосование объявляется несостоявшимся по техническим причинам. Попробуйте ещё раз."));
 			qMessage.removeAllReactions();
 			message.getClient().changePlayingText(Bot.STATUS);
 			return;
@@ -113,19 +116,14 @@ public class PollCommand extends Command {
 			}
 			//попутно удаляю ботов:
 			// FIXME: 17.11.2017 не удаляются приходится обходить
-			for (IUser user : reactions.get(i).getUsers()) {
-				if (user.isBot()) reactions.get(i).getUsers().remove(user);
-			}
+			for (IUser user : reactions.get(i).getUsers()) if (user.isBot()) reactions.get(i).getUsers().remove(user);
 			//попутно считаю уникальных проголосовавших пользователей:
-			for (IUser user : reactions.get(i).getUsers()) {
-				if (!user.isBot()) voters.add(user);
-			}
+			for (IUser user : reactions.get(i).getUsers()) if (!user.isBot()) voters.add(user);
 		}
 
 		//отменяю голосование, если никто не голосовал (не считая бота):
 		if (voters.isEmpty()) {
-			qMessage.edit("\n" + question + "\n\n" +
-					Util.i("Никто не голосовал! Голосование отменено, результаты аннулированы."));
+			qMessage.edit("\n" + question + "\n\n" + i("Никто не голосовал! Голосование отменено, результаты аннулированы."));
 			message.getClient().changePlayingText(Bot.STATUS);
 			qMessage.removeAllReactions(); // FIXME: 17.11.2017 повтор кода
 			return;
@@ -139,15 +137,13 @@ public class PollCommand extends Command {
 		//считаю пользователей не офлайн:
 		int usersNumber = 0;
 		for (IUser user : message.getGuild().getUsers()) {
-			if (!user.isBot() && !user.getPresence().getStatus().name().equals("OFFLINE")) {
-				usersNumber++;
-			}
+			if (!user.isBot() && !user.getPresence().getStatus().name().equals("OFFLINE")) usersNumber++;
 		}
 
-		String result = Util.b("Голосование завершено!") + Util.block(" ") + "\n" + question + "\n\n" +
+		String result = b("Голосование завершено!") + block(" ") + "\n" + question + "\n\n" +
 				"В голосовании приняли участие " + voters.size() + " из " + usersNumber +
 				" участников.\n\n" + pollResult.toString() + "\n" + "Вариант " + winner.getEmoji();
-		if (answers.length > 2) result += Util.code(answers[winnerNumber]) + " набрал наибольшее количество голосов!";
+		if (answers.length > 2) result += code(answers[winnerNumber]) + " набрал наибольшее количество голосов!";
 		else result += " набрал наибольшее количество голосов!";
 		qMessage.edit(result);
 
@@ -156,9 +152,7 @@ public class PollCommand extends Command {
 
 	private String getRandomQuestion() {
 		String array[] = {
-				"Как вам эта песня? ",
-				"Сколько стоит аренда аккаунта?★ Складной нож | Черный глянец/Зависит от внешности арендатора/Не измеряется деньгами",
-				"Шла Саша по шоссе?Шла/По кривой дорожке/Бежала/Наташа/Не сушку",
+				"Кто пойдёт в пубг? ",
 				"Сколько будет 2+2*2?1/2/3/4/5/6/7/8",
 				"Сколько тебе лет?12/13/14/Старше 14"
 		};
@@ -185,48 +179,36 @@ public class PollCommand extends Command {
 
 	private String[] splitQuestionAndAnswers(String[] args) {
 		//если нет аргументов, то возвращаю рандомный вопрос:
-		if (args.length == 0) {
-			return getRandomQuestion().split("\\?");
-		}
+		if (args.length == 0) return getRandomQuestion().split("\\?");
 		//если первый аргумент "map", то отдаю предустановку:
-		if (args[0].equals("map")) {
-			return getMapQuestion().split("\\?");
-		}
+		if (args[0].equals("map")) return getMapQuestion().split("\\?");
 		//добавляю разделитель за ленивых:
-		if (args.length == 1) {
-			args[0] += "?";
-		}
+		if (args.length == 1) args[0] += "?";
 		//создаю новый массив аргументов:
 		StringBuilder newArgs = new StringBuilder();
 		//возвращаю обратно пробелы,
-		for (String arg : args) {
-			newArgs.append(arg).append(" ");
-		}
+		for (String arg : args) newArgs.append(arg).append(" ");
 		//выделяю вопрос отдельно от вариантов ответов.
 		return newArgs.toString().split("\\?");
 	}
 
 	private StringBuilder calculatePollResult(List<IReaction> reactions, String[] answers) {
 		StringBuilder result = new StringBuilder();
-		result.append(Util.bi("Результаты голосования:\n\n"));
+		result.append(bi("Результаты голосования:\n\n"));
 		for (int i = 0; i < reactions.size(); i++) {
 			result.append(reactions.get(i).getEmoji());
-			if (answers.length > 1) result.append(Util.code(answers[i]));
+			if (answers.length > 1) result.append(code(answers[i]));
 			result.append(" = **");
 			int c = 0;
-			for (IUser user : reactions.get(i).getUsers()) {
-				if (!user.isBot()) c++;
-			}
+			for (IUser user : reactions.get(i).getUsers()) if (!user.isBot()) c++;
 			result.append(c).append("**: ");
 			for (IUser user : reactions.get(i).getUsers()) {
-				if (!user.isBot()) {
-					result.append(user.getName()).append(", ");
-				}
+				if (!user.isBot()) result.append(getName(guild, user)).append(", ");
 			}
 			if (!reactions.get(i).getUsers().isEmpty()) {
 				result.replace(result.length() - 2, result.length(), ".\n");
 			} else {
-				result.append(Util.b("нет голосов.\n"));
+				result.append(b("нет голосов.\n"));
 			}
 		}
 		return result;

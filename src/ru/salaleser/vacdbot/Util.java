@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static ru.salaleser.vacdbot.Config.*;
 
 public class Util {
 	/**
@@ -40,6 +44,10 @@ public class Util {
 	 */
 	public static boolean isCommand(String verifiable) {
 		return Bot.getCommandManager().commands.containsKey(verifiable);
+	}
+
+	public static boolean isGuild(String verifiable) {
+		return verifiable.matches("^\\d{18}$") && Bot.getClient().getGuildByID(Long.parseLong(verifiable)) != null;
 	}
 
 	/**
@@ -79,34 +87,78 @@ public class Util {
 		return guild.getRoleByID(Long.parseLong(roleId)) != null;
 	}
 
-	public static boolean isCommunityID(String verifiable) {
+	public static boolean isCommunityURL(String verifiable) {
 		return verifiable.matches("^https?://steamcommunity.com/\\S+$");
 	}
 
-	/**
-	 * Возвращает правильное окончание для слова "день"
-	 *
-	 * @param days количество дней
-	 * @return окончание (и суффикс, но это не важно)
-	 */
-	public static String ending(int days) {
-		if (String.valueOf(days).endsWith("1") && !String.valueOf(days).endsWith("11")) return "ень";
-		if (String.valueOf(days).endsWith("2") || String.valueOf(days).endsWith("3") || String.valueOf(days).endsWith("4"))
-			return "ня";
-		return "ней";
+	public static String getEnding(String nominative, long quantity) {
+		Pattern genitive = Pattern.compile("^\\d*[234]$");
+		Pattern plural = Pattern.compile("^\\d*[05-9]$|^\\d*1\\d$");
+		Matcher genetiveMatcher = genitive.matcher(String.valueOf(quantity));
+		Matcher pluralMatcher = plural.matcher(String.valueOf(quantity));
+		switch (nominative) {
+			case "день":
+				if (pluralMatcher.matches()) return "дней";
+				if (genetiveMatcher.matches()) return "дня";
+			case "час":
+				if (pluralMatcher.matches()) return "часов";
+				if (genetiveMatcher.matches()) return "часа";
+			case "минута":
+				if (pluralMatcher.matches()) return "минут";
+				if (genetiveMatcher.matches()) return "минуты";
+			case "секунда":
+				if (pluralMatcher.matches()) return "секунд";
+				if (genetiveMatcher.matches()) return "секунды";
+		}
+		return nominative;
+	}
+
+	public static HashMap<String, String> getArgs(IGuild guild, String[] args) {
+		HashMap<String, String> map = new HashMap<>();
+		for (String arg : args) {
+			//если это ссылка на профиль в стиме (Community URL), то надо заменить его на стим айди (SteamID64)
+			if (isCommunityURL(arg)) arg = getSteamID64ByCommunityURL(arg);
+			if (isSteamID64(arg)) {
+				map.put(STEAMID64, arg);
+			} else if (isDiscordUser(arg)) {
+				map.put(DISCORDID, arg.replaceAll("[<@!>]", ""));
+			} else if (isCommand(arg)) {
+				map.put(COMMANDNAME, arg);
+			} else if (isGuild(arg)) {
+				map.put(GUILDID, arg);
+			} else if (isDiscordRole(arg, guild)) {
+				map.put(ROLEID, arg.replaceAll("[<@&>]", ""));
+			} else if (isTimestamp(arg)) {
+				map.put(TIMESTAMP, arg);
+			} else if (arg.matches("[MWN]")) {
+				map.put(SEX, arg);
+			} else if (arg.matches("^faceit:\\w{2,32}$")) {
+				map.put(FACEITID, arg.substring(7));
+			} else if (arg.matches(".*\\$\\d{1,9}.*") || arg.matches(".*\\d{1,9}\\$.*")) {
+				map.put(USD, arg.replaceAll("\\D", ""));
+			} else if (arg.matches("^\\d{1,9}$")) {
+				map.put(NUMBER, arg);
+			}
+		}
+		if (!map.isEmpty()) Logger.info(guild.getName() + " — найденные аргументы: " + map.toString(), guild);
+		return map;
+	}
+
+	public static String getName(IGuild guild, IUser user) {
+		if (user.getDisplayName(guild).equals(user.getName())) return user.getName();
+		return user.getName() + " " + code("AKA") + " «" + user.getDisplayName(guild) + "»";
 	}
 
 	/**
 	 * Возвращает SteamID64, если он присвоен указанному пользователю в таблице "users"
 	 *
+	 * @param guildid гильдия
 	 * @param discordid Discord ID
-	 * @return SteamID64
+	 * @return SteamID64 или null если такого Discord ID нет
 	 */
-	public static String getSteamidByDiscordid(String discordid) {
+	public static String getSteamID64ByDiscordID(String guildid, String discordid) {
 		discordid = discordid.replaceAll("[<@!>]", "");
-		//если такого пользователя еще не было в базе данных, то добавить его:
-		if (!DBHelper.isUserExists("discordid", discordid)) refreshUsers();
-		String query = "SELECT steamid FROM users WHERE discordid = '" + discordid + "'";
+		String query = "SELECT steamid FROM users WHERE guildid = '" + guildid + "' AND discordid = '" + discordid + "'";
 		return DBHelper.executeQuery(query)[0][0];
 	}
 
@@ -114,12 +166,12 @@ public class Util {
 	 * Возвращает SteamID64 пользователя на основании его ссылки на профиль.
 	 * Парсит xml-версию страницы профиля Steam с адресом вида "http://steamcommunity.com/id/salaleser/".
 	 *
-	 * @param communityid URL профиля пользователя Steam
+	 * @param communityURL URL профиля пользователя Steam
 	 * @return SteamID64
 	 */
-	public static String getSteamidByCommunityid(String communityid) {
+	public static String getSteamID64ByCommunityURL(String communityURL) {
 		Document document;
-		String request = communityid + "?xml=1";
+		String request = communityURL + "?xml=1";
 		try {
 			document = Jsoup.connect(request).get();
 		} catch (IllegalArgumentException e) {
@@ -138,7 +190,6 @@ public class Util {
 	 * @return Discord ID
 	 */
 	public static String getDiscordidBySteamid(String steamid) {
-		if (!DBHelper.isUserExists("steamid", steamid)) return "noname";
 		String sql = "SELECT discordid FROM users WHERE steamid = '" + steamid + "'";
 		return DBHelper.executeQuery(sql)[0][0];
 	}
@@ -147,21 +198,21 @@ public class Util {
 	 * Перебирает всех пользователей и проверяет на наличие их ID в таблице "users" базы данных.
 	 * Если пользователя нет, то добавляет его Discord ID в таблицу.
 	 *
-	 * @return количество добавленных пользователей в базу данных
 	 */
-	public static int refreshUsers() {
-		List<IUser> users = Bot.getClient().getUsers();
-		int counter = 0;
+	public static void refreshUsers(IGuild guild) {
+		List<IUser> users = guild.getUsers();
 		for (IUser user : users) {
-			if (!DBHelper.isUserExists("discordid", user.getStringID())) {
-				if (DBHelper.insert("users", new String[]{null, user.getStringID()})) {
-					counter++;
-				}
+			if (!DBHelper.isUserExists(guild.getStringID(), DISCORDID, user.getStringID())) {
+				DBHelper.insert("users", new String[]{guild.getStringID(), user.getStringID()});
 			}
 		}
-		return counter;
 	}
 
+	/**
+	 * Заполняет таблицу settings новыми командами для упрощения себе работы
+	 *
+	 * @return количество добавленных команд
+	 */
 	public static int fillCommandsAccessible() {// TODO: 02.03.2018 добавить удаление лишних
 		int counter = 0;
 		for (Command command : Bot.getCommandManager().commands.values()) {
@@ -421,8 +472,7 @@ public class Util {
 	}
 
 	public static String getSound(String discordid, String column) {
-		String steamid = getSteamidByDiscordid(discordid);
-		String query = "SELECT " + column + " FROM users WHERE steamid = '" + steamid + "'";
+		String query = "SELECT " + column + " FROM sounds WHERE discordid = '" + discordid + "'";
 		return DBHelper.executeQuery(query)[0][0];
 	}
 
@@ -501,9 +551,6 @@ public class Util {
 	}
 	public static String ubi(String text) {
 		return "__***" + text + "***__";
-	}
-	public static String did(String text) {
-		return "<@" + text + ">";
 	}
 }
 

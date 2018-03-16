@@ -38,7 +38,6 @@ public class SetCommand extends Command {
 		String key = args[1];
 		String value = args[2];
 
-
 		//проверяю на существование такой команды:
 		if (!Util.isCommand(command)) {
 			message.reply("команда " + command + " не поддерживается.");

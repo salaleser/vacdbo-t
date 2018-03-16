@@ -1,7 +1,8 @@
-package ru.salaleser.vacdbot.bot.command;
+package ru.salaleser.vacdbot.bot.command.admin;
 
 import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
+import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.*;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 public class InviteCommand extends Command {
 
 	public InviteCommand() {
-		super("invite", MISC, "Приглашает пользователей в голосовой канал.");
+		super("invite", ADMIN, "Приглашает пользователей в голосовой канал.");
 	}
 
 	@Override

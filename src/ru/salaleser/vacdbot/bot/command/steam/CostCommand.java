@@ -4,21 +4,19 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import ru.salaleser.vacdbot.*;
 import ru.salaleser.vacdbot.bot.command.Command;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CostCommand extends Command {
 
+	private IGuild guild;
 	private final HttpClient httpClient = new HttpClient();
 	private ParserInventory parserInventory = new ParserInventory();
 
@@ -28,35 +26,38 @@ public class CostCommand extends Command {
 
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
-		String steamid = Util.getSteamidByDiscordid(message.getAuthor().getStringID());
-		if (args.length > 0) {
-			if (Util.isSteamID64(args[0])) {
-				steamid = args[0];
-			} else {
-				message.reply(Util.b("ошибка в профиле") +
-						" (проверяю стоимость предметов инвентаря " + message.getAuthor() + ")");//fixme повтор кода
+		this.guild = guild;
+		IChannel channel = message.getChannel();
+		IUser user = message.getAuthor();
+		String discordid = user.getStringID();
+		String steamid = Util.getSteamID64ByDiscordID(guild.getStringID(), user.getStringID());
+		for (String arg : args) {
+			if (Util.isCommunityURL(arg)) arg = Util.getSteamID64ByCommunityURL(arg);
+			if (Util.isSteamID64(arg)) {
+				steamid = arg;
+				discordid = Util.getDiscordidBySteamid(steamid);
+			} else if (Util.isDiscordUser(arg)) {
+				discordid = arg.replaceAll("[<@!>]", "");
+				steamid = Util.getSteamID64ByDiscordID(guild.getStringID(), discordid);
 			}
-		} else {
-			message.reply(Util.b("аргументы не заданы") +
-					" (проверяю стоимость предметов инвентаря " + message.getAuthor() + ")");
 		}
-		String name = steamid;
+		user = guild.getUserByID(Long.parseLong(discordid));
 
-		message.getChannel().sendMessage("Проверяю стоимость предметов инвентаря " + name + "...");
+		channel.sendMessage(Util.i("Проверяю стоимость предметов инвентаря " + user.getName() + "..."));
 		StringBuilder jsonInventory;
 		long totalCost = 0;
 		//сначала беру джейсон со всеми предметами второго контекста инвентаря:
 		jsonInventory = httpClient.connect("http://steamcommunity.com/inventory/" +
 				steamid + "/730/2?l=russian&count=5000");
 		if (jsonInventory == null) {
-			Logger.error("Время ожидания превышено! Повторите операцию.");
+			Logger.error("Время ожидания превышено! Повторите операцию.", guild);
 			return;
 		}
 		//разбираю только classid вместе с instanceid в одну строку через знак "_" и market_hash_name:
 		HashMap<String, String> items = parserInventory.parse(jsonInventory);
 
 		//уже известно количество предметов, показываю в дискорд:
-		message.getChannel().sendMessage("Всего предметов в инвентаре (context=2): " +
+		channel.sendMessage("Всего предметов в инвентаре (context=2): " +
 				Util.b(items.size() + "\n") + Util.i("Считаю стоимость инвентаря..."));
 
 		//для каждого предмета в отдельности беру текущую стоимость и суммирую их:
@@ -68,63 +69,7 @@ public class CostCommand extends Command {
 
 		//целочисленная сумма в рублях и копейках:
 		String rubkop = Util.toRubKop(String.valueOf(totalCost));
-		message.reply("Общая стоимость предметов (context=2) " + args[0] + ": " + Util.b(rubkop));
-	}
-
-	/**
-	 * Способ парсинга html (больше 20 цен предметов за короткий промежуток времени запрашивать невозможно):
-	 *
-	 * @param itemWithSpaces название предмета
-	 * @return стоимость предмета
-	 */
-	private float getPriceBySteamMarketHtml(String itemWithSpaces) {
-		float price;
-		String item = itemWithSpaces.replace(" ", "+");
-		price = parserInventory.parseMarketHtml("http://steamcommunity.com/market/search?appid=730&l=en&q=" +
-				item);
-		Logger.debug(itemWithSpaces + " = " + price);
-		return price;
-	}
-
-	/**
-	 * Способ парсинга html через steamcommunity.com/market/listings/
-	 * Здесь уже кулдаун не дают, но способ не идеален, так как возвращает js на кейсы
-	 *
-	 * @param itemWithSpaces название предмета
-	 * @return стоимость предмета
-	 */
-	private long getPriceBySteamMarketListings(String itemWithSpaces) {
-		String price;
-		String item = itemWithSpaces.replace(" ", "%20");
-		price = parserInventory.parseMarketHtmlListings("https://steamcommunity.com/market/listings/730/" + item);
-		String priceKop = price.replaceAll("[^0-9]", "");
-		Logger.debug("LISTINGS: " + itemWithSpaces + " = " + priceKop);
-		return Long.parseLong(priceKop);
-	}
-
-	/**
-	 * Способ парсинга html сайта market.csgo.com
-	 *
-	 * @return стоимость предмета
-	 */
-	private long getPriceByMarketCsgoComHtml(String market_hash_name) {
-		String itemName = market_hash_name.replace(" ", "%20");
-		String url = "https://market.csgo.com/?search=" + itemName;
-
-		Document document = null;
-		try {
-			document = Jsoup.connect(url).get();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		if (document == null) return 0;
-
-		Elements marketItems = document.getElementsByClass("market-items");
-		System.out.println(marketItems);
-		Element marketFirstItem = marketItems.first();
-		System.out.println(marketFirstItem.text());
-		Logger.debug(market_hash_name + " = " + marketFirstItem.text());
-		return 1;
+		message.reply("Общая стоимость предметов (context=2) " + user.getName() + ": " + Util.b(rubkop));
 	}
 
 	/**
@@ -148,7 +93,7 @@ public class CostCommand extends Command {
 		while (wasSocketTimeoutException) {
 			//если таймаутов слишком много, то придётся повторить операцию позднее:
 			if (counterOfTimeouts > 20) {
-				Logger.error("Скорее всего отсутствует соединение с интернетом. Операция отменена.");
+				Logger.error("Скорее всего отсутствует соединение с интернетом. Операция отменена.", guild);
 				return 0;
 			}
 			jsonMarketTM = httpClient.connect(url + market_hash_name + "/?key=" + Config.getCsgotmApiKey());
@@ -156,7 +101,7 @@ public class CostCommand extends Command {
 			if (jsonMarketTM == null) {
 				counterOfTimeouts++;
 				wasSocketTimeoutException = true;
-				Logger.error("Время ожидания вышло, повторяю операцию... (" + item.getValue() + ")");
+				Logger.error("Время ожидания вышло, повторяю операцию... (" + item.getValue() + ")", guild);
 			} else {
 				wasSocketTimeoutException = false;
 			}
@@ -169,20 +114,19 @@ public class CostCommand extends Command {
 			if (success) {
 				JSONArray list = (JSONArray) jsonObject.get("list");
 				if (list.isEmpty()) {
-					Logger.debug("Предмет " + item.getValue() + " никто не продаёт. Пробую посмотреть цену в Steam...");
+					System.out.println("Предмет " + item.getValue() + " никто не продаёт. Пробую посмотреть цену в Steam...");
 					return getPriceBySteamMarketJson(item.getValue());
 				}
 				JSONObject firstItem = (JSONObject) list.get(0);
 				price = (long) firstItem.get("price");
 			} else {
 				String error = (String) jsonObject.get("error");
-				Logger.error(Util.decode(error));
+				Logger.error(Util.decode(error), guild);
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 
-//		Logger.debug("Минимальная стоимость " + item.getValue() + " — " + Util.toRubKop(String.valueOf(price)));
 		System.out.println("Минимальная стоимость " + item.getValue() + " — " + Util.toRubKop(String.valueOf(price)));
 		return price;
 	}
@@ -201,7 +145,7 @@ public class CostCommand extends Command {
 
 		StringBuilder jsonSteamMarket = httpClient.connect(url + itemNameForUrl);
 		if (jsonSteamMarket == null) {
-			Logger.error("Время ожидания вышло. Возвращаю \"0\" (" + market_hash_name + ")");
+			Logger.error("Время ожидания вышло. Возвращаю \"0\" (" + market_hash_name + ")", guild);
 			return 0;
 		} else {
 			JSONParser jsonParser = new JSONParser();
@@ -211,7 +155,7 @@ public class CostCommand extends Command {
 				if (success) {
 					String lowest_price = (String) jsonObject.get("lowest_price");
 					if (lowest_price.isEmpty()) {
-						Logger.debug("Предмет не продаётся в Steam Market. Скорее всего этот предмет нельзя продать.");
+						System.out.println("Предмет не продаётся в Steam Market. Скорее всего этот предмет нельзя продать.");
 						return 0;
 					}
 					//выделяю цену как могу:
@@ -220,12 +164,12 @@ public class CostCommand extends Command {
 					price = Long.parseLong(priceKop);
 				} else {
 					String error = (String) jsonObject.get("error");
-					Logger.error(Util.decode(error));
+					Logger.error(Util.decode(error), guild);
 				}
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			Logger.debug("Минимальная стоимость " + market_hash_name + " в Steam Market — " +
+			System.out.println("Минимальная стоимость " + market_hash_name + " в Steam Market — " +
 					Util.toRubKop(String.valueOf(price)));
 		}
 		return price;

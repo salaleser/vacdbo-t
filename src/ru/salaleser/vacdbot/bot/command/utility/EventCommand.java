@@ -1,9 +1,8 @@
 package ru.salaleser.vacdbot.bot.command.utility;
 
 import ru.salaleser.vacdbot.DBHelper;
-import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
-import ru.salaleser.vacdbot.bot.EventColumns;
+import ru.salaleser.vacdbot.bot.columns.EventColumns;
 import ru.salaleser.vacdbot.bot.Scheduler;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
@@ -67,7 +66,7 @@ public class EventCommand extends Command {
 			}
 			row[EventColumns.Command] = args[4];
 		} catch (ArrayIndexOutOfBoundsException e) {
-			Logger.error("Мало аргументов.");
+			message.reply("слишком мало аргументов!");
 		}
 
 		String selectRowQuery = "SELECT * FROM " + table + " WHERE id = '" + args[1] + "'";

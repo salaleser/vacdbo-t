@@ -1,4 +1,4 @@
-package ru.salaleser.vacdbot.bot.command.utility;
+package ru.salaleser.vacdbot.bot.command.admin;
 
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
@@ -7,7 +7,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class QuitCommand extends Command {
 
 	public QuitCommand() {
-		super("quit", UTILITY, "Выключает бота.", new String[]{"exit"});
+		super("quit", ADMIN, "Выключает бота.", new String[]{"exit"});
 	}
 
 	@Override

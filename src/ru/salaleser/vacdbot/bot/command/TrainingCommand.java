@@ -52,11 +52,11 @@ public class TrainingCommand extends Command {
 						"\n\nТренировочный сервер: steam://" + ip + "//\n```connect " + ip + "; password 2002```");
 				counter++;
 			} catch (DiscordException e) {
-				Logger.error(e.getErrorMessage());
+				Logger.error(e.getErrorMessage(), guild);
 			}
 		}
 		Logger.info("Оповещение отправлено личным сообщением " + counter + " пользователям, " +
-				"не доставлено " + (userList.size() - counter) + " сообщений.");
+				"не доставлено " + (userList.size() - counter) + " сообщений.", guild);
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

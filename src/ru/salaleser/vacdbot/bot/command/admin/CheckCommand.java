@@ -1,10 +1,11 @@
-package ru.salaleser.vacdbot.bot.command;
+package ru.salaleser.vacdbot.bot.command.admin;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Parser7DTDServer;
 import ru.salaleser.vacdbot.Util;
+import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -13,7 +14,7 @@ import java.io.IOException;
 public class CheckCommand extends Command {
 
 	public CheckCommand() {
-		super("check", MISC, "Возвращает количество игроков на сервере сервере 7DTD.ZONE=RU#2");
+		super("check", ADMIN, "Возвращает количество игроков на сервере сервере 7DTD.ZONE=RU#2");
 	}
 
 	@Override
@@ -23,10 +24,10 @@ public class CheckCommand extends Command {
 		try {
 			document = Jsoup.connect("https://7dtd.zone/qserver.php").get();
 		} catch (IOException e) {
-			Logger.error(Util.i("Нет соединения с интернетом"));
+			Logger.error("Нет соединения с интернетом", guild);
 		}
 		if (document == null) {
-			Logger.error(Util.i("Пустой ответ от сервера"));
+			Logger.error("Пустой ответ от сервера", guild);
 			return;
 		}
 		message.getChannel().sendMessage("Игроков на сервере 7DTD.ZONE=RU#2: " +

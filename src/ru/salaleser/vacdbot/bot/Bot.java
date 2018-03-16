@@ -2,9 +2,10 @@ package ru.salaleser.vacdbot.bot;
 
 import ru.salaleser.vacdbot.Config;
 import ru.salaleser.vacdbot.DBHelper;
+import ru.salaleser.vacdbot.Gamer;
 import ru.salaleser.vacdbot.Logger;
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.*;
+import ru.salaleser.vacdbot.bot.command.admin.*;
 import ru.salaleser.vacdbot.bot.command.audioplayer.*;
 import ru.salaleser.vacdbot.bot.command.steam.*;
 import ru.salaleser.vacdbot.bot.command.support.*;
@@ -15,10 +16,10 @@ import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Bot {
 
@@ -27,7 +28,15 @@ public class Bot {
 		return guilds;
 	}
 	public static void addGuild(IGuild guild) {
-		Bot.guilds.add(guild);
+		guilds.add(guild);
+	}
+
+	private static HashMap<String, Gamer> gamers = new HashMap<>();
+	public static HashMap<String, Gamer> getGamers() {
+		return gamers;
+	}
+	public static void addGamer(String discordid, Gamer gamer) {
+		gamers.put(discordid, gamer);
 	}
 
 	private static IDiscordClient client;
@@ -41,13 +50,19 @@ public class Bot {
 	public static final String SALALESER = "223559816239513601";
 	public static final String STATUS = "твои нервы!";
 	public static final String PREFIX = "~";
+	public static final int RUB_USD = 5712; // FIXME: 12.03.2018 парсить с сайта
 
 	public static Gui gui;
 	public static Log log;
+
 	private static final Config CONFIG = new Config();
 	private static final String CFG = "vacdbot.cfg";
 	private static final ClientBuilder CLIENT_BUILDER = new ClientBuilder();
 	private static final CommandManager COMMAND_MANAGER = new CommandManager();
+
+	private static ClearCommand clearCommand = new ClearCommand();
+	private static ForeverAloneCommand foreverAloneCommand= new ForeverAloneCommand();
+	private static SoundCommand soundCommand= new SoundCommand();
 
 	public static void main(String[] args) {
 		addCommands();
@@ -63,7 +78,12 @@ public class Bot {
 		IDiscordClient client = login(isConfig);
 		if (client != null) {
 			EventDispatcher dispatcher = client.getDispatcher();
+			dispatcher.registerListener(COMMAND_MANAGER);
 			dispatcher.registerListener(new Listener());
+			dispatcher.registerListener(new Snitch());
+			dispatcher.registerListener(clearCommand);
+			dispatcher.registerListener(foreverAloneCommand);
+			dispatcher.registerListener(soundCommand);
 		}
 		new DBHelper();
 	}
@@ -120,7 +140,7 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new TransCommand());
 		COMMAND_MANAGER.addCommand(new CostCommand());
 		COMMAND_MANAGER.addCommand(new TimerCommand());
-		COMMAND_MANAGER.addCommand(new ClearCommand());
+		COMMAND_MANAGER.addCommand(clearCommand);
 		COMMAND_MANAGER.addCommand(new ScanCommand());
 		COMMAND_MANAGER.addCommand(new SelectCommand());
 		COMMAND_MANAGER.addCommand(new CheckCommand());
@@ -135,10 +155,12 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new TTSCommand());
 		COMMAND_MANAGER.addCommand(new UserCommand());
 		COMMAND_MANAGER.addCommand(new EventCommand());
-		COMMAND_MANAGER.addCommand(new ForeverAloneCommand());
+		COMMAND_MANAGER.addCommand(foreverAloneCommand);
 		COMMAND_MANAGER.addCommand(new TrainingCommand());
 		COMMAND_MANAGER.addCommand(new ConvertCommand());
 		COMMAND_MANAGER.addCommand(new RoleCommand());
+		COMMAND_MANAGER.addCommand(soundCommand);
+		COMMAND_MANAGER.addCommand(new ActivateCommand());
 		System.out.println("Всего модулей загружено — " + Command.count);
 	}
 

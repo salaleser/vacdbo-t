@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ru.salaleser.vacdbot.Util.*;
+
 public class ReportCommand extends Command {
 
 	private int days = 1;
@@ -28,9 +30,9 @@ public class ReportCommand extends Command {
 	@Override
 	public void help(IMessage message) {
 		message.getChannel().sendMessage(buildHelp(description,
-				"`~" + name + " [<SteamID64> [<описание>]]`.",
-				"`~" + name + "` — проверяет наличие банов у подозреваемых.",
-				"`~" + name + " 76561198446059611 nuke подрубил на счёте 13-8 играли впятером`.",
+				"`~report [<SteamID64> [<описание>]]`.",
+				"`~report` — проверяет наличие банов у подозреваемых.",
+				"`~report 76561198446059611 nuke подрубил на счёте 13-8 играли впятером`.",
 				"можно установить количество дней."
 				)
 		);
@@ -38,6 +40,7 @@ public class ReportCommand extends Command {
 
 	@Override
 	public void handle(IGuild guild, IMessage message, String[] args) {
+		this.guild = guild;
 		days = Integer.parseInt(DBHelper.getOption(guild.getStringID(), name, "days"));
 		channel = message.getChannel();
 		resultBuilder = new StringBuilder();
@@ -48,9 +51,8 @@ public class ReportCommand extends Command {
 		}
 
 		String steamid = args[0];
-		if (Util.isCommunityID(steamid)) steamid = Util.getSteamidByCommunityid(steamid);
-		if (!Util.isSteamID64(steamid)) {
-			Logger.error("Ошибка в SteamID!");
+		if (isCommunityURL(steamid)) steamid = getSteamID64ByCommunityURL(steamid);
+		if (!isSteamID64(steamid)) {
 			message.reply("ошибка в SteamID!");
 			return;
 		}
@@ -58,7 +60,6 @@ public class ReportCommand extends Command {
 		ParserPlayerSummaries parserPlayerSummaries = new ParserPlayerSummaries();
 		if (parserPlayerSummaries.isExists("suspects", steamid)) {
 			message.reply("этот SteamID уже есть в базе данных!");
-			Logger.error("SteamID уже есть в базе данных!");
 			return;
 		}
 		String description = null;
@@ -78,7 +79,6 @@ public class ReportCommand extends Command {
 
 		if (jsonPlayerSummaries == null) {
 			message.reply("Превышено время ожидания!");
-			Logger.error("Превышено время ожидания!");
 			return;
 		}
 
@@ -97,8 +97,8 @@ public class ReportCommand extends Command {
 		}
 	}
 
-	public void checkSuspects() {
-		channel.sendMessage(Util.i("Проверяю подозреваемых...") + "\n");
+	private void checkSuspects() {
+		channel.sendMessage(i("Проверяю подозреваемых...") + "\n");
 		StringBuilder steamidsBuilder = new StringBuilder();
 		String[][] suspects = DBHelper.executeQuery("SELECT steamid FROM suspects");
 		//перечисляю steamid через запятую:
@@ -110,7 +110,7 @@ public class ReportCommand extends Command {
 
 		//если вернется false более 10 раз, то считаю, что есть проблемы с подключением к интернету:
 		for (int i = 0; i < 10; i++) if (getBannedProfiles(steamids)) return;
-		Logger.error("Проверьте подключение к интернету!");
+		Logger.error("Проверьте подключение к интернету!", guild);
 	}
 
 	private boolean getBannedProfiles(String steamids) {
@@ -120,7 +120,7 @@ public class ReportCommand extends Command {
 		StringBuilder jsonBans = httpClient.connect("http://api.steampowered.com/" +
 				"ISteamUser/GetPlayerBans/v1/?key=" + Config.getSteamWebApiKey() + "&steamids=" + steamids);
 		if (jsonBans == null) {
-			Logger.error("Ошибка HTTP-соединения при проверке подозреваемых! Повторяю операцию...");
+			Logger.error("Ошибка HTTP-соединения при проверке подозреваемых! Повторяю операцию...", guild);
 			return false;
 		}
 		HashMap<String, Integer> cheaters = parserBans.parse(jsonBans);
@@ -129,7 +129,7 @@ public class ReportCommand extends Command {
 			if (cheater.getValue() < days) {
 				if (profilesBuilder.length() == 0) {
 					profilesBuilder.append("*Профили читерков, получивших бан за последние ")
-							.append(days).append(" д").append(Util.ending(days)).append(":*\n");
+							.append(days).append(getEnding("день", days)).append(":*").append("\n");
 				}
 				profilesBuilder.append("http://steamcommunity.com/profiles/").append(cheater.getKey()).append("\n");
 			}
@@ -137,10 +137,10 @@ public class ReportCommand extends Command {
 
 		resultBuilder.append(" из них уже отлетело ").append(cheaters.size()).append(" читерастов.");
 		if (profilesBuilder.length() == 0) {
-			resultBuilder.append(" За последние ").append(days).append(" д")
-					.append(Util.ending(days)).append(" никто не спалился. Ждём дальше...");
+			resultBuilder.append(" За последние ").append(days).append(getEnding("день", days))
+					.append(" никто не спалился. Ждём дальше...");
 		}
-		channel.sendMessage(Util.i(resultBuilder.toString()) + "\n" + profilesBuilder.toString());
+		channel.sendMessage(i(resultBuilder.toString()) + "\n" + profilesBuilder.toString());
 		return true;
 	}
 
@@ -155,7 +155,7 @@ public class ReportCommand extends Command {
 			JSONObject response = (JSONObject) jsonObject.get("response");
 			JSONArray players = (JSONArray) response.get("players");
 			if (players.isEmpty()) {
-				Logger.error("SteamID не существует!");
+				Logger.error("SteamID не существует!", guild);
 				return null;
 			}
 			for (Object p : players) {
@@ -170,7 +170,7 @@ public class ReportCommand extends Command {
 			return new String[] {personaname, realname, avatarfull};
 		} catch (ParseException e) {
 			e.printStackTrace();
-			Logger.error("Ошибка парсера!");
+			Logger.error("Ошибка парсера!", guild);
 			return null;
 		}
 	}

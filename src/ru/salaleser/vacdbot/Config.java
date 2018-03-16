@@ -10,6 +10,17 @@ public class Config {
 	public static final long FIRST_STEAMID64 = 76561197960265729L;
 	public static final long LAST_STEAMID64 = 76561202255233023L;
 
+	public static final String DISCORDID = "discordid";
+	public static final String STEAMID64 = "steamid";
+	public static final String COMMANDNAME = "commandname";
+	public static final String GUILDID = "guildid";
+	public static final String ROLEID = "roleid";
+	public static final String TIMESTAMP = "timestamp";
+	public static final String FACEITID = "faceit";
+	public static final String USD = "usd";
+	public static final String SEX = "sex";
+	public static final String NUMBER = "number";
+
 	public static String Accessible = "accessible";
 	public static String Level = "level";
 

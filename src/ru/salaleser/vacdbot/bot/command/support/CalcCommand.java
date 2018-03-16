@@ -13,7 +13,7 @@ public class CalcCommand extends Command {
 	private ArrayList<Character> operators = new ArrayList<>();
 
 	public CalcCommand() {
-		super("calc", SUPPORT, "Производит нехитрые манипуляции с числами.");
+		super("calc", SUPPORT, "Производит нехитрые манипуляции с числами.", new String[]{"="});
 	}
 
 	@Override

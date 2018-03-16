@@ -1,4 +1,4 @@
-package ru.salaleser.vacdbot.bot;
+package ru.salaleser.vacdbot.bot.columns;
 
 public class SettingsColumns {
 	public static int GuildID = 0;
