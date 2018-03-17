@@ -1,7 +1,6 @@
 package ru.salaleser.vacdbot.bot.command.steam;
 
 import ru.salaleser.vacdbot.DBHelper;
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -11,6 +10,8 @@ import sx.blah.discord.handle.obj.IUser;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+
+import static ru.salaleser.vacdbot.Util.ui;
 
 public class ReadyCommand extends Command { // TODO: 17.02.2018 добавить проверки на гильдию
 
@@ -76,7 +77,7 @@ public class ReadyCommand extends Command { // TODO: 17.02.2018 добавить
 			}
 		}
 		if (readyBuilder.length() == 0) readyBuilder.append("(пока никто не готов)\n");
-		if (notReadyBuilder.length() != 0) readyBuilder.append("\n").append(Util.ui("Сегодня играть не будут:")).append("\n");
+		if (notReadyBuilder.length() != 0) readyBuilder.append("\n").append(ui("Сегодня играть не будут:")).append("\n");
 
 		if (args.length == 0) {
 			add();
@@ -116,7 +117,7 @@ public class ReadyCommand extends Command { // TODO: 17.02.2018 добавить
 
 	private void alreadyExist() {
 		channel.sendMessage("Вы уже добавлены в базу данных сегодня.");
-		channel.sendMessage(Util.ui("Готовы играть:") + "\n" +
+		channel.sendMessage(ui("Готовы играть:") + "\n" +
 				readyBuilder.toString() + notReadyBuilder.toString());
 	}
 

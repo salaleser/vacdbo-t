@@ -1,7 +1,6 @@
 package ru.salaleser.vacdbot.bot.command.utility;
 
 import ru.salaleser.vacdbot.DBHelper;
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
@@ -11,10 +10,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
+import static ru.salaleser.vacdbot.Util.*;
+
 public class HelpCommand extends Command {
 
 	public HelpCommand() {
-		super("help", UTILITY, "Показывает как пользоваться командами.", new String[]{"?"});
+		super("help", UTILITY, "Показывает как пользоваться командами.", new String[]{"?", "помощь"});
 	}
 
 	@Override
@@ -33,14 +34,14 @@ public class HelpCommand extends Command {
 		if (args.length != 0) {
 			Command command = Bot.getCommandManager().getCommand(args[0]);
 			if (command == null) {// FIXME: 17.11.2017 такой же блок в менеджере команд
-				message.reply("команда " + Util.code(args[0]) + " не поддерживается");
+				message.reply("команда " + code(args[0]) + " не поддерживается");
 				return;
 			}
 			command.help(message);
 			return;
 		}
 
-		int rank = Util.getRank(guild, message.getAuthor());
+		int rank = getRank(guild, message.getAuthor());
 
 		//для быстрой помощи в общий чат:
 		StringBuilder shortHelpBuilder = new StringBuilder();
@@ -54,16 +55,16 @@ public class HelpCommand extends Command {
 		//остальное вроде ничо, оптимизировать бы только
 		//разбиваю по категориям команды и отправляю разными сообщениями, чтобы избежать лимит в 2000 символов:
 		StringBuilder helpBuilder = new StringBuilder("Ваш уровень доступа " +
-				Util.ub(String.valueOf(rank)) + ", доступные команды:" + "\n");
+				ub(String.valueOf(rank)) + ", доступные команды:" + "\n");
 		int i = 0;
 		String strike;
 		String bold;
 		for (String category : categories) {
 			i++;
-			StringBuilder categoryBuilder = new StringBuilder(Util.ub(category) + ":\n");
+			StringBuilder categoryBuilder = new StringBuilder(ub(category) + ":\n");
 			for (Map.Entry<String, Command> entry : Bot.getCommandManager().commands.entrySet()) { //перебирать надо entrySet чтобы алиасы выделить
 				if (!category.equals(entry.getValue().category)) continue;
-				boolean accessible = Util.isAccessible(guild.getStringID(), entry.getValue().name);
+				boolean accessible = isAccessible(guild.getStringID(), entry.getValue().name);
 				String level = DBHelper.getOption(guild.getStringID(), entry.getKey(), "level");
 				if (level == null) continue; //значит это алиас, он в списке не нужен
 				if (accessible) strike = "";
@@ -73,16 +74,16 @@ public class HelpCommand extends Command {
 				categoryBuilder
 						.append(strike)
 						.append(bold)
-						.append(Util.code(entry.getValue().name + " " + Arrays.toString(entry.getValue().aliases)))
+						.append(code(entry.getValue().name + " " + Arrays.toString(entry.getValue().aliases)))
 						.append(bold)
 						.append(" — ")
-						.append(Util.i(entry.getValue().description))
+						.append(i(entry.getValue().description))
 						.append(" (")
-						.append(Util.b(level))
+						.append(b(level))
 						.append(")")
 						.append(strike)
 						.append("\n");
-				shortHelpBuilder.append(", ").append(strike).append(bold).append(Util.code(entry.getValue().name)).append(bold).append(strike);
+				shortHelpBuilder.append(", ").append(strike).append(bold).append(code(entry.getValue().name)).append(bold).append(strike);
 			}
 
 			//разделение между категориями для красоты (кроме каждого третего — там и так есть)
@@ -95,33 +96,33 @@ public class HelpCommand extends Command {
 			//подряд нескольких сообщений (RateLimitException), установка задержки между отправками тоже не поможет.
 			if (i % 3 == 0) {
 				//не стоит слишком часто посылать сообщения (RateLimitException)
-				Util.delay(100);
+				delay(100);
 				message.getAuthor().getOrCreatePMChannel().sendMessage(helpBuilder.toString());
 				helpBuilder = new StringBuilder();
 			}
 		}
 		helpBuilder
 				.append("\n")
-				.append(Util.ub("Легенда:"))
+				.append(ub("Легенда:"))
 				.append(" ")
-				.append(Util.code("~команда [алиас]"))
+				.append(code("~команда [алиас]"))
 				.append(" — ")
-				.append(Util.i("Описание"))
+				.append(i("Описание"))
 				.append(" (")
-				.append(Util.b("минимальный ранг для использования"))
+				.append(b("минимальный ранг для использования"))
 				.append(")")
 				.append("\nЗачеркнутые команды запрещены по разным причинам " +
-						"(нестабильные, в разработке, личные и т.д.) Чтобы разблокировать их, сообщить об ошибке или " +
-						"предложить идею для новой команды свяжитесь со мной (Лёха <@!" + Bot.SALALESER + ">)")
+						"(нестабильные, в разработке, личные и т.д.) Чтобы разблокировать их, сообщить об ошибке " +
+						"или предложить идею для новой команды свяжитесь со мной (Лёха <@!" + Bot.SALALESER + ">)")
 				.append("\n")
 				.append("Префикс бота — ")
-				.append(Util.code(Bot.PREFIX))
+				.append(code(Bot.PREFIX))
 				.append(". Пример использования: ")
-				.append(Util.code("~help"))
+				.append(code("~help"))
 				.append(", ")
-				.append(Util.code("~tts"))
+				.append(code("~tts"))
 				.append(".");
-		message.getChannel().sendMessage(Util.i("Основной перечень выслан личным сообщением. " +
+		message.getChannel().sendMessage(i("Основной перечень выслан личным сообщением. " +
 				"Вот короткий список:") + shortHelpBuilder.delete(0, 1).toString());
 		message.getAuthor().getOrCreatePMChannel().sendMessage(helpBuilder.toString());
 	}

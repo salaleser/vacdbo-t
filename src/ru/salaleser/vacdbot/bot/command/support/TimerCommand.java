@@ -1,12 +1,13 @@
 package ru.salaleser.vacdbot.bot.command.support;
 
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.concurrent.TimeUnit;
+
+import static ru.salaleser.vacdbot.Util.*;
 
 public class TimerCommand extends Command {
 
@@ -20,15 +21,15 @@ public class TimerCommand extends Command {
 		int timer = 5; // TODO: 10.12.2017 брать из базы
 		if (args.length == 1) timer = Integer.parseInt(args[0]);
 		int finalTimer = timer;
-		message.getChannel().sendMessage(Util.i("Таймер установлен на " +
-				Util.b(finalTimer + "") + " минут."));
+		message.getChannel().sendMessage(i("Таймер установлен на " +
+				b(finalTimer + "") + " минут."));
 		Thread thread = new Thread(() -> {
-			IMessage tMessage = message.getChannel().sendMessage(Util.b("Осталось " +
-					Util.u(finalTimer + "") + " минут"));
+			IMessage tMessage = message.getChannel().sendMessage(b("Осталось " +
+					u(finalTimer + "") + " минут"));
 			for (int i = finalTimer; i > 0; i--) {
 				message.getChannel().changeTopic("таймер: " + i + " мин");
 				message.getClient().changePlayingText("таймер: " + i + " мин");
-				tMessage.edit(Util.b("Осталось " + Util.u(i + "") + " минут"));
+				tMessage.edit(b("Осталось " + u(i + "") + " минут"));
 				try {
 					TimeUnit.MINUTES.sleep(1);
 				} catch (InterruptedException e) {

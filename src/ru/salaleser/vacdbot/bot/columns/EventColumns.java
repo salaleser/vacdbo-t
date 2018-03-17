@@ -1,6 +1,6 @@
 package ru.salaleser.vacdbot.bot.columns;
 
-//здесь храню номера колонок таблицы "events", они меняются иногда у меня, ведь я еще не в полной мере понимаю чего хочу
+//fixme перегнать в enum
 public class EventColumns {
 	public static int ID = 0;
 	public static int GuildID = 1;

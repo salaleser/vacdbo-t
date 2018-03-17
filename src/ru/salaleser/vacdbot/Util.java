@@ -1,5 +1,7 @@
 package ru.salaleser.vacdbot;
 
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import ru.salaleser.vacdbot.bot.Bot;
@@ -20,6 +22,30 @@ import java.util.regex.Pattern;
 import static ru.salaleser.vacdbot.Config.*;
 
 public class Util {
+
+	public enum EmojisNumbers {
+		ONE(EmojiManager.getForAlias("one")),
+		TWO(EmojiManager.getForAlias("two")),
+		THREE(EmojiManager.getForAlias("three")),
+		FOUR(EmojiManager.getForAlias("four")),
+		FIVE(EmojiManager.getForAlias("five")),
+		SIX(EmojiManager.getForAlias("six")),
+		SEVEN(EmojiManager.getForAlias("seven")),
+		EIGHT(EmojiManager.getForAlias("eight")),
+		NINE(EmojiManager.getForAlias("nine")),
+		TEN(EmojiManager.getForAlias("keycap_ten"));
+
+		public Emoji emoji() {
+			return emoji;
+		}
+
+		Emoji emoji;
+
+		EmojisNumbers(Emoji emoji) {
+			this.emoji = emoji;
+		}
+	}
+
 	/**
 	 * Проверяет аргумент на соответствие числу
 	 *

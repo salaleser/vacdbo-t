@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot;
 
+import com.vdurmont.emoji.EmojiManager;
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Logger;
 import ru.salaleser.vacdbot.Util;
@@ -15,7 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import static ru.salaleser.vacdbot.Util.code;
-import static ru.salaleser.vacdbot.Util.delay;
 import static ru.salaleser.vacdbot.bot.Bot.PREFIX;
 
 public class CommandManager {
@@ -68,7 +68,7 @@ public class CommandManager {
 		//проверка на лицуху:
 		if (!Util.isAccessible(guild.getStringID(), command.name)) {
 			Logger.info("Команда " + command.name + " запрещена для гильдии " + guild.getName() + ".", guild);
-			message.addReaction("\uD83D\uDEAB");
+			message.addReaction(EmojiManager.getByUnicode("\uD83D\uDEAB"));
 			return;
 		}
 

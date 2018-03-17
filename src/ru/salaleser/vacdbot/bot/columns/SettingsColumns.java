@@ -1,5 +1,6 @@
 package ru.salaleser.vacdbot.bot.columns;
 
+//fixme перегнать в enum
 public class SettingsColumns {
 	public static int GuildID = 0;
 	public static int Command = 1;

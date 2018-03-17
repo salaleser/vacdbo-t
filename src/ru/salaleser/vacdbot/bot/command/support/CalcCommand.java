@@ -1,11 +1,12 @@
 package ru.salaleser.vacdbot.bot.command.support;
 
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
+
+import static ru.salaleser.vacdbot.Util.*;
 
 public class CalcCommand extends Command {
 
@@ -42,7 +43,7 @@ public class CalcCommand extends Command {
 		//распихать операнды и операторы по массивам:
 		String[] operandsArray = formula.toString().split("[+-/*^]");
 
-		for (String operand : operandsArray) if (Util.isNumeric(operand)) operands.add(operand);
+		for (String operand : operandsArray) if (isNumeric(operand)) operands.add(operand);
 		System.out.println(operands);
 
 		operators.add(formula.charAt(operandsArray[0].length()));
@@ -56,9 +57,9 @@ public class CalcCommand extends Command {
 		double operand2 = Double.parseDouble(operands.get(1));
 
 		String expression = operand1 + "" + operators.get(0) + "" + operand2 + "=" +
-				Util.b(calculate(operand1, operand2).get(0).toString());
+				b(calculate(operand1, operand2).get(0).toString());
 
-		Util.delay(500);
+		delay(500);
 
 		rMessage.edit(removeZerosAndDots(expression));
 	}

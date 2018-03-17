@@ -4,7 +4,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import ru.salaleser.vacdbot.*;
+import ru.salaleser.vacdbot.Config;
+import ru.salaleser.vacdbot.HttpClient;
+import ru.salaleser.vacdbot.Logger;
+import ru.salaleser.vacdbot.ParserInventory;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -14,6 +17,8 @@ import sx.blah.discord.handle.obj.IUser;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ru.salaleser.vacdbot.Util.*;
+
 public class CostCommand extends Command {
 
 	private IGuild guild;
@@ -21,7 +26,7 @@ public class CostCommand extends Command {
 	private ParserInventory parserInventory = new ParserInventory();
 
 	public CostCommand() {
-		super("cost", STEAM, "Считает стоимость инвентаря.");
+		super("cost", STEAM, "Считает стоимость инвентаря.", new String[]{"инвентарь"});
 	}
 
 	@Override
@@ -30,20 +35,20 @@ public class CostCommand extends Command {
 		IChannel channel = message.getChannel();
 		IUser user = message.getAuthor();
 		String discordid = user.getStringID();
-		String steamid = Util.getSteamID64ByDiscordID(guild.getStringID(), user.getStringID());
+		String steamid = getSteamID64ByDiscordID(guild.getStringID(), user.getStringID());
 		for (String arg : args) {
-			if (Util.isCommunityURL(arg)) arg = Util.getSteamID64ByCommunityURL(arg);
-			if (Util.isSteamID64(arg)) {
+			if (isCommunityURL(arg)) arg = getSteamID64ByCommunityURL(arg);
+			if (isSteamID64(arg)) {
 				steamid = arg;
-				discordid = Util.getDiscordidBySteamid(steamid);
-			} else if (Util.isDiscordUser(arg)) {
+				discordid = getDiscordidBySteamid(steamid);
+			} else if (isDiscordUser(arg)) {
 				discordid = arg.replaceAll("[<@!>]", "");
-				steamid = Util.getSteamID64ByDiscordID(guild.getStringID(), discordid);
+				steamid = getSteamID64ByDiscordID(guild.getStringID(), discordid);
 			}
 		}
 		user = guild.getUserByID(Long.parseLong(discordid));
 
-		channel.sendMessage(Util.i("Проверяю стоимость предметов инвентаря " + user.getName() + "..."));
+		channel.sendMessage(i("Проверяю стоимость предметов инвентаря " + user.getName() + "..."));
 		StringBuilder jsonInventory;
 		long totalCost = 0;
 		//сначала беру джейсон со всеми предметами второго контекста инвентаря:
@@ -58,18 +63,18 @@ public class CostCommand extends Command {
 
 		//уже известно количество предметов, показываю в дискорд:
 		channel.sendMessage("Всего предметов в инвентаре (context=2): " +
-				Util.b(items.size() + "\n") + Util.i("Считаю стоимость инвентаря..."));
+				b(items.size() + "\n") + i("Считаю стоимость инвентаря..."));
 
 		//для каждого предмета в отдельности беру текущую стоимость и суммирую их:
 		for (Map.Entry<String, String> item : items.entrySet()) {
 			totalCost += getPriceByMarketCsgoCom(item);
 			//по правилам сайта https://market.csgo.com/docs/ не более пяти запросов в секунду:
-			Util.delay(200);
+			delay(200);
 		}
 
 		//целочисленная сумма в рублях и копейках:
-		String rubkop = Util.toRubKop(String.valueOf(totalCost));
-		message.reply("Общая стоимость предметов (context=2) " + user.getName() + ": " + Util.b(rubkop));
+		String rubkop = toRubKop(String.valueOf(totalCost));
+		message.reply("Общая стоимость предметов (context=2) " + user.getName() + ": " + b(rubkop));
 	}
 
 	/**
@@ -121,13 +126,13 @@ public class CostCommand extends Command {
 				price = (long) firstItem.get("price");
 			} else {
 				String error = (String) jsonObject.get("error");
-				Logger.error(Util.decode(error), guild);
+				Logger.error(decode(error), guild);
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 
-		System.out.println("Минимальная стоимость " + item.getValue() + " — " + Util.toRubKop(String.valueOf(price)));
+		System.out.println("Минимальная стоимость " + item.getValue() + " — " + toRubKop(String.valueOf(price)));
 		return price;
 	}
 
@@ -164,13 +169,13 @@ public class CostCommand extends Command {
 					price = Long.parseLong(priceKop);
 				} else {
 					String error = (String) jsonObject.get("error");
-					Logger.error(Util.decode(error), guild);
+					Logger.error(decode(error), guild);
 				}
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			System.out.println("Минимальная стоимость " + market_hash_name + " в Steam Market — " +
-					Util.toRubKop(String.valueOf(price)));
+					toRubKop(String.valueOf(price)));
 		}
 		return price;
 	}

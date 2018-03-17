@@ -8,7 +8,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -18,16 +17,19 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+import static ru.salaleser.vacdbot.Util.b;
+import static ru.salaleser.vacdbot.Util.u;
+
 public class TransCommand extends Command {
 
 	public TransCommand() {
-		super("trans", SUPPORT, "RU<=>EN перевод с сайта http://wooordhunt.ru.");
+		super("trans", SUPPORT, "RU<=>EN перевод с сайта http://wooordhunt.ru.", new String[]{"перевод"});
 	}
 
 	@Override
 	public void help(IMessage message) {
 		message.getChannel().sendMessage(buildHelp(description,
-				"`~trans <русское_слово | английское_слово>`.",
+				"`~trans <русское_слово|английское_слово>`.",
 				"нет.",
 				"`~trans constellation`, `~trans кисломолочный`.",
 				"пока перевод только одного слова с русского на английский и обратно."
@@ -39,8 +41,7 @@ public class TransCommand extends Command {
 	public void handle(IGuild guild, IMessage message, String[] args) {
 		String content = String.join("%20", args);
 		ArrayList<String> result = getDataFromYandexTranslator(content);
-		StringBuilder translation = new StringBuilder(Util.b("Перевод слова " +
-				Util.u(content) + ":\n"));
+		StringBuilder translation = new StringBuilder(b("Перевод слова " + u(content) + ":") + "\n");
 		for (String line : result) translation.append(line).append(" ");
 		message.getChannel().sendMessage(translation.toString());
 	}

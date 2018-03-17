@@ -13,7 +13,7 @@ import static ru.salaleser.vacdbot.Util.*;
 public class UserCommand extends Command {
 
 	public UserCommand() {
-		super("user", UTILITY, "Устанавливает SteamID64, FACEIT ID или пол пользователям.");
+		super("user", UTILITY, "Устанавливает SteamID64, FACEIT ID или пол пользователям.", new String[]{"юзер"});
 	}
 
 	@Override
@@ -71,14 +71,22 @@ public class UserCommand extends Command {
 		}
 
 		HashMap<String, String> argsMap = getArgs(guild, args);
-		String discordid = argsMap.get(DISCORDID);
-		if (discordid == null) {
+		String discordid = null;
+		String steamid = null;
+		if (argsMap.containsKey(DISCORDID)) {
+			discordid = argsMap.get(DISCORDID);
+			steamid = getSteamID64ByDiscordID(guild.getStringID(), discordid);
+		} else if (argsMap.containsKey(STEAMID64)) {
+			steamid = argsMap.get(STEAMID64);
+			discordid = getDiscordidBySteamid(steamid);
+		}
+		if (discordid == null && steamid == null) {
 			message.reply("невозможно идентифицировать пользователя!");
 			return;
 		}
 
 		IUser user = guild.getUserByID(Long.parseLong(discordid));
-		String steamid = DBHelper.executeQuery(getQuery("steamid", discordid))[0][0];
+		steamid = DBHelper.executeQuery(getQuery("steamid", discordid))[0][0];
 		if (argsMap.containsKey(STEAMID64)) steamid = argsMap.get(STEAMID64);
 		String faceit = DBHelper.executeQuery(getQuery("faceit", discordid))[0][0];
 		if (argsMap.containsKey(FACEITID)) faceit = argsMap.get(FACEITID);

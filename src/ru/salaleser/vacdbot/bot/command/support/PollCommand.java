@@ -1,7 +1,7 @@
 package ru.salaleser.vacdbot.bot.command.support;
 
+import com.vdurmont.emoji.EmojiManager;
 import ru.salaleser.vacdbot.DBHelper;
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
@@ -14,12 +14,11 @@ import java.util.List;
 import java.util.Random;
 
 import static ru.salaleser.vacdbot.Util.*;
-import static ru.salaleser.vacdbot.Util.getName;
 
 public class PollCommand extends Command {
 
 	public PollCommand() {
-		super("poll", SUPPORT, "Создаёт голосование.");
+		super("poll", SUPPORT, "Создаёт голосование.", new String[]{"голосование"});
 	}
 
 	@Override
@@ -61,16 +60,16 @@ public class PollCommand extends Command {
 		// FIXME: 30.11.2017 Лёха из будущего, ну научись уже пользоваться новыми молодёжными эмодзи, а?
 		if (answers.length == 0 || answers.length == 1) {
 			delay(100);
-			qMessage.addReaction("👍");
+			qMessage.addReaction(EmojiManager.getByUnicode("👍"));
 			delay(100);
-			qMessage.addReaction("👎");
+			qMessage.addReaction(EmojiManager.getByUnicode("👎"));
 		} else if (answers.length <= 10) {
 			for (int i = 0; i < answers.length; i++) {
-				answersEnum.append(getNumberEmoji(i)).append(" — ").append(code(answers[i])).append("\n");
+				answersEnum.append(EmojisNumbers.values()[i].emoji()).append(" — ").append(code(answers[i])).append("\n");
 			}
 			for (int i = 0; i < answers.length; i++) {
 				delay(100);
-				qMessage.addReaction(getNumberEmoji(i));
+				qMessage.addReaction(EmojisNumbers.values()[i].emoji());
 			}
 		} else {
 			message.reply(i("неправильное количество вариантов ответов"));
@@ -169,12 +168,6 @@ public class PollCommand extends Command {
 			if (i + 1 != maps.length) mapQuestion.append("/");
 		}
 		return mapQuestion.toString();
-	}
-
-	private String getNumberEmoji(int number) {
-		String numberEmoji[] = {":one:", ":two:", ":three:", ":four:",
-				":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"};
-		return numberEmoji[number];
 	}
 
 	private String[] splitQuestionAndAnswers(String[] args) {

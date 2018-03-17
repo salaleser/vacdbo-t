@@ -1,10 +1,8 @@
 package ru.salaleser.vacdbot.bot.command.audioplayer;
 
-import ru.salaleser.vacdbot.bot.Bot;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IVoiceChannel;
 
 public class LeaveCommand extends Command {
 

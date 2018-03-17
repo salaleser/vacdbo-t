@@ -2,8 +2,8 @@ package ru.salaleser.vacdbot.bot.command.utility;
 
 import ru.salaleser.vacdbot.DBHelper;
 import ru.salaleser.vacdbot.Util;
-import ru.salaleser.vacdbot.bot.columns.EventColumns;
 import ru.salaleser.vacdbot.bot.Scheduler;
+import ru.salaleser.vacdbot.bot.columns.EventColumns;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;

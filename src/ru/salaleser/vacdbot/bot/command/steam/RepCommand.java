@@ -19,9 +19,6 @@ import java.util.HashMap;
 
 import static ru.salaleser.vacdbot.Config.STEAMID64;
 import static ru.salaleser.vacdbot.Util.*;
-import static ru.salaleser.vacdbot.Util.b;
-import static ru.salaleser.vacdbot.Util.u;
-import static ru.salaleser.vacdbot.Util.ub;
 
 public class RepCommand extends Command {
 	private final String BASE_URL = "http://steamcommunity.com/profiles/";
@@ -78,6 +75,10 @@ public class RepCommand extends Command {
 
 		// FIXME: 26.11.2017 парсить джейсоны вместо эйчтиэмль https://lab.xpaw.me/steam_api_documentation.html#IPlayerService_GetSteamLevel_v1
 		String title = document.title();
+		if (document.getElementsByClass("friendPlayerLevel").isEmpty()) {
+			message.reply(i("не удалось информацию профиля " + b(title) + ". Скорее всего он скрыт."));
+			return;
+		}
 		profile_level = document.getElementsByClass("friendPlayerLevel").first().text();
 		String status = document.getElementsByClass("profile_in_game_header").text();
 		String last_online = document.getElementsByClass("profile_in_game_name").text();
@@ -99,21 +100,7 @@ public class RepCommand extends Command {
 		numInventory = getInventory(steamid);
 
 		//SUMMARY:
-		channel.sendMessage(ub(title) + "\n" +
-				"Level: " + b(profile_level) + "\n" +
-				"Status: " + b(status) + " - " + last_online + "\n" +
-				"Recent activity: " + b(recent_activity) + "\n" +
-				"Summary: " + profile_summary + "\n" +
-				"Badges: " + b(numBadges) + "\n" +
-				"Games: " + b(numGames) + "\n" +
-				"Inventory: " + b(numInventory+"") + "\n" +
-				"Screenshots: " + b(numScreenshots) + "\n" +
-				"Videos: " + b(numVideos) + "\n" +
-				"Workshop Items: " + b(numWorkshopItems) + "\n" +
-				"Reviews: " + b(numReviews) + "\n" +
-				"Artwork: " + b(numArtwork) + "\n" +
-				"Groups: " + b(numGroups) + "\n" +
-				"Friends: " + b(numFriends));
+		channel.sendMessage(ub(title) + "\n" + "Level: " + b(profile_level) + "\n" + "Status: " + b(status) + " - " + last_online + "\n" + "Recent activity: " + b(recent_activity) + "\n" + "Summary: " + profile_summary + "\n" + "Badges: " + b(numBadges) + "\n" + "Games: " + b(numGames) + "\n" + "Inventory: " + b(numInventory + "") + "\n" + "Screenshots: " + b(numScreenshots) + "\n" + "Videos: " + b(numVideos) + "\n" + "Workshop Items: " + b(numWorkshopItems) + "\n" + "Reviews: " + b(numReviews) + "\n" + "Artwork: " + b(numArtwork) + "\n" + "Groups: " + b(numGroups) + "\n" + "Friends: " + b(numFriends));
 
 		//COMMENTS:
 		String url = steamid + "/allcomments?ctp=";
@@ -149,13 +136,26 @@ public class RepCommand extends Command {
 			}
 			commentsAll.add(commentsPage);
 		}
+
+		if (commentCounter == 0) {
+			channel.sendMessage("У пользователя нет комментариев.");
+			return;
+		}
+
 		float cheatRep = (float) complaints / commentCounter * 100;
 		float commentsRep = rep / commentCounter * cheatRep + commentCounter;
-		float reputation = calcLevel() + calcSummary() + calcBadges() + calcGames() + calcScreenshots() + calcVideos() + calcWorkshopItems() + calcReviews() + calcArtwork() + calcGroups() + calcFriends(document) + calcInventory() + commentsRep;
-		channel.sendMessage("Всего комментариев: **" + commentCounter + "**\n" + "Репутация абсолютная: **" + rep + "**\n" + "Обвинений в нечестной игре: **" + complaints + "** (" + (int) cheatRep + "%)\n" + "Репутация комментариев: **" + commentsRep + "**\n" + "ВСЕГО: " + reputation);
+		float reputation = calcLevel() + calcSummary() + calcBadges() + calcGames() + calcScreenshots() +
+				calcVideos() + calcWorkshopItems() + calcReviews() + calcArtwork() + calcGroups() +
+				calcFriends(document) + calcInventory() + commentsRep;
+		channel.sendMessage("" +
+				"Всего комментариев: " + b(String.valueOf(commentCounter)) + "\n" +
+				"Репутация абсолютная: " + b(String.valueOf(rep)) + "\n" +
+				"Обвинений в нечестной игре: " + b(String.valueOf(complaints)) + " (" + (int) cheatRep + "%)\n" +
+				"Репутация комментариев: " + b(String.valueOf(commentsRep)) + "\n" +
+				"ВСЕГО: " + reputation);
 
 		if (args.length > 1 && args[1].equals("v")) {
-			channel.sendMessage(u("Первая сотня комментариев из профиля:"));
+			channel.sendMessage(u("Первая сотня комментариев из профиля:")); //fixme сделать больше сотни
 			for (StringBuilder comment : commentsAll) {
 				channel.sendMessage(comment.toString());
 				delay(1000);

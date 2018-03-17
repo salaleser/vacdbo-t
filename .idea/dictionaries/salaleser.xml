@@ -11,6 +11,7 @@
       <w>channelconnected</w>
       <w>clearhinthistory</w>
       <w>colstoupdate</w>
+      <w>columnname</w>
       <w>commandname</w>
       <w>communitybanned</w>
       <w>communityid</w>
@@ -24,6 +25,7 @@
       <w>economyban</w>
       <w>eeee</w>
       <w>emoji</w>
+      <w>emojis</w>
       <w>faceit</w>
       <w>faceitid</w>
       <w>flashbang</w>
@@ -37,6 +39,7 @@
       <w>incgrenade</w>
       <w>joinsound</w>
       <w>jointts</w>
+      <w>leadin</w>
       <w>leavesound</w>
       <w>leavetts</w>
       <w>llll</w>

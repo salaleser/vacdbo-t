@@ -49,7 +49,6 @@ public class FindCommand extends Command {
 	private Set<String> getDataFromGoogle(String query) {
 		Set<String> result = new HashSet<>();
 		String request = "https://www.google.com/search?q=" + query + "&num=20";
-		System.out.println("Sending request..." + request);
 		try {
 			Document doc = Jsoup
 					.connect(request)

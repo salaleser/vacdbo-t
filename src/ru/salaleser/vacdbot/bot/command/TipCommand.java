@@ -9,7 +9,7 @@ import java.util.Random;
 public class TipCommand extends Command {
 
 	public TipCommand() {
-		super("tip", MISC, "Выдает гениальный совет по игре в ксго.");
+		super("tip", MISC, "Выдает гениальный совет по игре в ксго.", new String[]{"совет"});
 	}
 
 	@Override

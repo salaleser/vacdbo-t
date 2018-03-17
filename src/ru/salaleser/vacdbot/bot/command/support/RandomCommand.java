@@ -1,11 +1,12 @@
 package ru.salaleser.vacdbot.bot.command.support;
 
-import ru.salaleser.vacdbot.Util;
 import ru.salaleser.vacdbot.bot.command.Command;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.Random;
+
+import static ru.salaleser.vacdbot.Util.*;
 
 public class RandomCommand extends Command {
 
@@ -21,7 +22,7 @@ public class RandomCommand extends Command {
 	};
 
 	public RandomCommand() {
-		super("random", SUPPORT, "Генерирует случайное число.");
+		super("random", SUPPORT, "Генерирует случайное число.", new String[]{"рандом"});
 	}
 
 	@Override
@@ -54,22 +55,22 @@ public class RandomCommand extends Command {
 
 	private String getRandom(String stringRange) {
 		int range;
-		if (Util.isNumeric(stringRange)) range = Integer.parseInt(stringRange);
-		else return Util.b("Неверный аргумент");
+		if (isNumeric(stringRange)) range = Integer.parseInt(stringRange);
+		else return b("Неверный аргумент");
 		int random = (int) (Math.random() * range) + 1;
-		return Util.i("Случайное число от 1 до " + range + ": `" + random + "`");
+		return i("Случайное число от 1 до " + range + ": `" + random + "`");
 	}
 
 	private String getMap(String stringRange) {
 		int range;
-		if (Util.isNumeric(stringRange)) {
+		if (isNumeric(stringRange)) {
 			range = Integer.parseInt(stringRange);
 			if (range < 2) range = 2;
 			else if (range > maps.length) range = maps.length;
 		} else {
-			return Util.b("Неверный аргумент");
+			return b("Неверный аргумент");
 		}
-		return Util.i("Играть будем на карте " + Util.b(maps[new Random().nextInt(range)]));
+		return i("Играть будем на карте " + b(maps[new Random().nextInt(range)]));
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

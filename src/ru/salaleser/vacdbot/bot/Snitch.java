@@ -1,8 +1,8 @@
 package ru.salaleser.vacdbot.bot;
 
+import com.vdurmont.emoji.EmojiManager;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -21,8 +21,6 @@ import static ru.salaleser.vacdbot.bot.Bot.*;
 class Snitch {
 
 	private IMessage message;
-	private IChannel channel;
-	private String content;
 
 	private void snitch() { //fixme исправить это барахло
 		String content = message.getContent().toLowerCase();
@@ -36,9 +34,10 @@ class Snitch {
 		};
 		for (String word : kidWordlist) {
 			if (content.contains(word)) {
-				message.addReaction("🎒");
+				message.addReaction(EmojiManager.getByUnicode("🎒"));
 				message.getChannel().sendMessage("школьник detected");
-				exec(message.getGuild(), "tts", new String[]{"внимание, обнаружен школьник!"});
+				exec(message.getGuild(), "tts", new String[]{"внимание, в канале " +
+						message.getChannel().getName() + " зафиксирован школьник!"});
 			}
 		}
 
@@ -102,8 +101,8 @@ class Snitch {
 	@EventSubscriber
 	public void onMessage(MessageReceivedEvent event) {
 		this.message = event.getMessage();
-		this.channel = event.getChannel();
-		this.content = message.getContent().toLowerCase();
+		IChannel channel = event.getChannel();
+		String content = message.getContent().toLowerCase();
 
 		if (event.getAuthor().isBot()) return; //на ботов не реагировать
 		if (event.getMessage().getContent().startsWith(PREFIX)) return; //на команды не реагировать
@@ -186,31 +185,19 @@ class Snitch {
 		if (argsMap.size() != 0) channel.sendMessage(i(leadin[new Random().nextInt(leadin.length)] + argsBuilder));
 
 		if (content.matches(".*привет.*") || content.contains("\uD83D\uDC4B")) {
-			message.addReaction(":wave:");
+			message.addReaction(EmojiManager.getForAlias("wave"));
 		} else if (content.matches(".*кто\\s.*") ||
 				content.matches(".{4,}\\?$") ||
 				content.matches("^го\\s.*") ||
 				content.matches(".*будешь.*|.*будет.*") ||
 				content.matches(".*кс\\s?го.*|.*cs[\\s:]?go.*") ||
 				content.matches(".*пубг.*|.*pubg.*|.*пупок.*|.*пупчик.*|.*пабчик.*")) {
-			message.addReaction("➕");
+			message.addReaction(EmojiManager.getByUnicode("➕"));
 			delay(100);
-			message.addReaction("➖");
+			message.addReaction(EmojiManager.getByUnicode("➖"));
 		}
 
 		snitch();
-	}
-
-	@EventSubscriber
-	public void onReactionAdd(ReactionAddEvent event) {
-		if (event.getUser().isBot()) return;
-		if (event.getReaction().isCustomEmoji()) return;
-
-		this.message = event.getMessage();
-		this.channel = event.getChannel();
-		this.content = message.getContent();
-
-//		message.removeReaction(getClient().getOurUser(), event.getReaction().getEmoji().getName());
 	}
 }
 // ЭТА ДЛИННАЯ СТРОКА НУЖНА ДЛЯ ТОГО, ЧТОБЫ ПОЯВИЛАСЬ ВОЗМОЖНОСТЬ ГОРИЗОНТАЛЬНО СКРОЛЛИТЬ ДЛЯ ДИСПЛЕЯ С МАЛЕНЬКОЙ ДИАГОНАЛЬЮ, НАПРИМЕР ДЛЯ МОЕГО ОДИННАДЦАТИДЮЙМОВОГО МАКБУКА ЭЙР

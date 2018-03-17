@@ -64,7 +64,7 @@ public class ForeverAloneCommand extends Command {
 		}
 		if (connectedUsers == 1) {
 			String tts = "Привет " + foreveralone.getDisplayName(event.getGuild()) + ". Меня зовут " +
-					Bot.getClient().getOurUser().getDisplayName(guild) + ". Я вижу тебе одиноко. Давай хотя бы я с тобой пообщаюсь?";
+					Bot.getClient().getOurUser().getDisplayName(event.getGuild()) + ". Я вижу тебе одиноко. Давай хотя бы я с тобой пообщаюсь?";
 			exec(event.getGuild(), "tts", new String[]{tts});
 			exec(event.getGuild(), "foreveralone", new String[]{"on", foreveralone.getStringID()});
 		} else if (connectedUsers > 1) {

@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StatusCommand extends Command {
 
 	public StatusCommand() {
-		super("status", MISC, "Устанавливает гениальный статус.");
+		super("status", MISC, "Устанавливает гениальный статус.", new String[]{"статус"});
 	}
 
 	@Override

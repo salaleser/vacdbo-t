@@ -12,7 +12,7 @@ import static ru.salaleser.vacdbot.Util.*;
 public class RoleCommand extends Command {
 
 	public RoleCommand() {
-		super("role", UTILITY, "Устанавливает ранги ролям.");
+		super("role", UTILITY, "Устанавливает ранги ролям.", new String[]{"роль"});
 	}
 
 	@Override

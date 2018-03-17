@@ -4,7 +4,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import ru.salaleser.vacdbot.*;
+import ru.salaleser.vacdbot.DBHelper;
+import ru.salaleser.vacdbot.HttpClient;
+import ru.salaleser.vacdbot.Logger;
+import ru.salaleser.vacdbot.ParserFriendsBans;
 import ru.salaleser.vacdbot.bot.command.Command;
 import ru.salaleser.vacdbot.vacdbo.ParserPlayerSummaries;
 import sx.blah.discord.handle.obj.IChannel;
@@ -15,6 +18,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ru.salaleser.vacdbot.Config.BASE_URL;
+import static ru.salaleser.vacdbot.Config.getSteamWebApiKey;
 import static ru.salaleser.vacdbot.Util.*;
 
 public class ReportCommand extends Command {
@@ -73,8 +78,8 @@ public class ReportCommand extends Command {
 		int time = (int) (System.currentTimeMillis() / 1000L);
 
 		HttpClient httpClient = new HttpClient();
-		String url = Config.BASE_URL + "/ISteamUser/GetPlayerSummaries/v0002/?key=" +
-				Config.getSteamWebApiKey() + "&steamids=" + steamid;
+		String url = BASE_URL + "/ISteamUser/GetPlayerSummaries/v0002/?key=" +
+				getSteamWebApiKey() + "&steamids=" + steamid;
 		StringBuilder jsonPlayerSummaries = httpClient.connect(url);
 
 		if (jsonPlayerSummaries == null) {
@@ -105,8 +110,7 @@ public class ReportCommand extends Command {
 		for (String[] row : suspects) steamidsBuilder.append(",").append(row[0]);
 		String steamids = steamidsBuilder.substring(1);
 
-		resultBuilder.append("Всего в списке подозреваемых ")
-				.append(suspects.length).append(" подозрительных профилей,");
+		resultBuilder.append("Всего в списке подозреваемых ").append(suspects.length).append(" подозрительных профилей,");
 
 		//если вернется false более 10 раз, то считаю, что есть проблемы с подключением к интернету:
 		for (int i = 0; i < 10; i++) if (getBannedProfiles(steamids)) return;
@@ -118,7 +122,7 @@ public class ReportCommand extends Command {
 		HttpClient httpClient = new HttpClient();
 		ParserFriendsBans parserBans = new ParserFriendsBans();
 		StringBuilder jsonBans = httpClient.connect("http://api.steampowered.com/" +
-				"ISteamUser/GetPlayerBans/v1/?key=" + Config.getSteamWebApiKey() + "&steamids=" + steamids);
+				"ISteamUser/GetPlayerBans/v1/?key=" + getSteamWebApiKey() + "&steamids=" + steamids);
 		if (jsonBans == null) {
 			Logger.error("Ошибка HTTP-соединения при проверке подозреваемых! Повторяю операцию...", guild);
 			return false;

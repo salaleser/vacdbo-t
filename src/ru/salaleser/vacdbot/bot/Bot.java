@@ -63,6 +63,7 @@ public class Bot {
 	private static ClearCommand clearCommand = new ClearCommand();
 	private static ForeverAloneCommand foreverAloneCommand= new ForeverAloneCommand();
 	private static SoundCommand soundCommand= new SoundCommand();
+	private static ConsoleCommand consoleCommand= new ConsoleCommand();
 
 	public static void main(String[] args) {
 		addCommands();
@@ -84,6 +85,7 @@ public class Bot {
 			dispatcher.registerListener(clearCommand);
 			dispatcher.registerListener(foreverAloneCommand);
 			dispatcher.registerListener(soundCommand);
+			dispatcher.registerListener(consoleCommand);
 		}
 		new DBHelper();
 	}
@@ -120,7 +122,7 @@ public class Bot {
 	 */
 	private static void addCommands() { // TODO: 09.02.2018 скан на новые модули и подключаемые пользовательские модули
 		System.out.println("Загружаю модули...");
-		COMMAND_MANAGER.addCommand(new ConsoleCommand());
+		COMMAND_MANAGER.addCommand(consoleCommand);
 		COMMAND_MANAGER.addCommand(new FindCommand());
 		COMMAND_MANAGER.addCommand(new HelpCommand());
 		COMMAND_MANAGER.addCommand(new PollCommand());
