@@ -19,7 +19,7 @@ public class RoleCommand extends Command {
 	public void help(IMessage message) {
 		message.getChannel().sendMessage(buildHelp(description,
 				"`~role [<@Role>|<ID_роли>] [<ранг>]`.",
-				"`~role` — показывает все роли гильдии.",
+				"нет.",
 				"`~role @Чоткие 2`, `~role @Гости 5`.",
 				"ранг пользователя равен самому высокому рангу из ролей пользователя (чем меньше число, тем " +
 						"выше ранг, у основателя всегда самый высокий ранг `1`)."

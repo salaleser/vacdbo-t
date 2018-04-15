@@ -43,10 +43,10 @@ public class PollCommand extends Command {
 
 		int countdown = 20;
 		String countdownValue = DBHelper.getOption(guild.getStringID(), name, "countdown");
-		if (isNumeric(countdownValue) &&
-				Integer.parseInt(countdownValue) >= 5 &&
-				Integer.parseInt(countdownValue) <= 60) {
-			countdown = Integer.parseInt(countdownValue);
+		if (isNumeric(countdownValue)) {
+			if (Integer.parseInt(countdownValue) < 5) countdown = 5;
+			else if (Integer.parseInt(countdownValue) > 600) countdown = 600;
+			else countdown = Integer.parseInt(countdownValue);
 		}
 
 		IMessage qMessage = message.getChannel().sendMessage("Инициализация голосования...");
@@ -57,7 +57,6 @@ public class PollCommand extends Command {
 		String answers[] = questionAndAnswers[1].split("/");
 
 		//добавляю кнопки для голосования в виде реакций:
-		// FIXME: 30.11.2017 Лёха из будущего, ну научись уже пользоваться новыми молодёжными эмодзи, а?
 		if (answers.length == 0 || answers.length == 1) {
 			delay(100);
 			qMessage.addReaction(EmojiManager.getByUnicode("👍"));
@@ -65,7 +64,7 @@ public class PollCommand extends Command {
 			qMessage.addReaction(EmojiManager.getByUnicode("👎"));
 		} else if (answers.length <= 10) {
 			for (int i = 0; i < answers.length; i++) {
-				answersEnum.append(EmojisNumbers.values()[i].emoji()).append(" — ").append(code(answers[i])).append("\n");
+				answersEnum.append(EmojisNumbers.values()[i].emoji().getUnicode()).append(" — ").append(code(answers[i])).append("\n");
 			}
 			for (int i = 0; i < answers.length; i++) {
 				delay(100);

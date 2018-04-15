@@ -61,9 +61,10 @@ public class Bot {
 	private static final CommandManager COMMAND_MANAGER = new CommandManager();
 
 	private static ClearCommand clearCommand = new ClearCommand();
-	private static ForeverAloneCommand foreverAloneCommand= new ForeverAloneCommand();
-	private static SoundCommand soundCommand= new SoundCommand();
-	private static ConsoleCommand consoleCommand= new ConsoleCommand();
+	private static ForeverAloneCommand foreverAloneCommand = new ForeverAloneCommand();
+	private static SoundCommand soundCommand = new SoundCommand();
+	private static ConsoleCommand consoleCommand = new ConsoleCommand();
+	private static DiscussCommand discussCommand = new DiscussCommand();
 
 	public static void main(String[] args) {
 		addCommands();
@@ -86,6 +87,7 @@ public class Bot {
 			dispatcher.registerListener(foreverAloneCommand);
 			dispatcher.registerListener(soundCommand);
 			dispatcher.registerListener(consoleCommand);
+			dispatcher.registerListener(discussCommand);
 		}
 		new DBHelper();
 	}
@@ -163,6 +165,9 @@ public class Bot {
 		COMMAND_MANAGER.addCommand(new RoleCommand());
 		COMMAND_MANAGER.addCommand(soundCommand);
 		COMMAND_MANAGER.addCommand(new ActivateCommand());
+		COMMAND_MANAGER.addCommand(discussCommand);
+		COMMAND_MANAGER.addCommand(new RolesCommand());
+		COMMAND_MANAGER.addCommand(new UsersCommand());
 		System.out.println("Всего модулей загружено — " + Command.count);
 	}
 

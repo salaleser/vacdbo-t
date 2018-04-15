@@ -35,44 +35,11 @@ public class UserCommand extends Command {
 		String table = "users";
 		refreshUsers(guild);
 
-		int usersCounter = 0;
-		int unknownSteamidsCounter = 0;
-		if (args.length == 0) {
-			StringBuilder userBuilder = new StringBuilder(ub("Пользователи гильдии " + guild.getName() + ":"));
-			for (IUser user : guild.getUsers()) {
-				if (user == null) continue; //если пользователя нет в гильдии, то не показывать его
-				if (user.isBot()) continue; //если бот, то тоже не показывать
-				usersCounter++;
-				String steamid = getSteamID64ByDiscordID(guild.getStringID(), user.getStringID());
-				if (steamid == null) unknownSteamidsCounter++;
-				userBuilder
-						.append("\n")
-						.append(b(getName(guild, user)))
-						.append(" ")
-						.append(code(user.getStringID()))
-						.append("|")
-						.append(code(steamid))
-						.append(" — ")
-						.append(b("" + getRank(guild, user)));
-				if (usersCounter % 20 == 0) {
-					channel.sendMessage(userBuilder.toString());
-					userBuilder = new StringBuilder();
-				}
-			}
-			userBuilder
-					.append("\n\n")
-					.append("Всего пользователей Вашей гильдии: ")
-					.append(b(usersCounter + ""))
-					.append(". Из них с неизвестными SteamID: ")
-					.append(b(unknownSteamidsCounter + ""))
-					.append(".");
-			channel.sendMessage(userBuilder.toString());
-			return;
-		}
+		if (args.length == 0) return;
 
-		HashMap<String, String> argsMap = getArgs(guild, args);
 		String discordid = null;
-		String steamid = null;
+		String steamid;
+		HashMap<String, String> argsMap = getArgs(guild, args);
 		if (argsMap.containsKey(DISCORDID)) {
 			discordid = argsMap.get(DISCORDID);
 			steamid = getSteamID64ByDiscordID(guild.getStringID(), discordid);
@@ -80,7 +47,7 @@ public class UserCommand extends Command {
 			steamid = argsMap.get(STEAMID64);
 			discordid = getDiscordidBySteamid(steamid);
 		}
-		if (discordid == null && steamid == null) {
+		if (discordid == null) {
 			message.reply("невозможно идентифицировать пользователя!");
 			return;
 		}
@@ -135,7 +102,7 @@ public class UserCommand extends Command {
 			replyBuilder.delete(0, 2);
 			replyBuilder.append(" успешно добавлен");
 			if (argsMap.size() > 1) replyBuilder.append("ы");
-			message.reply(replyBuilder + " пользователю " + b(user.getName()) + ".");
+			message.reply(replyBuilder + " пользователю " + b(getName(guild, user)) + ".");
 		} else {
 			message.reply("параметр не установлен.");
 		}

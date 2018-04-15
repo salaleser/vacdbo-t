@@ -31,7 +31,7 @@ public class ConsoleCommand extends Command {
 				"`~console`.",
 				"нет.",
 				"`~console`.",
-				"в разработке."
+				"взаимодействие со справочником посредством реакций-кнопок."
 				)
 		);
 	}
